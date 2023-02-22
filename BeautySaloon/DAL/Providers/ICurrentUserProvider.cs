@@ -2,5 +2,5 @@
 
 public interface ICurrentUserProvider
 {
-    public Guid UserId { get; set; }
+    public Guid GetUserId();
 }

@@ -36,7 +36,7 @@ public class AuditInterceptor : SaveChangesInterceptor
             .ToArray();
 
         var utcNow = DateTime.UtcNow;
-        var currentUserId = _currentUserProvider.UserId;
+        var currentUserId = _currentUserProvider.GetUserId();
 
         foreach (var entry in auditableEntiries)
         {

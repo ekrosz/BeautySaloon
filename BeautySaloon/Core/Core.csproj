@@ -8,4 +8,10 @@
     <RootNamespace>BeautySaloon.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Dto\Requests\" />
+    <Folder Include="Dto\Responses\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>

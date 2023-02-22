@@ -21,4 +21,11 @@ public class BeautySaloonDbContext : DbContext
 
         base.OnConfiguring(optionsBuilder);
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+
+        base.OnModelCreating(modelBuilder);
+    }
 }

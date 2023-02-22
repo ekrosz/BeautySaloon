@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace BeautySaloon.DAL.Configurations.Abstract;
 public abstract class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : class, IEntity
 {
-    public void Configure(EntityTypeBuilder<TEntity> builder)
+    public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
         builder.HasKey(x => x.Id);
 
