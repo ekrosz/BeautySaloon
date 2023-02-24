@@ -35,6 +35,11 @@ public class AuditInterceptor : SaveChangesInterceptor
             .Where(x => x.Entity is IAuditable && AllowStates.Contains(x.State))
             .ToArray();
 
+        if (!auditableEntiries.Any())
+        {
+            return base.SavingChangesAsync(eventData, result, cancellationToken);
+        }
+
         var utcNow = DateTime.UtcNow;
         var currentUserId = _currentUserProvider.GetUserId();
 
