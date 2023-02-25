@@ -4,5 +4,5 @@ public interface ISoftDeletable
 {
     public bool IsDeleted { get; set; }
 
-    public void Delete();
+    public void Delete() => IsDeleted = true;
 }

@@ -74,6 +74,4 @@ public class User : IEntity, ISoftDeletable
         Email = email;
         Name = name;
     }
-
-    public void Delete() => IsDeleted = true;
 }

@@ -19,10 +19,24 @@ public class WriteRepository<TEntity> : ReadRepository<TEntity>, IWriteRepositor
         => await _dbContext.AddRangeAsync(entities, cancellationToken);
 
     public void Delete(TEntity entity)
-        => _dbContext.Remove(entity);
+    {
+        if (entity is ISoftDeletable deletableEntity)
+        {
+            deletableEntity.Delete();
+            return;
+        }
+
+        _dbContext.Remove(entity);
+    }
 
     public void DeleteRange(IEnumerable<TEntity> entities)
-        => _dbContext.RemoveRange(entities);
+    {
+        entities.Where(e => e is ISoftDeletable)
+            .ToList()
+            .ForEach(e => ((ISoftDeletable)e).Delete());
+
+        _dbContext.RemoveRange(entities.Where(e => e is not ISoftDeletable));
+    }
 
     public void Update(TEntity entity)
         => _dbContext.Update(entity);
