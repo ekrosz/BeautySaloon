@@ -1,10 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BeautySaloon.DAL.Entities.Contracts;
 
 namespace BeautySaloon.DAL.Entities;
-internal class Subscription
+
+public class Subscription : IEntity, IAuditable
 {
+    [Obsolete("For EF")]
+    private Subscription()
+    {
+    }
+
+    public Subscription(
+        string name,
+        decimal price,
+        int? lifeTime)
+    {
+        Name = name;
+        Price = price;
+        LifeTime = lifeTime;
+    }
+
+    public Guid Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
+
+    public int? LifeTime { get; set; }
+
+    public decimal Price { get; set; }
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime UpdatedOn { get; set; }
+
+    public Guid UserModifierId { get; set; }
+
+    public List<SubscriptionServiceInspection> SubscriptionServiceInspections { get; set; } = new List<SubscriptionServiceInspection>();
 }

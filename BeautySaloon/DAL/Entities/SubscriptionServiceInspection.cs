@@ -1,10 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BeautySaloon.DAL.Entities.Contracts;
 
 namespace BeautySaloon.DAL.Entities;
-internal class Inspection
+
+public class SubscriptionServiceInspection : IEntity, IAuditable
 {
+    [Obsolete("For EF")]
+    private SubscriptionServiceInspection()
+    {
+    }
+
+    public SubscriptionServiceInspection(int count)
+    {
+        Count = count;
+    }
+
+    public Guid Id { get; set; }
+
+    public int Count { get; set; }
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime UpdatedOn { get; set; }
+
+    public Guid UserModifierId { get; set; }
 }

@@ -32,4 +32,6 @@ public class CosmeticService : IEntity, IAuditable
     public DateTime UpdatedOn { get; set; }
 
     public Guid UserModifierId { get; set; }
+
+    public List<SubscriptionServiceInspection> SubscriptionServiceInspections { get; set; } = new List<SubscriptionServiceInspection>();
 }

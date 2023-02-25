@@ -37,7 +37,7 @@ public class PersonConfiguration : EntityConfiguration<Person>
             .IsRequired(false);
 
         builder.Property(x => x.Comment)
-            .HasMaxLength(255)
+            .HasMaxLength(500)
             .IsRequired(false);
 
         base.Configure(builder);
