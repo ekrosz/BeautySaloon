@@ -132,7 +132,8 @@ public class AuthService : IAuthService
         var user = await _userWriteRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new EntityNotFoundException($"Пользователь {request.Id} не найден.", typeof(User));
 
-        _userWriteRepository.Delete(user);
+        user.Delete();
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
