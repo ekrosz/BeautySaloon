@@ -8,7 +8,8 @@ public class QueryRepository<TEntity> : ReadRepository<TEntity>, IQueryRepositor
 
     protected override IQueryable<TEntity> Query => _dbContext.Set<TEntity>()
         .IgnoreAutoIncludes()
-        .AsNoTracking();
+        .AsNoTracking()
+        .AsSplitQuery();
 
     public QueryRepository(BeautySaloonDbContext dbContext)
         : base(dbContext)

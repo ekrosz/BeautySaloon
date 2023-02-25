@@ -1,15 +1,21 @@
 ﻿using BeautySaloon.DAL.Interceptors;
 using BeautySaloon.DAL.Providers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BeautySaloon.DAL;
 public class BeautySaloonDbContext : DbContext
 {
     private readonly ICurrentUserProvider _currentUserProvider;
+    private readonly ILoggerFactory _loggerFactory;
 
-    public BeautySaloonDbContext(DbContextOptions options, ICurrentUserProvider currentUserProvider)
+    public BeautySaloonDbContext(
+        DbContextOptions options,
+        ILoggerFactory loggerFactory,
+        ICurrentUserProvider currentUserProvider)
         : base(options)
     {
+        _loggerFactory = loggerFactory;
         _currentUserProvider = currentUserProvider;
     }
 
@@ -18,6 +24,8 @@ public class BeautySaloonDbContext : DbContext
         optionsBuilder.AddInterceptors(
             new AuditInterceptor(_currentUserProvider),
             new SoftDeleteInterceptor());
+
+        optionsBuilder.UseLoggerFactory(_loggerFactory);
 
         base.OnConfiguring(optionsBuilder);
     }

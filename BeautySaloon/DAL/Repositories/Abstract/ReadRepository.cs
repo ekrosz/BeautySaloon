@@ -8,7 +8,7 @@ public abstract class ReadRepository<TEntity> : IReadRepository<TEntity> where T
 {
     private readonly BeautySaloonDbContext _dbContext;
 
-    protected virtual IQueryable<TEntity> Query => _dbContext.Set<TEntity>();
+    protected virtual IQueryable<TEntity> Query => _dbContext.Set<TEntity>().AsSplitQuery();
 
     public ReadRepository(BeautySaloonDbContext dbContext)
     {

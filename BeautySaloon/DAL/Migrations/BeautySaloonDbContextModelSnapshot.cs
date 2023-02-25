@@ -61,12 +61,12 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.User", b =>
                 {
-                    b.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.FullName", "Name", b1 =>
+                    b.OwnsOne("BeautySaloon.DAL.Entities.User.Name#BeautySaloon.DAL.Entities.ValueObjects.FullName", "Name", b1 =>
                         {
                             b1.Property<Guid>("UserId")
                                 .HasColumnType("uuid");
@@ -87,7 +87,7 @@ namespace BeautySaloon.DAL.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("User");
+                            b1.ToTable("User", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");

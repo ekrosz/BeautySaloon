@@ -2,5 +2,5 @@
 
 public record FullName(string FirstName, string LastName, string? MiddleName)
 {
-    public static FullName Empty => new FullName(string.Empty, string.Empty, null);
+    public static FullName Empty => new(string.Empty, string.Empty, null);
 }
