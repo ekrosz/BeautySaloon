@@ -4,29 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BeautySaloon.DAL.Configurations;
 
-public class UserConfiguration : EntityConfiguration<User>
+public class PersonConfiguration : EntityConfiguration<Person>
 {
-    public override void Configure(EntityTypeBuilder<User> builder)
+    public override void Configure(EntityTypeBuilder<Person> builder)
     {
-        builder.Property(x => x.Login)
-            .HasMaxLength(255)
-            .IsRequired();
-
-        builder.Property(x => x.Password)
-            .HasMaxLength(255)
-            .IsRequired();
-
-        builder.Property(x => x.PhoneNumber)
-            .HasMaxLength(12)
-            .IsRequired();
-
-        builder.Property(x => x.Email)
-            .HasMaxLength(255)
-            .IsRequired(false);
-
-        builder.Property(x => x.Role)
-            .IsRequired();
-
         builder.OwnsOne(x => x.Name, n =>
         {
             n.WithOwner();
@@ -43,6 +24,21 @@ public class UserConfiguration : EntityConfiguration<User>
             .HasMaxLength(50)
             .IsRequired(false);
         });
+
+        builder.Property(x => x.BirthDate)
+            .IsRequired();
+
+        builder.Property(x => x.PhoneNumber)
+            .HasMaxLength(12)
+            .IsRequired();
+
+        builder.Property(x => x.Email)
+            .HasMaxLength(255)
+            .IsRequired(false);
+
+        builder.Property(x => x.Comment)
+            .HasMaxLength(255)
+            .IsRequired(false);
 
         base.Configure(builder);
     }

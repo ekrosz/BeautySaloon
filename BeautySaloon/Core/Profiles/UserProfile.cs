@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BeautySaloon.Core.Dto.Responses.Auth;
+using BeautySaloon.Core.Dto.Responses.User;
 using BeautySaloon.DAL.Entities;
 
 namespace BeautySaloon.Core.Profiles;

@@ -1,0 +1,46 @@
+﻿using BeautySaloon.DAL.Entities.Contracts;
+using BeautySaloon.DAL.Entities.ValueObjects;
+
+namespace BeautySaloon.DAL.Entities;
+
+public class Person : IEntity, ISoftDeletable, IAuditable
+{
+    [Obsolete("For EF")]
+    private Person()
+    {
+    }
+
+    public Person(
+        FullName name,
+        DateTime birthDate,
+        string phoneNumber,
+        string? email,
+        string? comment)
+    {
+        Name = name;
+        BirthDate = birthDate;
+        PhoneNumber = phoneNumber;
+        Email = email;
+        Comment = comment;
+    }
+
+    public Guid Id { get; set; }
+
+    public FullName Name { get; set; } = FullName.Empty;
+
+    public DateTime BirthDate { get; set; }
+
+    public string? Email { get; set; } = string.Empty;
+
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    public string? Comment { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime UpdatedOn { get; set; }
+
+    public Guid UserModifierId { get; set; }
+}

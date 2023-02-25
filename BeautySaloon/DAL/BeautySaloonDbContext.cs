@@ -21,9 +21,7 @@ public class BeautySaloonDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.AddInterceptors(
-            new AuditInterceptor(_currentUserProvider),
-            new SoftDeleteInterceptor());
+        optionsBuilder.AddInterceptors(new AuditInterceptor(_currentUserProvider));
 
         optionsBuilder.UseLoggerFactory(_loggerFactory);
 

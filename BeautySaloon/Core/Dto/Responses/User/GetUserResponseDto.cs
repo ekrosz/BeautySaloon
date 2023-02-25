@@ -1,7 +1,7 @@
 ﻿using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects;
 
-namespace BeautySaloon.Core.Dto.Responses.Auth;
+namespace BeautySaloon.Core.Dto.Responses.User;
 
 public record GetUserResponseDto
 {

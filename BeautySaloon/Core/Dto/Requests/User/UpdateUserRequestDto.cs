@@ -3,7 +3,7 @@ using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects;
 using FluentValidation;
 
-namespace BeautySaloon.Core.Dto.Requests.Auth;
+namespace BeautySaloon.Core.Dto.Requests.User;
 public class UpdateUserRequestDto
 {
     public Role Role { get; init; }

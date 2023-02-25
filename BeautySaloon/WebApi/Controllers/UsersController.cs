@@ -1,6 +1,7 @@
 ﻿using BeautySaloon.Core.Dto.Common;
 using BeautySaloon.Core.Dto.Requests.Auth;
-using BeautySaloon.Core.Dto.Responses.Auth;
+using BeautySaloon.Core.Dto.Requests.User;
+using BeautySaloon.Core.Dto.Responses.User;
 using BeautySaloon.Core.Services.Contracts;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -8,11 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeautySaloon.WebApi.Controllers;
 
+[Authorize(Roles = "Admin")]
 [Route("api/users")]
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IUserService _userService;
 
     private readonly IValidator<AuthorizeByCredentialsRequestDto> _authorizeByCredentialsValidator;
     private readonly IValidator<AuthorizeByRefreshTokenRequestDto> _authorizeByRefreshTokenValidator;
@@ -21,14 +23,14 @@ public class UsersController : ControllerBase
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
     public UsersController(
-        IAuthService authService,
+        IUserService userService,
         IValidator<AuthorizeByCredentialsRequestDto> authorizeByCredentialsValidator,
         IValidator<AuthorizeByRefreshTokenRequestDto> authorizeByRefreshTokenValidator,
         IValidator<CreateUserRequestDto> createUserValidator,
         IValidator<UpdateUserRequestDto> updateUserByIdValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
-        _authService = authService;
+        _userService = userService;
         _authorizeByCredentialsValidator = authorizeByCredentialsValidator;
         _authorizeByRefreshTokenValidator = authorizeByRefreshTokenValidator;
         _createUserValidator = createUserValidator;
@@ -36,32 +38,14 @@ public class UsersController : ControllerBase
         _byIdRequestValidator = byIdRequestValidator;
     }
 
-    [HttpPost("/auth/credentials")]
-    public async Task<AuthorizeResponseDto> AuthorizeAsync([FromBody] AuthorizeByCredentialsRequestDto request, CancellationToken cancellationToken = default)
-    {
-        await _authorizeByCredentialsValidator.ValidateAndThrowAsync(request, cancellationToken);
-
-        return await _authService.AuthorizeByCredentialsAsync(request, cancellationToken);
-    }
-
-    [HttpPost("/auth/refresh")]
-    public async Task<AuthorizeResponseDto> AuthorizeAsync([FromBody] AuthorizeByRefreshTokenRequestDto request, CancellationToken cancellationToken = default)
-    {
-        await _authorizeByRefreshTokenValidator.ValidateAndThrowAsync(request, cancellationToken);
-
-        return await _authService.AuthorizeByRefreshTokenAsync(request, cancellationToken);
-    }
-
-    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task CreateUserAsync([FromBody] CreateUserRequestDto request, CancellationToken cancellationToken = default)
     {
         await _createUserValidator.ValidateAndThrowAsync(request, cancellationToken);
 
-        await _authService.CreateUserAsync(request, cancellationToken);
+        await _userService.CreateUserAsync(request, cancellationToken);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task UpdateAsync([FromRoute] Guid id, [FromBody] UpdateUserRequestDto request, CancellationToken cancellationToken = default)
     {
@@ -69,10 +53,9 @@ public class UsersController : ControllerBase
 
         var requestById = new ByIdWithDataRequestDto<UpdateUserRequestDto>(id, request);
 
-        await _authService.UpdateUserAsync(requestById, cancellationToken);
+        await _userService.UpdateUserAsync(requestById, cancellationToken);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
@@ -80,10 +63,9 @@ public class UsersController : ControllerBase
 
         await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
 
-        await _authService.DeleteUserAsync(requestById, cancellationToken);
+        await _userService.DeleteUserAsync(requestById, cancellationToken);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpGet("{id}")]
     public async Task<GetUserResponseDto> GetAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
@@ -91,11 +73,10 @@ public class UsersController : ControllerBase
 
         await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
 
-        return await _authService.GetUserAsync(requestById, cancellationToken);
+        return await _userService.GetUserAsync(requestById, cancellationToken);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpGet]
     public Task<ItemListResponseDto<GetUserResponseDto>> GetListAsync([FromQuery] GetUserListRequestDto request, CancellationToken cancellationToken = default)
-        => _authService.GetUserListAsync(request, cancellationToken);
+        => _userService.GetUserListAsync(request, cancellationToken);
 }
