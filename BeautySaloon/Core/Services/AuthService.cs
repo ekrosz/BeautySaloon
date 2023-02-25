@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BeautySaloon.Common.Utils;
+using BeautySaloon.Core.Dto.Common;
 using BeautySaloon.Core.Dto.Requests.Auth;
 using BeautySaloon.Core.Dto.Responses.Auth;
 using BeautySaloon.Core.Exceptions;
@@ -23,21 +24,25 @@ public class AuthService : IAuthService
 
     private readonly IUnitOfWork _unitOfWork;
 
+    private readonly IMapper _mapper;
+
     private readonly AuthenticationSettings _authenticationSettings;
 
     public AuthService(
         IWriteRepository<User> userRepository,
         IUnitOfWork unitOfWork,
+        IMapper mapper,
         IOptionsSnapshot<AuthenticationSettings> authenticationSettings)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
         _authenticationSettings = authenticationSettings.Value;
     }
 
     public async Task<AuthorizeResponseDto> AuthorizeByCredentialsAsync(AuthorizeByCredentialsRequestDto request, CancellationToken cancellationToken = default)
     {
-        var user = await _userRepository.GetFirstAsync(x => x.Login == request.Login)
+        var user = await _userRepository.GetFirstAsync(x => x.Login.ToLower().Equals(request.Login.ToLower()), cancellationToken)
             ?? throw new EntityNotFoundException($"Пользователь {request.Login} не найден.", typeof(User));
 
         if (!user.IsValidPassword(request.Password))
@@ -60,7 +65,7 @@ public class AuthService : IAuthService
             throw new RefreshTokenExpiredException();
         }
 
-        var user = await _userRepository.GetByIdAsync(refreshData.UserId)
+        var user = await _userRepository.GetByIdAsync(refreshData.UserId, cancellationToken)
             ?? throw new EntityNotFoundException($"Пользователь {refreshData.UserId} не найден.", typeof(User));
 
         if (!user.IsValidRefreshSecret(refreshData.RefreshSecretKey))
@@ -76,7 +81,7 @@ public class AuthService : IAuthService
 
     public async Task CreateUserAsync(CreateUserRequestDto request, CancellationToken cancellationToken = default)
     {
-        var user = await _userRepository.GetFirstAsync(x => x.Login.Equals(request.Login));
+        var user = await _userRepository.GetFirstAsync(x => x.Login.ToLower().Equals(request.Login.ToLower()), cancellationToken);
 
         if (user is not null)
         {
@@ -95,15 +100,17 @@ public class AuthService : IAuthService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateUserAsync(UpdateUserByIdRequestDto request, CancellationToken cancellationToken = default)
+    public async Task UpdateUserAsync(ByIdWithDataRequestDto<UpdateUserRequestDto> request, CancellationToken cancellationToken = default)
     {
-        var user = await _userRepository.GetByIdAsync(request.Id)
+        var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new EntityNotFoundException($"Пользователь {request.Id} не найден.", typeof(User));
 
-        var isExistLogin = await _userRepository.ExistAsync(x => x.Login.Equals(request.Data.Login) && x.Id != request.Id);
+        var isExistLogin = await _userRepository.ExistAsync(x => x.Login.Equals(request.Data.Login) && x.Id != request.Id, cancellationToken);
 
         if (isExistLogin)
+        {
             throw new EntityAlreadyExistException($"Пользователь {request.Data.Login} уже существуюет", typeof(User));
+        }
 
         user.Update(
             request.Data.Role,
@@ -114,6 +121,34 @@ public class AuthService : IAuthService
             request.Data.Email);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteUserAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new EntityNotFoundException($"Пользователь {request.Id} не найден.", typeof(User));
+
+        _userRepository.Delete(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<GetUserResponseDto> GetUserAsync(ByIdRequestDto request, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new EntityNotFoundException($"Пользователь {request.Id} не найден.", typeof(User));
+
+        return _mapper.Map<GetUserResponseDto>(user);
+    }
+
+    public async Task<ItemListResponseDto<GetUserResponseDto>> GetUserListAsync(GetUserListRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var users = await _userRepository.FindAsync(x =>
+            string.IsNullOrWhiteSpace(request.SearchString)
+            || x.Name.FirstName.ToLower().Contains(request.SearchString.ToLower())
+            || x.Name.LastName.ToLower().Contains(request.SearchString.ToLower())
+            || x.PhoneNumber.ToLower().Contains(request.SearchString.ToLower()), cancellationToken);
+
+        return new ItemListResponseDto<GetUserResponseDto>(_mapper.Map<IReadOnlyCollection<GetUserResponseDto>>(users));
     }
 
     private string GenerateAccessToken(User user)
