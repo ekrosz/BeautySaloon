@@ -5,7 +5,7 @@ using BeautySaloon.DAL.Entities.ValueObjects;
 
 namespace BeautySaloon.DAL.Entities;
 
-public class User : IEntity, ISoftDeletable
+public class User : IEntity, ISoftDeletable, IHasPhoneNumber
 {
     [Obsolete("For EF")]
     private User()
@@ -22,7 +22,7 @@ public class User : IEntity, ISoftDeletable
     {
         Role = role;
         Login = login;
-        Password = CryptoUtility.GetEncryptedPassword(password);
+        Password = CryptoUtilities.GetEncryptedPassword(password);
         PhoneNumber = phoneNumber;
         Email = email;
         Name = name;
@@ -47,7 +47,7 @@ public class User : IEntity, ISoftDeletable
     public bool IsDeleted { get; set; }
 
     public bool IsValidPassword(string password)
-        => Password.Equals(CryptoUtility.GetEncryptedPassword(password));
+        => Password.Equals(CryptoUtilities.GetEncryptedPassword(password));
 
     public bool IsValidRefreshSecret(Guid refreshSecret)
         => RefreshSecretKey == refreshSecret;
@@ -69,7 +69,7 @@ public class User : IEntity, ISoftDeletable
     {
         Role = role;
         Login = login;
-        Password = CryptoUtility.GetEncryptedPassword(password);
+        Password = CryptoUtilities.GetEncryptedPassword(password);
         PhoneNumber = phoneNumber;
         Email = email;
         Name = name;

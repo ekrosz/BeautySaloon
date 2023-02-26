@@ -24,6 +24,10 @@ public class CosmeticServiceConfiguration : EntityConfiguration<CosmeticService>
             .HasMaxLength(500)
             .IsRequired();
 
+        builder.HasMany<SubscriptionCosmeticService>()
+            .WithOne(x => x.CosmeticService)
+            .HasForeignKey(x => x.CosmeticServiceId);
+
         base.Configure(builder);
     }
 }

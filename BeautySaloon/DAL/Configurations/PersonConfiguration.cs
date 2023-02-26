@@ -28,10 +28,6 @@ public class PersonConfiguration : EntityConfiguration<Person>
         builder.Property(x => x.BirthDate)
             .IsRequired();
 
-        builder.Property(x => x.PhoneNumber)
-            .HasMaxLength(12)
-            .IsRequired();
-
         builder.Property(x => x.Email)
             .HasMaxLength(255)
             .IsRequired(false);
@@ -39,6 +35,13 @@ public class PersonConfiguration : EntityConfiguration<Person>
         builder.Property(x => x.Comment)
             .HasMaxLength(500)
             .IsRequired(false);
+
+        builder.HasMany(x => x.PersonSubscriptions)
+            .WithOne()
+            .HasForeignKey(x => x.PersonId);
+
+        builder.Navigation(x => x.PersonSubscriptions)
+            .AutoInclude();
 
         base.Configure(builder);
     }

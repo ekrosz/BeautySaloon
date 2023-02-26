@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace BeautySaloon.Common.Utils;
-public static class CryptoUtility
+public static class CryptoUtilities
 {
     private const string Format = "X2";
 

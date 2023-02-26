@@ -1,4 +1,5 @@
-﻿using BeautySaloon.Core.Dto.Common;
+﻿using BeautySaloon.Common.Utils;
+using BeautySaloon.Core.Dto.Common;
 using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects;
 using FluentValidation;
@@ -9,15 +10,15 @@ public record CreateUserRequestDto
 {
     public Role Role { get; init; }
 
-    public string Login { get; set; } = string.Empty;
+    public string Login { get; init; } = string.Empty;
 
-    public string Password { get; set; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
 
-    public string PhoneNumber { get; set; } = string.Empty;
+    public string PhoneNumber { get; init; } = string.Empty;
 
-    public string? Email { get; set; } = string.Empty;
+    public string? Email { get; init; } = string.Empty;
 
-    public FullName Name { get; set; } = FullName.Empty;
+    public FullName Name { get; init; } = FullName.Empty;
 }
 
 public class RegisterRequestValidator : AbstractValidator<CreateUserRequestDto>
@@ -42,11 +43,13 @@ public class RegisterRequestValidator : AbstractValidator<CreateUserRequestDto>
         RuleFor(_ => _.PhoneNumber)
             .NotNull()
             .NotEmpty()
-            .MaximumLength(12);
+            .MaximumLength(12)
+            .Must(_ => PhoneNumberUtilities.IsValid(_));
 
         RuleFor(_ => _.Email)
             .NotEmpty()
             .MaximumLength(255)
+            .EmailAddress()
             .When(_ => _.Email is not null);
 
         RuleFor(_ => _.Name)

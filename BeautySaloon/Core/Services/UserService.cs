@@ -4,7 +4,6 @@ using BeautySaloon.Core.Dto.Requests.User;
 using BeautySaloon.Core.Dto.Responses.User;
 using BeautySaloon.Core.Exceptions;
 using BeautySaloon.Core.Services.Contracts;
-using BeautySaloon.Core.Settings;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;
@@ -99,8 +98,8 @@ public class UserService : IUserService
     {
         var users = await _userQueryRepository.FindAsync(x =>
             string.IsNullOrWhiteSpace(request.SearchString)
-            || x.Name.FirstName.ToLower().Contains(request.SearchString.ToLower())
-            || x.Name.LastName.ToLower().Contains(request.SearchString.ToLower())
+            || string.Join(' ', x.Name.LastName, x.Name.FirstName, x.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
+
             || x.PhoneNumber.ToLower().Contains(request.SearchString.ToLower()), cancellationToken);
 
         return new ItemListResponseDto<GetUserResponseDto>(_mapper.Map<IReadOnlyCollection<GetUserResponseDto>>(users));

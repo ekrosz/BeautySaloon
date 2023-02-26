@@ -33,5 +33,5 @@ public class Subscription : IEntity, IAuditable
 
     public Guid UserModifierId { get; set; }
 
-    public List<SubscriptionServiceInspection> SubscriptionServiceInspections { get; set; } = new List<SubscriptionServiceInspection>();
+    public List<SubscriptionCosmeticService> SubscriptionCosmeticServices { get; set; } = new List<SubscriptionCosmeticService>();
 }

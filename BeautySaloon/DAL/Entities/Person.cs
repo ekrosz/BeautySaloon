@@ -1,9 +1,10 @@
 ﻿using BeautySaloon.DAL.Entities.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace BeautySaloon.DAL.Entities;
 
-public class Person : IEntity, ISoftDeletable, IAuditable
+public class Person : IEntity, ISoftDeletable, IAuditable, IHasPhoneNumber
 {
     [Obsolete("For EF")]
     private Person()
@@ -43,4 +44,21 @@ public class Person : IEntity, ISoftDeletable, IAuditable
     public DateTime UpdatedOn { get; set; }
 
     public Guid UserModifierId { get; set; }
+
+    public List<PersonSubscription> PersonSubscriptions { get; set; } = new List<PersonSubscription>();
+
+
+    public void Update(
+        FullName name,
+        DateTime birthDate,
+        string phoneNumber,
+        string? email,
+        string? comment)
+    {
+        Name = name;
+        BirthDate = birthDate;
+        PhoneNumber = phoneNumber;
+        Email = email;
+        Comment = comment;
+    }
 }

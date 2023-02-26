@@ -1,4 +1,5 @@
-﻿using BeautySaloon.DAL.Entities.Contracts;
+﻿using BeautySaloon.Common.Utils;
+using BeautySaloon.DAL.Entities.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,6 +29,13 @@ public abstract class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TE
                 .HasDefaultValue(false);
 
             builder.HasQueryFilter(x => !((ISoftDeletable)x).IsDeleted);
+        }
+
+        if (typeof(TEntity).IsAssignableTo(typeof(IHasPhoneNumber)))
+        {
+            builder.Property<string>(nameof(IHasPhoneNumber.PhoneNumber))
+                .HasMaxLength(12)
+                .IsRequired();
         }
     }
 }

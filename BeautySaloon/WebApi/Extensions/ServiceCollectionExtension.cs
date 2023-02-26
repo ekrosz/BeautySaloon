@@ -1,4 +1,5 @@
 ﻿using BeautySaloon.Core.Dto.Requests.Auth;
+using BeautySaloon.Core.Profiles;
 using BeautySaloon.Core.Services;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.Core.Settings;
@@ -45,9 +46,10 @@ public static class ServiceCollectionExtension
     {
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IPersonService, PersonService>();
 
-        services.AddValidatorsFromAssembly(typeof(AuthorizeByCredentialsRequestDto).Assembly);
-        services.AddAutoMapper(typeof(AuthorizeByCredentialsRequestDto).Assembly);
+        services.AddValidatorsFromAssembly(typeof(AuthorizeByCredentialsRequestValidator).Assembly);
+        services.AddAutoMapper(typeof(UserProfile).Assembly);
 
         return services;
     }

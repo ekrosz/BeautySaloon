@@ -16,10 +16,6 @@ public class UserConfiguration : EntityConfiguration<User>
             .HasMaxLength(255)
             .IsRequired();
 
-        builder.Property(x => x.PhoneNumber)
-            .HasMaxLength(12)
-            .IsRequired();
-
         builder.Property(x => x.Email)
             .HasMaxLength(255)
             .IsRequired(false);

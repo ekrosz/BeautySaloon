@@ -107,7 +107,7 @@ public class AuthService : IAuthService
             ExpiredOn = DateTime.UtcNow.AddHours(_authenticationSettings.RefreshTokenLifetime).Ticks
         };
 
-        return Convert.ToBase64String(CryptoUtility.EncryptData(refreshData, _authenticationSettings.RefreshSecurityBytesKey));
+        return Convert.ToBase64String(CryptoUtilities.EncryptData(refreshData, _authenticationSettings.RefreshSecurityBytesKey));
     }
 
 
@@ -115,7 +115,7 @@ public class AuthService : IAuthService
     {
         var encryptedData = Convert.FromBase64String(refreshToken);
 
-        return CryptoUtility.DecryptData<RefreshDataDto>(encryptedData, _authenticationSettings.RefreshSecurityBytesKey);
+        return CryptoUtilities.DecryptData<RefreshDataDto>(encryptedData, _authenticationSettings.RefreshSecurityBytesKey);
     }
 
     private struct RefreshDataDto

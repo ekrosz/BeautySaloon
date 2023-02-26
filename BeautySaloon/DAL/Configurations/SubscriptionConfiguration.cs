@@ -18,6 +18,17 @@ public class SubscriptionConfiguration : EntityConfiguration<Subscription>
         builder.Property(x => x.Price)
             .IsRequired();
 
+        builder.HasMany(x => x.SubscriptionCosmeticServices)
+            .WithOne()
+            .HasForeignKey(x => x.SubscriptionId);
+
+        builder.Navigation(x => x.SubscriptionCosmeticServices)
+            .AutoInclude();
+
+        builder.HasMany<PersonSubscription>()
+            .WithOne(x => x.Subscription)
+            .HasForeignKey(x => x.SubscriptionId);
+
         base.Configure(builder);
     }
 }

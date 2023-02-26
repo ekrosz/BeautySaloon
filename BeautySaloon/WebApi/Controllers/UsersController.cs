@@ -1,4 +1,5 @@
-﻿using BeautySaloon.Core.Dto.Common;
+﻿using BeautySaloon.Common;
+using BeautySaloon.Core.Dto.Common;
 using BeautySaloon.Core.Dto.Requests.Auth;
 using BeautySaloon.Core.Dto.Requests.User;
 using BeautySaloon.Core.Dto.Responses.User;
@@ -9,37 +10,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeautySaloon.WebApi.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = Constants.Roles.Admin)]
 [Route("api/users")]
 [ApiController]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
 
-    private readonly IValidator<AuthorizeByCredentialsRequestDto> _authorizeByCredentialsValidator;
-    private readonly IValidator<AuthorizeByRefreshTokenRequestDto> _authorizeByRefreshTokenValidator;
     private readonly IValidator<CreateUserRequestDto> _createUserValidator;
     private readonly IValidator<UpdateUserRequestDto> _updateUserByIdValidator;
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
     public UsersController(
         IUserService userService,
-        IValidator<AuthorizeByCredentialsRequestDto> authorizeByCredentialsValidator,
-        IValidator<AuthorizeByRefreshTokenRequestDto> authorizeByRefreshTokenValidator,
         IValidator<CreateUserRequestDto> createUserValidator,
         IValidator<UpdateUserRequestDto> updateUserByIdValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
         _userService = userService;
-        _authorizeByCredentialsValidator = authorizeByCredentialsValidator;
-        _authorizeByRefreshTokenValidator = authorizeByRefreshTokenValidator;
         _createUserValidator = createUserValidator;
         _updateUserByIdValidator = updateUserByIdValidator;
         _byIdRequestValidator = byIdRequestValidator;
     }
 
     [HttpPost]
-    public async Task CreateUserAsync([FromBody] CreateUserRequestDto request, CancellationToken cancellationToken = default)
+    public async Task CreateAsync([FromBody] CreateUserRequestDto request, CancellationToken cancellationToken = default)
     {
         await _createUserValidator.ValidateAndThrowAsync(request, cancellationToken);
 
