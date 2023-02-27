@@ -6,6 +6,8 @@ namespace BeautySaloon.DAL.Repositories.Abstract;
 
 public interface IQueryRepository<TEntity> : IReadRepository<TEntity> where TEntity : class, IEntity
 {
+    Task<bool> ExistAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+
     Task<PageResponseDto<TEntity>> GetPageAsync<TKey>(
         PageRequestDto request,
         Expression<Func<TEntity, bool>> predicate,

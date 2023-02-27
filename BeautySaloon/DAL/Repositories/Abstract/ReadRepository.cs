@@ -10,13 +10,12 @@ public abstract class ReadRepository<TEntity> : IReadRepository<TEntity> where T
 
     protected virtual IQueryable<TEntity> Query => _dbContext.Set<TEntity>().AsSplitQuery();
 
+    protected virtual DbSet<TEntity> DbSet => _dbContext.Set<TEntity>();
+
     public ReadRepository(BeautySaloonDbContext dbContext)
     {
         _dbContext = dbContext;
     }
-
-    public Task<bool> ExistAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
-        => Query.AnyAsync(predicate, cancellationToken);
 
     public async Task<IReadOnlyCollection<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         => await Query.Where(predicate).ToArrayAsync(cancellationToken);

@@ -8,10 +8,6 @@ public interface IWriteRepository<TEntity> : IReadRepository<TEntity> where TEnt
 
     public Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
 
-    public void Update(TEntity entity);
-
-    public void UpdateRange(IEnumerable<TEntity> entities);
-
     public void Delete(TEntity entity);
 
     public void DeleteRange(IEnumerable<TEntity> entities);

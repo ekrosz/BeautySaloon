@@ -35,13 +35,13 @@ public class CosmeticServiceService : ICosmeticServiceService
 
     public async Task CreateCosmeticServiceAsync(CreateCosmeticServiceRequestDto request, CancellationToken cancellationToken = default)
     {
-        var isExistServiceWithName = await _cosmeticServiceQueryRepository.ExistAsync(
+        var isExistName = await _cosmeticServiceQueryRepository.ExistAsync(
             x => x.Name.ToLower().Equals(request.Name.ToLower()),
             cancellationToken);
 
-        if (isExistServiceWithName)
+        if (isExistName)
         {
-            throw new UniquePropertyException(typeof(CosmeticService), nameof(request.Name));
+            throw new EntityAlreadyExistException($"Косметическая услуга {request.Name} уже существует.", typeof(CosmeticService));
         }
 
         var entity = new CosmeticService(
@@ -84,6 +84,15 @@ public class CosmeticServiceService : ICosmeticServiceService
 
     public async Task UpdateCosmeticServiceAsync(ByIdWithDataRequestDto<UpdateCosmeticServiceRequestDto> request, CancellationToken cancellationToken = default)
     {
+        var isExistName = await _cosmeticServiceQueryRepository.ExistAsync(
+            x => x.Name.ToLower().Equals(request.Data.Name.ToLower()) && x.Id != request.Id,
+            cancellationToken);
+
+        if (isExistName)
+        {
+            throw new EntityAlreadyExistException($"Косметическая услуга {request.Data.Name} уже существует.", typeof(CosmeticService));
+        }
+
         var entity = await _cosmeticServiceWriteRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new EntityNotFoundException($"Косметическая услуга {request.Id} не найдена.", typeof(CosmeticService));
 

@@ -6,17 +6,17 @@ using System.Linq.Expressions;
 namespace BeautySaloon.DAL.Repositories.Abstract;
 public class QueryRepository<TEntity> : ReadRepository<TEntity>, IQueryRepository<TEntity> where TEntity : class, IEntity
 {
-    private readonly BeautySaloonDbContext _dbContext;
-
-    protected override IQueryable<TEntity> Query => _dbContext.Set<TEntity>()
+    protected override IQueryable<TEntity> Query => base.Query
         .AsNoTracking()
         .AsSplitQuery();
 
     public QueryRepository(BeautySaloonDbContext dbContext)
         : base(dbContext)
     {
-        _dbContext = dbContext;
     }
+
+    public Task<bool> ExistAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        => Query.AnyAsync(predicate, cancellationToken);
 
     public async Task<PageResponseDto<TEntity>> GetPageAsync<TKey>(
         PageRequestDto request,

@@ -38,7 +38,7 @@ public class UserService : IUserService
 
         if (user is not null)
         {
-            throw new EntityAlreadyExistException($"Пользователь {user.Login} уже существуюет", typeof(User));
+            throw new EntityAlreadyExistException($"Пользователь {user.Login} уже существуюет.", typeof(User));
         }
 
         var entity = new User(
@@ -58,11 +58,13 @@ public class UserService : IUserService
         var user = await _userWriteRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new EntityNotFoundException($"Пользователь {request.Id} не найден.", typeof(User));
 
-        var isExistLogin = await _userWriteRepository.ExistAsync(x => x.Login.Equals(request.Data.Login) && x.Id != request.Id, cancellationToken);
+        var isExistLogin = await _userQueryRepository.ExistAsync(
+            x => x.Login.Equals(request.Data.Login) && x.Id != request.Id,
+            cancellationToken);
 
         if (isExistLogin)
         {
-            throw new EntityAlreadyExistException($"Пользователь {request.Data.Login} уже существуюет", typeof(User));
+            throw new EntityAlreadyExistException($"Пользователь {request.Data.Login} уже существуюет.", typeof(User));
         }
 
         user.Update(
