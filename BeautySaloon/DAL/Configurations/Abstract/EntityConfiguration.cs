@@ -1,5 +1,4 @@
-﻿using BeautySaloon.Common.Utils;
-using BeautySaloon.DAL.Entities.Contracts;
+﻿using BeautySaloon.DAL.Entities.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

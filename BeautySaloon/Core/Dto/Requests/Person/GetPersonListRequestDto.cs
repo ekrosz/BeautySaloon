@@ -17,7 +17,6 @@ public class GetPersonListRequestValidator : AbstractValidator<GetPersonListRequ
     {
         RuleFor(_ => _.Page)
             .NotNull()
-            .NotEmpty()
             .SetValidator(new PageRequestValidator());
     }
 }

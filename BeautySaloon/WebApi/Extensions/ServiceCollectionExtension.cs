@@ -47,6 +47,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IPersonService, PersonService>();
+        services.AddScoped<ICosmeticServiceService, CosmeticServiceService>();
 
         services.AddValidatorsFromAssembly(typeof(AuthorizeByCredentialsRequestValidator).Assembly);
         services.AddAutoMapper(typeof(UserProfile).Assembly);

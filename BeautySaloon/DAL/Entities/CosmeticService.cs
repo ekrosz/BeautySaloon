@@ -32,4 +32,14 @@ public class CosmeticService : IEntity, IAuditable
     public DateTime UpdatedOn { get; set; }
 
     public Guid UserModifierId { get; set; }
+
+    public void Update(
+        string name,
+        string description,
+        int executeTime)
+    {
+        Name = name;
+        Description = description;
+        ExecuteTime = executeTime;
+    }
 }
