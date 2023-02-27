@@ -96,8 +96,8 @@ public class PersonService : IPersonService
         var page = await _personQueryRepository.GetPageAsync(
             request: request.Page,
             predicate: x => string.IsNullOrWhiteSpace(request.SearchString)
-            || string.Join(' ', x.Name.LastName, x.Name.FirstName, x.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
-            || x.PhoneNumber.ToLower().Contains(request.SearchString.ToLower()),
+                || string.Join(' ', x.Name.LastName, x.Name.FirstName, x.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
+                || x.PhoneNumber.ToLower().Contains(request.SearchString.ToLower()),
             sortProperty: x => x.Name.LastName,
             cancellationToken: cancellationToken);
 

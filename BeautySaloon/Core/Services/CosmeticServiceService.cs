@@ -75,7 +75,7 @@ public class CosmeticServiceService : ICosmeticServiceService
         var cosmeticServices = await _cosmeticServiceQueryRepository.GetPageAsync(
             request: request.Page,
             x => string.IsNullOrWhiteSpace(request.SearchString)
-            || x.Name.ToLower().Contains(request.SearchString.ToLower()),
+                || x.Name.ToLower().Contains(request.SearchString.ToLower()),
             sortProperty: x => x.Name,
             cancellationToken: cancellationToken);
 

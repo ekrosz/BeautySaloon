@@ -9,9 +9,8 @@ public class SubscriptionCosmeticService : IEntity, IAuditable
     {
     }
 
-    public SubscriptionCosmeticService(Guid subscriptionId, Guid cosmeticServiceId, int count)
+    public SubscriptionCosmeticService(Guid cosmeticServiceId, int count)
     {
-        SubscriptionId = subscriptionId;
         CosmeticServiceId = cosmeticServiceId;
         Count = count;
     }

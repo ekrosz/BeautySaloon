@@ -8,7 +8,7 @@ public record GetPersonListRequestDto
 {
     public string? SearchString { get; init; }
 
-    public PageRequestDto Page { get; set; } = new PageRequestDto();
+    public PageRequestDto Page { get; init; } = new();
 }
 
 public class GetPersonListRequestValidator : AbstractValidator<GetPersonListRequestDto>

@@ -34,4 +34,20 @@ public class Subscription : IEntity, IAuditable
     public Guid UserModifierId { get; set; }
 
     public List<SubscriptionCosmeticService> SubscriptionCosmeticServices { get; set; } = new List<SubscriptionCosmeticService>();
+
+    public void AddCosmeticServices(IEnumerable<SubscriptionCosmeticService> cosmeticServices)
+    {
+        SubscriptionCosmeticServices.Clear();
+        SubscriptionCosmeticServices.AddRange(cosmeticServices);
+    }
+
+    public void Update(
+        string name,
+        decimal price,
+        int? lifeTime)
+    {
+        Name = name;
+        Price = price;
+        LifeTime = lifeTime;
+    }
 }

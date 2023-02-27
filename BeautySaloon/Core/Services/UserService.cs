@@ -101,7 +101,6 @@ public class UserService : IUserService
         var users = await _userQueryRepository.FindAsync(x =>
             string.IsNullOrWhiteSpace(request.SearchString)
             || string.Join(' ', x.Name.LastName, x.Name.FirstName, x.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
-
             || x.PhoneNumber.ToLower().Contains(request.SearchString.ToLower()), cancellationToken);
 
         return new ItemListResponseDto<GetUserResponseDto>(_mapper.Map<IReadOnlyCollection<GetUserResponseDto>>(users));
