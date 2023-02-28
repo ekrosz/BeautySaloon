@@ -2,11 +2,6 @@
 using BeautySaloon.Core.Dto.Responses.Person;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeautySaloon.Core.Profiles;
 public class PersonProfile : Profile
@@ -20,7 +15,7 @@ public class PersonProfile : Profile
         CreateMap<Person, GetPersonListItemResponseDto>();
 
         CreateMap<Person, GetPersonResponseDto>()
-            .ForMember(dest => dest.Subscriptions, cfg => cfg.MapFrom(src => src.PersonSubscriptions.Select(x => x.Subscription)));
+            .ForMember(dest => dest.Subscriptions, cfg => cfg.MapFrom(src => src.Orders.Select(x => x.PersonSubscriptions.GroupBy(_ => _.SubscriptionCosmeticService.Subscription).Select(_ => _.Key))));
 
         CreateMap<Subscription, GetPersonResponseDto.SubscriptionResponseDto>();
     }

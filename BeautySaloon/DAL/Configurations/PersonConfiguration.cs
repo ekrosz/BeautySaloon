@@ -36,11 +36,11 @@ public class PersonConfiguration : EntityConfiguration<Person>
             .HasMaxLength(500)
             .IsRequired(false);
 
-        builder.HasMany(x => x.PersonSubscriptions)
+        builder.HasMany(x => x.Orders)
             .WithOne()
             .HasForeignKey(x => x.PersonId);
 
-        builder.Navigation(x => x.PersonSubscriptions)
+        builder.Navigation(x => x.Orders)
             .AutoInclude();
 
         base.Configure(builder);

@@ -25,10 +25,6 @@ public class SubscriptionConfiguration : EntityConfiguration<Subscription>
         builder.Navigation(x => x.SubscriptionCosmeticServices)
             .AutoInclude();
 
-        builder.HasMany<PersonSubscription>()
-            .WithOne(x => x.Subscription)
-            .HasForeignKey(x => x.SubscriptionId);
-
         base.Configure(builder);
     }
 }

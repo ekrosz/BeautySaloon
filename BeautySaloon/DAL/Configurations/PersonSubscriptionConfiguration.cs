@@ -8,7 +8,7 @@ public class PersonSubscriptionConfiguration : EntityConfiguration<PersonSubscri
 {
     public override void Configure(EntityTypeBuilder<PersonSubscription> builder)
     {
-        builder.Navigation(x => x.Subscription)
+        builder.Navigation(x => x.SubscriptionCosmeticService)
             .AutoInclude();
 
         base.Configure(builder);

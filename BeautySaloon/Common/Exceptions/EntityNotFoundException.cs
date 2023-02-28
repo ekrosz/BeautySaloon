@@ -1,4 +1,4 @@
-﻿namespace BeautySaloon.Core.Exceptions;
+﻿namespace BeautySaloon.Common.Exceptions;
 
 public class EntityNotFoundException : Exception
 {

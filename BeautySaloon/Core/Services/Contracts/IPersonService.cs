@@ -13,8 +13,6 @@ public interface IPersonService
 
     Task DeletePersonAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
 
-    Task AddSubscriptionAsync(ByIdWithDataRequestDto<AddSubscriptionRequestDto> request, CancellationToken cancellationToken = default);
-
     Task<GetPersonResponseDto> GetPersonAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
 
     Task<PageResponseDto<GetPersonListItemResponseDto>> GetPersonListAsync(GetPersonListRequestDto request, CancellationToken cancellationToken = default);

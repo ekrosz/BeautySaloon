@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using BeautySaloon.Common.Exceptions;
 using BeautySaloon.Core.Dto.Common;
 using BeautySaloon.Core.Dto.Requests.User;
 using BeautySaloon.Core.Dto.Responses.User;
-using BeautySaloon.Core.Exceptions;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Repositories.Abstract;

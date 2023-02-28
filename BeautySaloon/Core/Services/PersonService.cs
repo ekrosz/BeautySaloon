@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using BeautySaloon.Common.Exceptions;
 using BeautySaloon.Core.Dto.Common;
 using BeautySaloon.Core.Dto.Requests.Person;
 using BeautySaloon.Core.Dto.Responses.Person;
-using BeautySaloon.Core.Exceptions;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
@@ -15,8 +15,6 @@ public class PersonService : IPersonService
 {
     private readonly IQueryRepository<Person> _personQueryRepository;
 
-    private readonly IQueryRepository<Subscription> _subscriptionQueryRepository;
-
     private readonly IWriteRepository<Person> _personWriteRepository;
 
     private readonly IUnitOfWork _unitOfWork;
@@ -25,40 +23,14 @@ public class PersonService : IPersonService
 
     public PersonService(
         IQueryRepository<Person> personQueryRepository,
-        IQueryRepository<Subscription> subscriptionQueryRepository,
         IWriteRepository<Person> personWriteRepository,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _personQueryRepository = personQueryRepository;
-        _subscriptionQueryRepository = subscriptionQueryRepository;
         _personWriteRepository = personWriteRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-    }
-
-    public async Task AddSubscriptionAsync(ByIdWithDataRequestDto<AddSubscriptionRequestDto> request, CancellationToken cancellationToken = default)
-    {
-        var person = await _personWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Пользователь {request.Id} не найден.", typeof(Person));
-
-        var subscriptions = await _subscriptionQueryRepository.FindAsync(x => request.Data.SubscriptionIds.Contains(x.Id), cancellationToken);
-
-        var notExistSubscriptions = request.Data.SubscriptionIds
-            .Except(subscriptions.Select(x => x.Id));
-
-        if (notExistSubscriptions.Any())
-        {
-            throw new EntityNotFoundException($"Абонимент {notExistSubscriptions.First()} не найден.", typeof(Subscription));
-        }
-
-        var entities = subscriptions
-            .Select(x => new PersonSubscription(person.Id, x.Id))
-            .ToArray();
-
-        person.PersonSubscriptions.AddRange(entities);
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task CreatePersonAsync(CreatePersonRequestDto request, CancellationToken cancellationToken = default)

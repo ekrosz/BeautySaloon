@@ -30,4 +30,6 @@ public class SubscriptionCosmeticService : IEntity, IAuditable
     public Guid UserModifierId { get; set; }
 
     public CosmeticService CosmeticService { get; set; } = default!;
+
+    public Subscription Subscription { get; set; } = default!;
 }

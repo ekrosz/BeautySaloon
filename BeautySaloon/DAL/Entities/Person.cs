@@ -1,6 +1,5 @@
 ﻿using BeautySaloon.DAL.Entities.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace BeautySaloon.DAL.Entities;
 
@@ -45,8 +44,9 @@ public class Person : IEntity, ISoftDeletable, IAuditable, IHasPhoneNumber
 
     public Guid UserModifierId { get; set; }
 
-    public List<PersonSubscription> PersonSubscriptions { get; set; } = new List<PersonSubscription>();
+    public List<Order> Orders { get; set; } = new List<Order>();
 
+    public void AddOrder(Order entity) => Orders.Add(entity);
 
     public void Update(
         FullName name,

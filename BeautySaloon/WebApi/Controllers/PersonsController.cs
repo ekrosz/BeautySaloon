@@ -19,7 +19,6 @@ public class PersonsController : ControllerBase
 
     private readonly IValidator<CreatePersonRequestDto> _createPersonRequestValidator;
     private readonly IValidator<UpdatePersonRequestDto> _updatePersonRequestValidator;
-    private readonly IValidator<AddSubscriptionRequestDto> _addSubscriptionRequestValidator;
     private readonly IValidator<GetPersonListRequestDto> _getPersonListRequestValidator;
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
@@ -27,14 +26,12 @@ public class PersonsController : ControllerBase
         IPersonService personService,
         IValidator<CreatePersonRequestDto> createPersonRequestValidator,
         IValidator<UpdatePersonRequestDto> updatePersonRequestValidator,
-        IValidator<AddSubscriptionRequestDto> addSubscriptionRequestValidator,
         IValidator<GetPersonListRequestDto> getPersonListRequestValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
         _personService = personService;
         _createPersonRequestValidator = createPersonRequestValidator;
         _updatePersonRequestValidator = updatePersonRequestValidator;
-        _addSubscriptionRequestValidator = addSubscriptionRequestValidator;
         _getPersonListRequestValidator = getPersonListRequestValidator;
         _byIdRequestValidator = byIdRequestValidator;
     }
@@ -45,16 +42,6 @@ public class PersonsController : ControllerBase
         await _createPersonRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
         await _personService.CreatePersonAsync(request, cancellationToken);
-    }
-
-    [HttpPost("{id}/subsciptions")]
-    public async Task AddSubsriptionAsync([FromRoute] Guid id, [FromBody] AddSubscriptionRequestDto request, CancellationToken cancellationToken = default)
-    {
-        await _addSubscriptionRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
-
-        var requestById = new ByIdWithDataRequestDto<AddSubscriptionRequestDto>(id, request);
-
-        await _personService.AddSubscriptionAsync(requestById, cancellationToken);
     }
 
     [HttpPut("{id}")]
