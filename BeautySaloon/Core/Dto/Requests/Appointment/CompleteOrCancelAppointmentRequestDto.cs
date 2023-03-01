@@ -12,7 +12,7 @@ public class CompleteOrCancelAppointmentRequestValidator : AbstractValidator<Com
     public CompleteOrCancelAppointmentRequestValidator()
     {
         RuleFor(_ => _.Comment)
-            .MinimumLength(500)
+            .MaximumLength(500)
             .When(_ => _.Comment is not null);
     }
 }

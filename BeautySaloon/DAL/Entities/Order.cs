@@ -12,15 +12,14 @@ public class Order : IEntity, IAuditable
     {
     }
 
-    public Order(decimal cost)
+    public Order(decimal cost, string? comment)
     {
         Cost = cost;
+        Comment = comment;
         PaymentMethod = PaymentMethod.None;
     }
 
     public Guid Id { get; set; }
-
-    public Guid PersonId { get; set; }
 
     public decimal Cost { get; set; }
 
@@ -41,17 +40,19 @@ public class Order : IEntity, IAuditable
     [JsonIgnore]
     public PaymentStatus PaymentStatus => CalcStatus();
 
+    public void Update(
+        decimal cost,
+        string? comment)
+    {
+        ThrowIfFinalStatus();
+
+        Cost = cost;
+        Comment = comment;
+    }
+
     public void AddPersonSubscriptions(IEnumerable<PersonSubscription> entities)
     {
-        if (PaymentStatus == PaymentStatus.Paid)
-        {
-            throw new OrderAlreadyPaidException(Id);
-        }
-
-        if (PaymentStatus == PaymentStatus.Cancelled)
-        {
-            throw new OrderAlreadyCancelledException(Id);
-        }
+        ThrowIfFinalStatus();
 
         PersonSubscriptions.Clear();
         PersonSubscriptions.AddRange(entities);
@@ -59,15 +60,7 @@ public class Order : IEntity, IAuditable
 
     public void Pay(PaymentMethod paymentMethod, string? comment)
     {
-        if (PaymentStatus == PaymentStatus.Paid)
-        {
-            throw new OrderAlreadyPaidException(Id);
-        }
-
-        if (PaymentStatus == PaymentStatus.Cancelled)
-        {
-            throw new OrderAlreadyCancelledException(Id);
-        }
+        ThrowIfFinalStatus();
 
         PaymentMethod = paymentMethod;
         Comment = comment;
@@ -76,15 +69,7 @@ public class Order : IEntity, IAuditable
 
     public void Cancel(string? comment)
     {
-        if (PaymentStatus == PaymentStatus.Paid)
-        {
-            throw new OrderAlreadyPaidException(Id);
-        }
-
-        if (PaymentStatus == PaymentStatus.Cancelled)
-        {
-            throw new OrderAlreadyCancelledException(Id);
-        }
+        ThrowIfFinalStatus();
 
         Comment = comment;
         PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Cancelled);
@@ -103,5 +88,18 @@ public class Order : IEntity, IAuditable
         }
 
         return PaymentStatus.Paid;
+    }
+
+    private void ThrowIfFinalStatus()
+    {
+        if (PaymentStatus == PaymentStatus.Paid)
+        {
+            throw new OrderAlreadyPaidException(Id);
+        }
+
+        if (PaymentStatus == PaymentStatus.Cancelled)
+        {
+            throw new OrderAlreadyCancelledException(Id);
+        }
     }
 }

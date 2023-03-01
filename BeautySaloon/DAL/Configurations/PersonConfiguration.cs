@@ -32,20 +32,18 @@ public class PersonConfiguration : EntityConfiguration<Person>
             .HasMaxLength(255)
             .IsRequired(false);
 
-        builder.Property(x => x.Comment)
-            .HasMaxLength(500)
-            .IsRequired(false);
-
         builder.HasMany(x => x.Orders)
-            .WithOne()
-            .HasForeignKey(x => x.PersonId);
+            .WithOne(x => x.Person)
+            .HasForeignKey("PersonId")
+            .IsRequired();
 
         builder.Navigation(x => x.Orders)
             .AutoInclude();
 
         builder.HasMany(x => x.Appointments)
             .WithOne(x => x.Person)
-            .HasForeignKey(x => x.PersonId);
+            .HasForeignKey("PersonId")
+            .IsRequired();
 
         builder.Navigation(x => x.Appointments)
             .AutoInclude();

@@ -20,7 +20,7 @@ public class AppointmentService : IAppointmentService
 
     private readonly IQueryRepository<PersonSubscription> _personSubscriptionQueryRepositry;
 
-    private readonly IQueryRepository<Person> _personQueryRepositry;
+    private readonly IWriteRepository<Person> _personWriteRepositry;
 
     private readonly IUnitOfWork _unitOfWork;
 
@@ -30,21 +30,21 @@ public class AppointmentService : IAppointmentService
         IWriteRepository<Appointment> appointmentWriteRepositry,
         IQueryRepository<Appointment> appointmentQueryRepositry,
         IQueryRepository<PersonSubscription> personSubscriptionQueryRepositry,
-        IQueryRepository<Person> personQueryRepositry,
+        IWriteRepository<Person> personWriteRepositry,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _appointmentWriteRepositry = appointmentWriteRepositry;
         _appointmentQueryRepositry = appointmentQueryRepositry;
         _personSubscriptionQueryRepositry = personSubscriptionQueryRepositry;
-        _personQueryRepositry = personQueryRepositry;
+        _personWriteRepositry = personWriteRepositry;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
     public async Task CreateAppointmentAsync(CreateAppointmentRequestDto request, CancellationToken cancellationToken = default)
     {
-        var person = await _personQueryRepositry.GetByIdAsync(request.PersonId, cancellationToken)
+        var person = await _personWriteRepositry.GetByIdAsync(request.PersonId, cancellationToken)
             ?? throw new EntityNotFoundException($"Клиент {request.PersonId} не найден.", typeof(Person));
 
         var personSubscriptions = person.Orders.SelectMany(
@@ -55,9 +55,14 @@ public class AppointmentService : IAppointmentService
 
         var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticService.CosmeticService.ExecuteTimeInMinutes);
 
-        await ValidateDate(request.AppointmentDate, duration, null, cancellationToken);
+        await ValidateDate(
+            personSubscriptions,
+            request.AppointmentDate,
+            duration,
+            null,
+            cancellationToken);
 
-        var entity = new Appointment(request.AppointmentDate, duration);
+        var entity = new Appointment(request.AppointmentDate, duration, request.Comment);
 
         entity.AddPersonSubscription(personSubscriptions);
         person.AddAppointment(entity);
@@ -78,8 +83,14 @@ public class AppointmentService : IAppointmentService
 
         var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticService.CosmeticService.ExecuteTimeInMinutes);
 
-        await ValidateDate(request.Data.AppointmentDate, duration, request.Id, cancellationToken);
+        await ValidateDate(
+            personSubscriptions,
+            request.Data.AppointmentDate,
+            duration,
+            request.Id,
+            cancellationToken);
 
+        entity.Update(request.Data.AppointmentDate, duration, request.Data.Comment);
         entity.AddPersonSubscription(personSubscriptions);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -143,7 +154,7 @@ public class AppointmentService : IAppointmentService
                 throw new Exception("Абонемент был отменен");
             }
 
-            if (personSubscription.Status == PersonSubscriptionStatus.Completed || personSubscription.AppointmentId.HasValue)
+            if (personSubscription.Status == PersonSubscriptionStatus.Completed)
             {
                 throw new Exception("Уже создана запись на данную услугу");
             }
@@ -151,6 +162,7 @@ public class AppointmentService : IAppointmentService
     }
 
     private async Task ValidateDate(
+        IEnumerable<PersonSubscription> personSubscriptions,
         DateTime appointmentDate,
         int duration,
         Guid? appointmentId,
@@ -167,6 +179,16 @@ public class AppointmentService : IAppointmentService
         if (anyAppointmentInRange)
         {
             throw new Exception($"В период времени с {appointmentDate:G} до {appointmentDate:G} уже существует запись.");
+        }
+
+        foreach (var personSubscription in personSubscriptions)
+        {
+            var subscriptionLifeTime = personSubscription.SubscriptionCosmeticService.Subscription.LifeTimeInDays;
+
+            if (subscriptionLifeTime.HasValue && personSubscription.Order.UpdatedOn.AddDays(subscriptionLifeTime.Value).Date < appointmentDate.Date)
+            {
+                throw new Exception($"Абонемент {personSubscription.SubscriptionCosmeticService.Subscription.Name} уже истечет до указанной даты.");
+            }
         }
     }
 }

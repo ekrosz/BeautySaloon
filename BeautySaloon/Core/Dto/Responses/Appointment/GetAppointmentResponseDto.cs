@@ -1,6 +1,5 @@
 ﻿using BeautySaloon.Core.Dto.Responses.Common;
 using BeautySaloon.DAL.Entities.Enums;
-using BeautySaloon.DAL.Entities.ValueObjects;
 
 namespace BeautySaloon.Core.Dto.Responses.Appointment;
 

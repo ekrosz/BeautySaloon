@@ -14,14 +14,12 @@ public class Person : IEntity, ISoftDeletable, IAuditable, IHasPhoneNumber
         FullName name,
         DateTime birthDate,
         string phoneNumber,
-        string? email,
-        string? comment)
+        string? email)
     {
         Name = name;
         BirthDate = birthDate;
         PhoneNumber = phoneNumber;
         Email = email;
-        Comment = comment;
     }
 
     public Guid Id { get; set; }
@@ -33,8 +31,6 @@ public class Person : IEntity, ISoftDeletable, IAuditable, IHasPhoneNumber
     public string? Email { get; set; } = string.Empty;
 
     public string PhoneNumber { get; set; } = string.Empty;
-
-    public string? Comment { get; set; }
 
     public bool IsDeleted { get; set; }
 
@@ -56,13 +52,11 @@ public class Person : IEntity, ISoftDeletable, IAuditable, IHasPhoneNumber
         FullName name,
         DateTime birthDate,
         string phoneNumber,
-        string? email,
-        string? comment)
+        string? email)
     {
         Name = name;
         BirthDate = birthDate;
         PhoneNumber = phoneNumber;
         Email = email;
-        Comment = comment;
     }
 }

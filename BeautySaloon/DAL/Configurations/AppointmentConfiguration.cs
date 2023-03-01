@@ -16,11 +16,12 @@ public class AppointmentConfiguration : EntityConfiguration<Appointment>
 
         builder.Property(x => x.Comment)
             .HasMaxLength(500)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.HasMany(x => x.PersonSubscriptions)
             .WithOne()
-            .HasForeignKey(x => x.OrderId);
+            .HasForeignKey("AppointmentId")
+            .IsRequired(false);
 
         builder.Navigation(x => x.PersonSubscriptions)
             .AutoInclude();

@@ -20,10 +20,6 @@ public class PersonSubscription : IEntity, IAuditable
 
     public Guid SubscriptionCosmeticServiceId { get; set; }
 
-    public Guid OrderId { get; set; }
-
-    public Guid? AppointmentId { get; set; }
-
     public PersonSubscriptionStatus Status { get; set; }
 
     public DateTime CreatedOn { get; set; }
@@ -31,6 +27,8 @@ public class PersonSubscription : IEntity, IAuditable
     public DateTime UpdatedOn { get; set; }
 
     public Guid UserModifierId { get; set; }
+
+    public Order Order { get; set; } = default!;
 
     public SubscriptionCosmeticService SubscriptionCosmeticService { get; set; } = default!;
 }

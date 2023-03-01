@@ -16,11 +16,12 @@ public class OrderConfiguration : EntityConfiguration<Order>
 
         builder.Property(x => x.Comment)
             .HasMaxLength(500)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.HasMany(x => x.PersonSubscriptions)
-            .WithOne()
-            .HasForeignKey(x => x.OrderId);
+            .WithOne(x => x.Order)
+            .HasForeignKey("OrderId")
+            .IsRequired();
 
         builder.Navigation(x => x.PersonSubscriptions)
             .AutoInclude();

@@ -1,5 +1,7 @@
 ﻿using BeautySaloon.DAL.Entities.Enums;
 using FluentValidation;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace BeautySaloon.Core.Dto.Requests.Order;
 
@@ -20,7 +22,7 @@ public class PayOrderRequestValidator : AbstractValidator<PayOrderRequestDto>
             .IsInEnum();
 
         RuleFor(_ => _.Comment)
-            .MinimumLength(500)
+            .MaximumLength(500)
             .When(_ => _.Comment is not null);
     }
 }

@@ -58,7 +58,7 @@ public class OrderService : IOrderService
             throw new EntityNotFoundException($"Абонемент {notExistSubscriptions.First()} не найден.", typeof(Subscription));
         }
 
-        var order = new Order(subscriptions.Sum(x => x.Price));
+        var order = new Order(subscriptions.Sum(x => x.Price), request.Comment);
 
         var personSubscriptions = subscriptions.SelectMany(x => x.SubscriptionCosmeticServices)
             .Select(x => new PersonSubscription(x.Id))
@@ -92,6 +92,7 @@ public class OrderService : IOrderService
             .Select(x => new PersonSubscription(x.Id))
             .ToArray();
 
+        order.Update(subscriptions.Sum(x => x.Price), request.Data.Comment);
         order.AddPersonSubscriptions(personSubscriptions);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -121,7 +122,7 @@ public class OrderService : IOrderService
     {
         var orders = await _orderQueryRepository.GetPageAsync(
             request: request.Page,
-            predicate: x => x.PersonId == request.PersonId
+            predicate: x => x.Person.Id == request.PersonId
                     && (string.IsNullOrWhiteSpace(request.SearchString)
                         || string.Join(' ', x.Person.Name.LastName, x.Person.Name.FirstName, x.Person.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
                         || x.Person.PhoneNumber.ToLower().Contains(request.SearchString))

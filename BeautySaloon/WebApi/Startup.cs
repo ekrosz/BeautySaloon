@@ -1,4 +1,5 @@
 ﻿using BeautySaloon.WebApi.Extensions;
+using System.Text.Json.Serialization;
 
 namespace BeautySaloon.WebApi;
 
@@ -13,7 +14,9 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
         services.AddSwaggerGen();
 
         services.AddAuthorization(Configuration);

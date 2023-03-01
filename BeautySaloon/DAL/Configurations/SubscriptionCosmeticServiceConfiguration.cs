@@ -11,6 +11,9 @@ public class SubscriptionCosmeticServiceConfiguration : EntityConfiguration<Subs
         builder.Navigation(x => x.CosmeticService)
             .AutoInclude();
 
+        builder.Navigation(x => x.Subscription)
+            .AutoInclude();
+
         base.Configure(builder);
     }
 }

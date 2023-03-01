@@ -39,8 +39,7 @@ public class PersonService : IPersonService
             request.Name,
             request.BirthDate,
             request.PhoneNumber,
-            request.Email,
-            request.Comment);
+            request.Email);
 
         await _personWriteRepository.AddAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -85,8 +84,7 @@ public class PersonService : IPersonService
             request.Data.Name,
             request.Data.BirthDate,
             request.Data.PhoneNumber,
-            request.Data.Email,
-            request.Data.Comment);
+            request.Data.Email);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

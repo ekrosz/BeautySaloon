@@ -21,6 +21,10 @@ public class GetOrderListRequestValidator : AbstractValidator<GetOrderListReques
 {
     public GetOrderListRequestValidator()
     {
+        RuleFor(_ => _.PersonId)
+            .NotNull()
+            .NotEmpty();
+
         RuleFor(_ => _.StartCreatedOn)
             .LessThanOrEqualTo(_ => _.EndCreatedOn)
             .When(_ => _.StartCreatedOn.HasValue && _.EndCreatedOn.HasValue);

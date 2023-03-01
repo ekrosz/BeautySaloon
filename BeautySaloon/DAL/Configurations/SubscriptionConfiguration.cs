@@ -19,8 +19,9 @@ public class SubscriptionConfiguration : EntityConfiguration<Subscription>
             .IsRequired();
 
         builder.HasMany(x => x.SubscriptionCosmeticServices)
-            .WithOne()
-            .HasForeignKey(x => x.SubscriptionId);
+            .WithOne(x => x.Subscription)
+            .HasForeignKey("SubscriptionId")
+            .IsRequired();
 
         builder.Navigation(x => x.SubscriptionCosmeticServices)
             .AutoInclude();

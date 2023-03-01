@@ -40,7 +40,7 @@ public class SubscriptionService : ISubscriptionService
     public async Task CreateSubscriptionAsync(CreateSubscriptionRequestDto request, CancellationToken cancellationToken = default)
     {
         var isExistName = await _subscriptionQueryRepository.ExistAsync(
-            x => x.Name.ToLower().Contains(request.Name.ToLower()),
+            x => x.Name.ToLower().Equals(request.Name.ToLower()),
             cancellationToken);
 
         if (isExistName)
@@ -63,10 +63,11 @@ public class SubscriptionService : ISubscriptionService
         var entity = new Subscription(
             request.Name,
             request.Price,
-            request.LifeTimeInDays);
+            request.LifeTimeInDays)
+        { Id = Guid.NewGuid() };
 
         var subscriptionCosmeticServices = request.CosmeticServices
-            .Select(x => new SubscriptionCosmeticService(x.Id, x.Count))
+            .Select(x => new SubscriptionCosmeticService(x.Id, x.Count) { Id = Guid.NewGuid() })
             .ToArray();
 
         entity.AddCosmeticServices(subscriptionCosmeticServices);

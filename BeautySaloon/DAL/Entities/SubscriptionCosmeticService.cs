@@ -19,8 +19,6 @@ public class SubscriptionCosmeticService : IEntity, IAuditable
 
     public Guid CosmeticServiceId { get; set; }
 
-    public Guid SubscriptionId { get; set; }
-
     public int Count { get; set; }
 
     public DateTime CreatedOn { get; set; }
@@ -31,5 +29,5 @@ public class SubscriptionCosmeticService : IEntity, IAuditable
 
     public CosmeticService CosmeticService { get; set; } = default!;
 
-    public Subscription Subscription { get; set; } = default!;
+    public virtual Subscription Subscription { get; set; } = default!;
 }

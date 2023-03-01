@@ -14,8 +14,6 @@ public record CreatePersonRequestDto
     public string? Email { get; init; } = string.Empty;
 
     public string PhoneNumber { get; init; } = string.Empty;
-
-    public string? Comment { get; init; }
 }
 
 public class CreatePersonRequestValidator : AbstractValidator<CreatePersonRequestDto>
@@ -44,9 +42,5 @@ public class CreatePersonRequestValidator : AbstractValidator<CreatePersonReques
             .MaximumLength(255)
             .EmailAddress()
             .When(_ => _.Email is not null);
-
-        RuleFor(_ => _.Comment)
-            .MaximumLength(500)
-            .When(_ => _.Comment is not null);
     }
 }

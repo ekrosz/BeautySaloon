@@ -14,8 +14,8 @@ public class OrderProfile : Profile
 
         CreateMap<Order, GetOrderResponseDto>()
             .ForMember(dest => dest.Subscriptions, cfg => cfg.MapFrom(src => src.PersonSubscriptions
-                .GroupBy(_ => _.SubscriptionCosmeticService.Subscription)
-                .Select(_ => _.Key)));
+                .GroupBy(_ => _.SubscriptionCosmeticService.Subscription.Id)
+                .Select(_ => _.First().SubscriptionCosmeticService.Subscription)));
 
         CreateMap<Person, PersonResponseDto>();
 

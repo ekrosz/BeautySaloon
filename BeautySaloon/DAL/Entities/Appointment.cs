@@ -1,4 +1,5 @@
-﻿using BeautySaloon.DAL.Entities.Contracts;
+﻿using BeautySaloon.Common.Exceptions;
+using BeautySaloon.DAL.Entities.Contracts;
 using BeautySaloon.DAL.Entities.Enums;
 using System.Text.Json.Serialization;
 
@@ -11,15 +12,14 @@ public class Appointment : IEntity, IAuditable
     {
     }
 
-    public Appointment(DateTime appointmentDate, int durationInMinutes)
+    public Appointment(DateTime appointmentDate, int durationInMinutes, string? comment)
     {
         AppointmentDate = appointmentDate;
         DurationInMinutes = durationInMinutes;
+        Comment = comment;
     }
 
     public Guid Id { get; set; }
-
-    public Guid PersonId { get; set; }
 
     public DateTime AppointmentDate { get; set; }
 
@@ -40,6 +40,18 @@ public class Appointment : IEntity, IAuditable
     [JsonIgnore]
     public AppointmentStatus Status => CalcStatus();
 
+    public void Update(
+        DateTime appointmentDate,
+        int durationInMinutes,
+        string? comment)
+    {
+        ThrowIfFinalStatus();
+
+        AppointmentDate = appointmentDate;
+        DurationInMinutes = durationInMinutes;
+        Comment = comment;
+    }
+
     public void AddPersonSubscription(IEnumerable<PersonSubscription> entities)
     {
         PersonSubscriptions.Clear();
@@ -48,15 +60,7 @@ public class Appointment : IEntity, IAuditable
 
     public void Complete(string? comment)
     {
-        if (Status == AppointmentStatus.Cancelled)
-        {
-            throw new Exception($"Запись {Id} уже была отменена.");
-        }
-
-        if (Status == AppointmentStatus.Completed)
-        {
-            throw new Exception($"Запись {Id} уже выполнена.");
-        }
+        ThrowIfFinalStatus();
 
         Comment = comment;
         PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Completed);
@@ -64,17 +68,9 @@ public class Appointment : IEntity, IAuditable
 
     public void Cancel(string? comment)
     {
-        if (Status == AppointmentStatus.Cancelled)
-        {
-            throw new Exception($"Запись {Id} уже была отменена.");
-        }
+        ThrowIfFinalStatus();
 
-        if (Status == AppointmentStatus.Completed)
-        {
-            throw new Exception($"Запись {Id} уже выполнена.");
-        }
-
-        Comment= comment;
+        Comment = comment;
         PersonSubscriptions.Clear();
     }
 
@@ -91,5 +87,18 @@ public class Appointment : IEntity, IAuditable
         }
 
         return AppointmentStatus.Completed;
+    }
+
+    private void ThrowIfFinalStatus()
+    {
+        if (Status == AppointmentStatus.Cancelled)
+        {
+            throw new Exception($"Запись {Id} уже была отменена.");
+        }
+
+        if (Status == AppointmentStatus.Completed)
+        {
+            throw new Exception($"Запись {Id} уже выполнена.");
+        }
     }
 }

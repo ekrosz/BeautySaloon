@@ -49,6 +49,8 @@ public static class ServiceCollectionExtension
         services.AddScoped<IPersonService, PersonService>();
         services.AddScoped<ICosmeticServiceService, CosmeticServiceService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
 
         services.AddValidatorsFromAssembly(typeof(AuthorizeByCredentialsRequestValidator).Assembly);
         services.AddAutoMapper(typeof(UserProfile).Assembly);

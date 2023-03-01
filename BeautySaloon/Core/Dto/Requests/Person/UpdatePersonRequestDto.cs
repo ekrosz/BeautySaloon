@@ -14,8 +14,6 @@ public record UpdatePersonRequestDto
     public string? Email { get; init; } = string.Empty;
 
     public string PhoneNumber { get; init; } = string.Empty;
-
-    public string? Comment { get; init; }
 }
 
 public class UpdatePersonRequestValidator : AbstractValidator<UpdatePersonRequestDto>
@@ -44,9 +42,5 @@ public class UpdatePersonRequestValidator : AbstractValidator<UpdatePersonReques
             .MaximumLength(255)
             .EmailAddress()
             .When(_ => _.Email is not null);
-
-        RuleFor(_ => _.Comment)
-            .MaximumLength(500)
-            .When(_ => _.Comment is not null);
     }
 }

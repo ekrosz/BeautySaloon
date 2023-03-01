@@ -1,6 +1,7 @@
 ﻿using BeautySaloon.Core.Dto.Responses.Common;
 using BeautySaloon.DAL.Entities.Enums;
-using BeautySaloon.DAL.Entities.ValueObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace BeautySaloon.Core.Dto.Responses.Order;
 

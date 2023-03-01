@@ -6,6 +6,7 @@ using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 
 namespace BeautySaloon.Core.Profiles;
+
 public class PersonProfile : Profile
 {
     private static readonly IReadOnlyCollection<PersonSubscriptionStatus> AllowStatuses = new[]
@@ -25,8 +26,8 @@ public class PersonProfile : Profile
             .ForMember(dest => dest.Subscriptions, cfg => cfg.MapFrom(src => src.Orders.SelectMany(
                 x => x.PersonSubscriptions
                     .Where(_ => AllowStatuses.Contains(_.Status)))
-                    .GroupBy(_ => _.SubscriptionCosmeticService.Subscription)
-                    .Select(_ => _.Key)));
+                    .GroupBy(_ => _.SubscriptionCosmeticService.Subscription.Id)
+                    .Select(_ => _.First().SubscriptionCosmeticService.Subscription)));
 
         CreateMap<Subscription, SubscriptionResponseDto>();
     }
