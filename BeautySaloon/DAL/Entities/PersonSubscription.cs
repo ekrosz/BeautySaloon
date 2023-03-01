@@ -32,7 +32,5 @@ public class PersonSubscription : IEntity, IAuditable
 
     public Guid UserModifierId { get; set; }
 
-    public Order Order { get; set; } = default!;
-
     public SubscriptionCosmeticService SubscriptionCosmeticService { get; set; } = default!;
 }

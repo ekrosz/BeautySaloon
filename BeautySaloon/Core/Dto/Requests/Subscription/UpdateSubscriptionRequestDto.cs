@@ -6,14 +6,14 @@ public record UpdateSubscriptionRequestDto
 {
     public string Name { get; init; } = string.Empty;
 
-    public int? LifeTime { get; init; }
+    public int? LifeTimeInDays { get; init; }
 
     public decimal Price { get; init; }
 
     public IReadOnlyCollection<CosmeticServiceRequestDto> CosmeticServices { get; init; } = Array.Empty<CosmeticServiceRequestDto>();
 }
 
-public class UpdateSubscriptionRequestValidator : AbstractValidator<CreateSubscriptionRequestDto>
+public class UpdateSubscriptionRequestValidator : AbstractValidator<UpdateSubscriptionRequestDto>
 {
     public UpdateSubscriptionRequestValidator()
     {
@@ -22,10 +22,10 @@ public class UpdateSubscriptionRequestValidator : AbstractValidator<CreateSubscr
             .NotEmpty()
             .MaximumLength(100);
 
-        RuleFor(_ => _.LifeTime)
+        RuleFor(_ => _.LifeTimeInDays)
             .GreaterThanOrEqualTo(1)
             .LessThanOrEqualTo(366)
-            .When(_ => _.LifeTime.HasValue);
+            .When(_ => _.LifeTimeInDays.HasValue);
 
         RuleFor(_ => _.Price)
             .NotNull()

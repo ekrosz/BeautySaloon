@@ -1,9 +1,12 @@
-﻿using BeautySaloon.Common.Exceptions;
+﻿using AutoMapper;
+using BeautySaloon.Common.Exceptions;
 using BeautySaloon.Core.Dto.Common;
 using BeautySaloon.Core.Dto.Requests.Appointment;
+using BeautySaloon.Core.Dto.Responses.Appointment;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.Enums;
+using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;
 
@@ -21,18 +24,22 @@ public class AppointmentService : IAppointmentService
 
     private readonly IUnitOfWork _unitOfWork;
 
+    private readonly IMapper _mapper;
+
     public AppointmentService(
         IWriteRepository<Appointment> appointmentWriteRepositry,
         IQueryRepository<Appointment> appointmentQueryRepositry,
         IQueryRepository<PersonSubscription> personSubscriptionQueryRepositry,
         IQueryRepository<Person> personQueryRepositry,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IMapper mapper)
     {
         _appointmentWriteRepositry = appointmentWriteRepositry;
         _appointmentQueryRepositry = appointmentQueryRepositry;
         _personSubscriptionQueryRepositry = personSubscriptionQueryRepositry;
         _personQueryRepositry = personQueryRepositry;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task CreateAppointmentAsync(CreateAppointmentRequestDto request, CancellationToken cancellationToken = default)
@@ -46,15 +53,15 @@ public class AppointmentService : IAppointmentService
 
         ValidateStatus(personSubscriptions);
 
-        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticService.CosmeticService.ExecuteTime);
+        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticService.CosmeticService.ExecuteTimeInMinutes);
 
         await ValidateDate(request.AppointmentDate, duration, null, cancellationToken);
 
         var entity = new Appointment(request.AppointmentDate, duration);
 
         entity.AddPersonSubscription(personSubscriptions);
+        person.AddAppointment(entity);
 
-        await _appointmentWriteRepositry.AddAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -69,13 +76,57 @@ public class AppointmentService : IAppointmentService
 
         ValidateStatus(personSubscriptions);
 
-        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticService.CosmeticService.ExecuteTime);
+        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticService.CosmeticService.ExecuteTimeInMinutes);
 
         await ValidateDate(request.Data.AppointmentDate, duration, request.Id, cancellationToken);
 
         entity.AddPersonSubscription(personSubscriptions);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task CompleteAppointmentAsync(ByIdWithDataRequestDto<CompleteOrCancelAppointmentRequestDto> request, CancellationToken cancellationToken = default)
+    {
+        var entity = await _appointmentWriteRepositry.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new EntityNotFoundException($"Запись {request.Id} не найдена.", typeof(Appointment));
+
+        entity.Complete(request.Data.Comment);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task CancelAppointmentAsync(ByIdWithDataRequestDto<CompleteOrCancelAppointmentRequestDto> request, CancellationToken cancellationToken = default)
+    {
+        var entity = await _appointmentWriteRepositry.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new EntityNotFoundException($"Запись {request.Id} не найдена.", typeof(Appointment));
+
+        entity.Cancel(request.Data.Comment);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<PageResponseDto<GetAppointmentListItemResponseDto>> GetAppointmentListAsync(GetAppointmentListRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var appointments = await _appointmentQueryRepositry.GetPageAsync(
+            request: request.Page,
+            predicate: x => (string.IsNullOrWhiteSpace(request.SearchString)
+                    || string.Join(' ', x.Person.Name.LastName, x.Person.Name.FirstName, x.Person.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
+                        || x.Person.PhoneNumber.ToLower().Contains(request.SearchString.ToLower()))
+                    && ((!request.StartAppointmentDate.HasValue || x.AppointmentDate.Date >= request.StartAppointmentDate.Value.Date)
+                        && (!request.EndAppointmentDate.HasValue || x.AppointmentDate.Date <= request.EndAppointmentDate.Value.Date)),
+            sortProperty: x => x.AppointmentDate,
+            asc: false,
+            cancellationToken);
+
+        return _mapper.Map<PageResponseDto<GetAppointmentListItemResponseDto>>(appointments);
+    }
+
+    public async Task<GetAppointmentResponseDto> GetAppointmentAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var appointment = await _appointmentQueryRepositry.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new EntityNotFoundException($"Запись {request.Id} не найдена.", typeof(Appointment));
+
+        return _mapper.Map<GetAppointmentResponseDto>(appointment);
     }
 
     private static void ValidateStatus(IEnumerable<PersonSubscription> personSubscriptions)
@@ -97,26 +148,6 @@ public class AppointmentService : IAppointmentService
                 throw new Exception("Уже создана запись на данную услугу");
             }
         }
-    }
-
-    public async Task CompleteAppointmentAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
-    {
-        var entity = await _appointmentWriteRepositry.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Запись {request.Id} не найдена.", typeof(Appointment));
-
-        entity.Complete();
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task CancelAppointmentAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
-    {
-        var entity = await _appointmentWriteRepositry.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Запись {request.Id} не найдена.", typeof(Appointment));
-
-        entity.Cancel();
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     private async Task ValidateDate(

@@ -1,22 +1,33 @@
 ﻿using AutoMapper;
+using BeautySaloon.Core.Dto.Responses.Common;
 using BeautySaloon.Core.Dto.Responses.Person;
 using BeautySaloon.DAL.Entities;
+using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 
 namespace BeautySaloon.Core.Profiles;
 public class PersonProfile : Profile
 {
+    private static readonly IReadOnlyCollection<PersonSubscriptionStatus> AllowStatuses = new[]
+    {
+        PersonSubscriptionStatus.NotPaid,
+        PersonSubscriptionStatus.Paid,
+        PersonSubscriptionStatus.Completed
+    };
+
     public PersonProfile()
     {
-        CreateMap<PageResponseDto<Person>, PageResponseDto<GetPersonListItemResponseDto>>()
-            .ForMember(dest => dest.Items, cfg => cfg.MapFrom(src => src.Items))
-            .ForMember(dest => dest.TotalCount, cfg => cfg.MapFrom(src => src.TotalCount));
+        CreateMap<PageResponseDto<Person>, PageResponseDto<GetPersonListItemResponseDto>>();
 
         CreateMap<Person, GetPersonListItemResponseDto>();
 
         CreateMap<Person, GetPersonResponseDto>()
-            .ForMember(dest => dest.Subscriptions, cfg => cfg.MapFrom(src => src.Orders.Select(x => x.PersonSubscriptions.GroupBy(_ => _.SubscriptionCosmeticService.Subscription).Select(_ => _.Key))));
+            .ForMember(dest => dest.Subscriptions, cfg => cfg.MapFrom(src => src.Orders.SelectMany(
+                x => x.PersonSubscriptions
+                    .Where(_ => AllowStatuses.Contains(_.Status)))
+                    .GroupBy(_ => _.SubscriptionCosmeticService.Subscription)
+                    .Select(_ => _.Key)));
 
-        CreateMap<Subscription, GetPersonResponseDto.SubscriptionResponseDto>();
+        CreateMap<Subscription, SubscriptionResponseDto>();
     }
 }

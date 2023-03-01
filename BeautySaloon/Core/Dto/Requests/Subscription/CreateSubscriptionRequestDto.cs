@@ -6,7 +6,7 @@ public record CreateSubscriptionRequestDto
 {
     public string Name { get; init; } = string.Empty;
 
-    public int? LifeTime { get; init; }
+    public int? LifeTimeInDays { get; init; }
 
     public decimal Price { get; init; }
 
@@ -22,10 +22,10 @@ public class CreateSubscriptionRequestValidator : AbstractValidator<CreateSubscr
             .NotEmpty()
             .MaximumLength(100);
 
-        RuleFor(_ => _.LifeTime)
+        RuleFor(_ => _.LifeTimeInDays)
             .GreaterThanOrEqualTo(1)
             .LessThanOrEqualTo(366)
-            .When(_ => _.LifeTime.HasValue);
+            .When(_ => _.LifeTimeInDays.HasValue);
 
         RuleFor(_ => _.Price)
             .NotNull()

@@ -47,7 +47,7 @@ public class CosmeticServiceService : ICosmeticServiceService
         var entity = new CosmeticService(
             request.Name,
             request.Description,
-            request.ExecuteTime);
+            request.ExecuteTimeInMinutes);
 
         await _cosmeticServiceWriteRepository.AddAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -99,7 +99,7 @@ public class CosmeticServiceService : ICosmeticServiceService
         entity.Update(
             request.Data.Name,
             request.Data.Description,
-            request.Data.ExecuteTime);
+            request.Data.ExecuteTimeInMinutes);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }

@@ -8,7 +8,7 @@ public record CreateCosmeticServiceRequestDto
 
     public string Description { get; init; } = string.Empty;
 
-    public int ExecuteTime { get; init; }
+    public int ExecuteTimeInMinutes { get; init; }
 }
 
 public class CreateCosmeticServiceRequestValidator : AbstractValidator<CreateCosmeticServiceRequestDto>
@@ -25,7 +25,7 @@ public class CreateCosmeticServiceRequestValidator : AbstractValidator<CreateCos
             .NotEmpty()
             .MaximumLength(500);
 
-        RuleFor(_ => _.ExecuteTime)
+        RuleFor(_ => _.ExecuteTimeInMinutes)
             .NotNull()
             .NotEmpty()
             .GreaterThanOrEqualTo(1)

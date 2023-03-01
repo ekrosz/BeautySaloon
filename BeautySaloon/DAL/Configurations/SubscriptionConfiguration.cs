@@ -12,7 +12,7 @@ public class SubscriptionConfiguration : EntityConfiguration<Subscription>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(x => x.LifeTime)
+        builder.Property(x => x.LifeTimeInDays)
             .IsRequired(false);
 
         builder.Property(x => x.Price)

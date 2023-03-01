@@ -46,7 +46,11 @@ public class Person : IEntity, ISoftDeletable, IAuditable, IHasPhoneNumber
 
     public List<Order> Orders { get; set; } = new List<Order>();
 
+    public List<Appointment> Appointments { get; set; } = new List<Appointment>();
+
     public void AddOrder(Order entity) => Orders.Add(entity);
+
+    public void AddAppointment(Appointment entity) => Appointments.Add(entity);
 
     public void Update(
         FullName name,

@@ -26,6 +26,8 @@ public class Order : IEntity, IAuditable
 
     public PaymentMethod PaymentMethod { get; set; }
 
+    public string? Comment { get; set; }
+
     public DateTime CreatedOn { get; set; }
 
     public DateTime UpdatedOn { get; set; }
@@ -55,7 +57,7 @@ public class Order : IEntity, IAuditable
         PersonSubscriptions.AddRange(entities);
     }
 
-    public void Pay(PaymentMethod paymentMethod)
+    public void Pay(PaymentMethod paymentMethod, string? comment)
     {
         if (PaymentStatus == PaymentStatus.Paid)
         {
@@ -68,10 +70,11 @@ public class Order : IEntity, IAuditable
         }
 
         PaymentMethod = paymentMethod;
+        Comment = comment;
         PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Paid);
     }
 
-    public void Cancel()
+    public void Cancel(string? comment)
     {
         if (PaymentStatus == PaymentStatus.Paid)
         {
@@ -83,6 +86,7 @@ public class Order : IEntity, IAuditable
             throw new OrderAlreadyCancelledException(Id);
         }
 
+        Comment = comment;
         PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Cancelled);
     }
 

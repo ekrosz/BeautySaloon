@@ -49,7 +49,7 @@ public class SubscriptionService : ISubscriptionService
         }
 
         var cosmeticServices = await _cosmeticServiceQueryRepository.FindAsync(
-            x => request.CosmeticServices.Any(y => y.Id == x.Id),
+            x => request.CosmeticServices.Select(s => s.Id).Contains(x.Id),
             cancellationToken);
 
         var notExistCosmeticServices = request.CosmeticServices
@@ -63,7 +63,7 @@ public class SubscriptionService : ISubscriptionService
         var entity = new Subscription(
             request.Name,
             request.Price,
-            request.LifeTime);
+            request.LifeTimeInDays);
 
         var subscriptionCosmeticServices = request.CosmeticServices
             .Select(x => new SubscriptionCosmeticService(x.Id, x.Count))
@@ -133,7 +133,7 @@ public class SubscriptionService : ISubscriptionService
         entity.Update(
             request.Data.Name,
             request.Data.Price,
-            request.Data.LifeTime);
+            request.Data.LifeTimeInDays);
 
         var subscriptionCosmeticServices = request.Data.CosmeticServices
             .Select(x => new SubscriptionCosmeticService(x.Id, x.Count))

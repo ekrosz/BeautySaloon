@@ -43,6 +43,13 @@ public class PersonConfiguration : EntityConfiguration<Person>
         builder.Navigation(x => x.Orders)
             .AutoInclude();
 
+        builder.HasMany(x => x.Appointments)
+            .WithOne(x => x.Person)
+            .HasForeignKey(x => x.PersonId);
+
+        builder.Navigation(x => x.Appointments)
+            .AutoInclude();
+
         base.Configure(builder);
     }
 }

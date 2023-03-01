@@ -2,6 +2,7 @@
 using BeautySaloon.Common.Exceptions;
 using BeautySaloon.Core.Dto.Common;
 using BeautySaloon.Core.Dto.Requests.Order;
+using BeautySaloon.Core.Dto.Responses.Order;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
@@ -101,36 +102,43 @@ public class OrderService : IOrderService
         var order = await _orderWriteRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new EntityNotFoundException($"Заказ {request.Id} не найден.", typeof(Order));
 
-        order.Pay(request.Data.PaymentMethod);
+        order.Pay(request.Data.PaymentMethod, request.Data.Comment);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task CancelOrderAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
+    public async Task CancelOrderAsync(ByIdWithDataRequestDto<CancelOrderRequestDto> request, CancellationToken cancellationToken = default)
     {
         var order = await _orderWriteRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new EntityNotFoundException($"Заказ {request.Id} не найден.", typeof(Order));
 
-        order.Cancel();
+        order.Cancel(request.Data.Comment);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<PageResponseDto<GetOrderRequestDto>> GetOrderListAsync(ByIdWithDataRequestDto<GetOrderRequestDto> request, CancellationToken cancellationToken = default)
+    public async Task<PageResponseDto<GetOrderResponseDto>> GetOrderListAsync(GetOrderListRequestDto request, CancellationToken cancellationToken = default)
     {
         var orders = await _orderQueryRepository.GetPageAsync(
-            request: request.Data.Page,
-            predicate: x => x.PersonId == request.Id
-                    && (string.IsNullOrWhiteSpace(request.Data.SearchString)
-                        || string.Join(' ', x.Person.Name.LastName, x.Person.Name.FirstName, x.Person.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.Data.SearchString.ToLower())
-                        || x.Person.PhoneNumber.ToLower().Contains(request.Data.SearchString))
-                    && ((!request.Data.StartCreatedOn.HasValue || x.CreatedOn.Date >= request.Data.StartCreatedOn.Value.Date)
-                        && (!request.Data.EndCreatedOn.HasValue || x.CreatedOn.Date <= request.Data.EndCreatedOn.Value.Date))
-                    && (!request.Data.PaymentStatus.HasValue || x.PaymentStatus == request.Data.PaymentStatus.Value),
+            request: request.Page,
+            predicate: x => x.PersonId == request.PersonId
+                    && (string.IsNullOrWhiteSpace(request.SearchString)
+                        || string.Join(' ', x.Person.Name.LastName, x.Person.Name.FirstName, x.Person.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
+                        || x.Person.PhoneNumber.ToLower().Contains(request.SearchString))
+                    && ((!request.StartCreatedOn.HasValue || x.CreatedOn.Date >= request.StartCreatedOn.Value.Date)
+                        && (!request.EndCreatedOn.HasValue || x.CreatedOn.Date <= request.EndCreatedOn.Value.Date)),
             sortProperty: x => x.UpdatedOn,
             asc: false,
             cancellationToken);
 
-        return _mapper.Map<PageResponseDto<GetOrderRequestDto>>(orders);
+        return _mapper.Map<PageResponseDto<GetOrderResponseDto>>(orders);
+    }
+
+    public async Task<GetOrderResponseDto> GetOrderAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var order = await _orderQueryRepository.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new EntityNotFoundException($"Заказ {request.Id} не найден.", typeof(Order));
+
+        return _mapper.Map<GetOrderResponseDto>(order);
     }
 }

@@ -8,5 +8,5 @@ public record GetCosmeticServiceResponseDto
 
     public string Description { get; init; } = string.Empty;
 
-    public int ExecuteTime { get; init; }
+    public int ExecuteTimeInMinutes { get; init; }
 }

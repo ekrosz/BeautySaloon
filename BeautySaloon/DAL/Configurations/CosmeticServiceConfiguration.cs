@@ -17,7 +17,7 @@ public class CosmeticServiceConfiguration : EntityConfiguration<CosmeticService>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(x => x.ExecuteTime)
+        builder.Property(x => x.ExecuteTimeInMinutes)
             .IsRequired();
 
         builder.Property(x => x.Description)

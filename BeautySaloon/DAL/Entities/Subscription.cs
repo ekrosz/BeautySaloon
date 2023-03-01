@@ -12,18 +12,18 @@ public class Subscription : IEntity, IAuditable
     public Subscription(
         string name,
         decimal price,
-        int? lifeTime)
+        int? lifeTimeInDays)
     {
         Name = name;
         Price = price;
-        LifeTime = lifeTime;
+        LifeTimeInDays = lifeTimeInDays;
     }
 
     public Guid Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
 
-    public int? LifeTime { get; set; }
+    public int? LifeTimeInDays { get; set; }
 
     public decimal Price { get; set; }
 
@@ -44,10 +44,10 @@ public class Subscription : IEntity, IAuditable
     public void Update(
         string name,
         decimal price,
-        int? lifeTime)
+        int? lifeTimeInDays)
     {
         Name = name;
         Price = price;
-        LifeTime = lifeTime;
+        LifeTimeInDays = lifeTimeInDays;
     }
 }

@@ -6,7 +6,7 @@ public record GetSubscriptionResponseDto
 
     public string Name { get; init; } = string.Empty;
 
-    public int? LifeTime { get; init; }
+    public int? LifeTimeInDays { get; init; }
 
     public decimal Price { get; init; }
 
@@ -20,6 +20,6 @@ public record GetSubscriptionResponseDto
 
         public string Description { get; init; } = string.Empty;
 
-        public int ExecuteTime { get; init; }
+        public int ExecuteTimeInMinutes { get; init; }
     }
 }
