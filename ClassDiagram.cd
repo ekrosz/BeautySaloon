@@ -1,0 +1,547 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BeautySaloon.Core.Dto.Common.ByIdRequestValidator" Collapsed="true">
+    <Position X="18" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Common\ByIdRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Common.FullNameValidator" Collapsed="true">
+    <Position X="12.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Common\FullNameValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Common.PageRequestValidator" Collapsed="true">
+    <Position X="16.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Common\PageRequestValidator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Appointment.CompleteOrCancelAppointmentRequestValidator" Collapsed="true">
+    <Position X="9.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Appointment\CompleteOrCancelAppointmentRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Appointment.CreateAppointmentRequestValidator" Collapsed="true">
+    <Position X="16.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Appointment\CreateAppointmentRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Appointment.GetAppointmentListRequestValidator" Collapsed="true">
+    <Position X="14.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Appointment\GetAppointmentListRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Appointment.UpdateAppointmentRequestValidator" Collapsed="true">
+    <Position X="16.25" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Appointment\UpdateAppointmentRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Auth.AuthorizeByCredentialsRequestValidator" Collapsed="true">
+    <Position X="12.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Auth\AuthorizeByCredentialsRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Auth.AuthorizeByRefreshTokenRequestValidator" Collapsed="true">
+    <Position X="14.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Auth\AuthorizeByRefreshTokenRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.CosmeticService.CreateCosmeticServiceRequestValidator" Collapsed="true">
+    <Position X="18" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\CosmeticService\CreateCosmeticServiceRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.CosmeticService.GetCosmeticServiceListRequestValidator" Collapsed="true">
+    <Position X="16.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\CosmeticService\GetCosmeticServiceListRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.CosmeticService.UpdateCosmeticServiceRequestValidator" Collapsed="true">
+    <Position X="18" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\CosmeticService\UpdateCosmeticServiceRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Order.CancelOrderRequestValidator" Collapsed="true">
+    <Position X="19.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Order\CancelOrderRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Order.CreateOrderRequestValidator" Collapsed="true">
+    <Position X="19.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Order\CreateOrderRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Order.GetOrderListRequestDto" Collapsed="true">
+    <Position X="18" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAQAAAEAAAAAAAAAAAAAAAAAAAAACAAABA=</HashCode>
+      <FileName>Dto\Requests\Order\GetOrderListRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Order.GetOrderListRequestValidator" Collapsed="true">
+    <Position X="19.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Order\GetOrderListRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Order.PayOrderRequestValidator" Collapsed="true">
+    <Position X="18" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Order\PayOrderRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Order.UpdateOrderRequestValidator" Collapsed="true">
+    <Position X="19.75" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Order\UpdateOrderRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Person.CreatePersonRequestValidator" Collapsed="true">
+    <Position X="9.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Person\CreatePersonRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Person.GetPersonListRequestValidator" Collapsed="true">
+    <Position X="9.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Person\GetPersonListRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Person.UpdatePersonRequestValidator" Collapsed="true">
+    <Position X="9.25" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Person\UpdatePersonRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Subscription.CosmeticServiceRequestValidator" Collapsed="true">
+    <Position X="12.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Subscription\CosmeticServiceRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Subscription.CreateSubscriptionRequestValidator" Collapsed="true">
+    <Position X="11" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Subscription\CreateSubscriptionRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Subscription.GetSubscriptionListRequestValidator" Collapsed="true">
+    <Position X="11" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Subscription\GetSubscriptionListRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.Subscription.UpdateSubscriptionRequestValidator" Collapsed="true">
+    <Position X="11" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\Subscription\UpdateSubscriptionRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.User.RegisterRequestValidator" Collapsed="true">
+    <Position X="11" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\User\CreateUserRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.User.UpdateUserRequestDto" Collapsed="true">
+    <Position X="12.75" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAEAAAQAQAAAAAAAACAAAQAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\User\UpdateUserRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Dto.Requests.User.UpdateUserRequestValidator" Collapsed="true">
+    <Position X="14.5" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Dto\Requests\User\UpdateUserRequestDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Profiles.AppointmentProfile" Collapsed="true">
+    <Position X="9.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Profiles\AppointmentProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Profiles.CosmeticServiceProfile" Collapsed="true">
+    <Position X="11" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Profiles\CosmeticServiceProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Profiles.OrderProfile" Collapsed="true">
+    <Position X="12.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Profiles\OrderProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Profiles.PersonProfile" Collapsed="true">
+    <Position X="19.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Profiles\PersonProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Profiles.SubscriptionProfile" Collapsed="true">
+    <Position X="12.75" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Profiles\SubscriptionProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Profiles.UserProfile" Collapsed="true">
+    <Position X="16.25" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Profiles\UserProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BeautySaloon.Core.Services.AppointmentService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAECgAAAAQAAACAgABQAAAAIAAAAYIACAAAAAAAAA=</HashCode>
+      <FileName>Services\AppointmentService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.Core.Services.AuthService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAgCAABAAgAAAAAAEQAAAIAAAAAAAABAAAA=</HashCode>
+      <FileName>Services\AuthService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.Core.Services.CosmeticServiceService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAABAAAAAAAAAAhABAAAQAAAAAABAAAEAAAAAAEA=</HashCode>
+      <FileName>Services\CosmeticServiceService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.Core.Services.OrderService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAQAAEAAAACAAAAAgABIAAAIAAACAAAAACAIAAAAAA=</HashCode>
+      <FileName>Services\OrderService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.Core.Services.PersonService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.25" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAgABAAABJAAAAAEAAAAAEAIAAAA=</HashCode>
+      <FileName>Services\PersonService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.Core.Services.SubscriptionService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEEAAAAEEAAAgBBAAAQAAAAAAAAAAAAABAABAA=</HashCode>
+      <FileName>Services\SubscriptionService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.Core.Services.UserService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAgABAAAAAAABABAAAAAAAQQAIAA=</HashCode>
+      <FileName>Services\UserService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.Common.Exceptions.EntityAlreadyExistException" Collapsed="true">
+    <Position X="14" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.Common.Exceptions.EntityNotFoundException" Collapsed="true">
+    <Position X="15.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.Common.Exceptions.InvalidSecretKeyException" Collapsed="true">
+    <Position X="12.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.Common.Exceptions.InvalidUserCredentialsException" Collapsed="true">
+    <Position X="14" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.Common.Exceptions.OrderAlreadyCancelledException" Collapsed="true">
+    <Position X="15.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.Common.Exceptions.OrderAlreadyPaidException" Collapsed="true">
+    <Position X="12.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.Common.Exceptions.RefreshTokenExpiredException" Collapsed="true">
+    <Position X="15.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.Common.Utils.CryptoUtilities" Collapsed="true">
+    <Position X="12.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.Common.Utils.PhoneNumberUtilities" Collapsed="true">
+    <Position X="14" Y="2.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Configurations.Abstract.EntityConfiguration&lt;TEntity&gt;" Collapsed="true">
+    <Position X="15.25" Y="19.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Configurations.AppointmentConfiguration" Collapsed="true">
+    <Position X="9.75" Y="21" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Configurations.CosmeticServiceConfiguration" Collapsed="true">
+    <Position X="14.25" Y="21" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Configurations.OrderConfiguration" Collapsed="true">
+    <Position X="18.75" Y="21" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Configurations.PersonConfiguration" Collapsed="true">
+    <Position X="23.25" Y="21" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Configurations.PersonSubscriptionConfiguration" Collapsed="true">
+    <Position X="7.5" Y="21" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Configurations.SubscriptionConfiguration" Collapsed="true">
+    <Position X="12" Y="21" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Configurations.SubscriptionCosmeticServiceConfiguration" Collapsed="true">
+    <Position X="16.5" Y="21" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Configurations.UserConfiguration" Collapsed="true">
+    <Position X="21" Y="21" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Interceptors.AuditInterceptor" Collapsed="true">
+    <Position X="25.75" Y="19.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Interceptors.PhoneNumberInterceptor" Collapsed="true">
+    <Position X="25.75" Y="20.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Repositories.Abstract.QueryRepository&lt;TEntity&gt;" Collapsed="true">
+    <Position X="9" Y="24" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Repositories.Abstract.ReadRepository&lt;TEntity&gt;" Collapsed="true">
+    <Position X="8" Y="22.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Repositories.Abstract.WriteRepository&lt;TEntity&gt;" Collapsed="true">
+    <Position X="6.75" Y="24" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Uow.UnitOfWork" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="27.5" Y="20.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.BeautySaloonDbContext" Collapsed="true">
+    <Position X="27.5" Y="19.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.Enums.AppointmentStatus" Collapsed="true">
+    <Position X="13.5" Y="14.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.Enums.PaymentMethod" Collapsed="true">
+    <Position X="11.75" Y="15.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.Enums.PaymentStatus" Collapsed="true">
+    <Position X="13.5" Y="15.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.Enums.PersonSubscriptionStatus" Collapsed="true">
+    <Position X="11.75" Y="16.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.Enums.Role" Collapsed="true">
+    <Position X="13.5" Y="16.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.Appointment" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.75" Y="14.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.CosmeticService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="14.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.Order" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17" Y="14.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.Person" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="15.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.PersonSubscription" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17" Y="15.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.Subscription" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="16.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.SubscriptionCosmeticService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17" Y="16.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BeautySaloon.DAL.Entities.User" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.75" Y="17.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="BeautySaloon.Core.Services.Contracts.IAppointmentService" Collapsed="true">
+    <Position X="9.25" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAACAAAAAAAAAIAAAAQIACAAAAAAAAA=</HashCode>
+      <FileName>Services\Contracts\IAppointmentService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BeautySaloon.Core.Services.Contracts.IAuthService" Collapsed="true">
+    <Position X="11" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Contracts\IAuthService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BeautySaloon.Core.Services.Contracts.ICosmeticServiceService" Collapsed="true">
+    <Position X="12.75" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAABAAAAAAAAAABAAAAAAAAAAAABAAAAAAAAAAEA=</HashCode>
+      <FileName>Services\Contracts\ICosmeticServiceService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BeautySaloon.Core.Services.Contracts.IOrderService" Collapsed="true">
+    <Position X="14.5" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAACAAAAAAAAIAAAAAAACAAAAACAIAAAAAA=</HashCode>
+      <FileName>Services\Contracts\IOrderService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BeautySaloon.Core.Services.Contracts.IPersonService" Collapsed="true">
+    <Position X="16.25" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAABBAAAAAEAAAAAEAAAAAA=</HashCode>
+      <FileName>Services\Contracts\IPersonService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BeautySaloon.Core.Services.Contracts.ISubscriptionService" Collapsed="true">
+    <Position X="18" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAEEAAAABAAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Services\Contracts\ISubscriptionService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BeautySaloon.Core.Services.Contracts.IUserService" Collapsed="true">
+    <Position X="19.75" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABABAAAAAAAQQAAAA=</HashCode>
+      <FileName>Services\Contracts\IUserService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BeautySaloon.DAL.Repositories.Abstract.IQueryRepository&lt;TEntity&gt;" Collapsed="true">
+    <Position X="11.75" Y="24" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="BeautySaloon.DAL.Repositories.Abstract.IReadRepository&lt;TEntity&gt;" Collapsed="true">
+    <Position X="13" Y="22.75" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="BeautySaloon.DAL.Repositories.Abstract.IWriteRepository&lt;TEntity&gt;" Collapsed="true">
+    <Position X="14" Y="24" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="BeautySaloon.DAL.Uow.IUnitOfWork" Collapsed="true">
+    <Position X="27.5" Y="22" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="BeautySaloon.DAL.Providers.ICurrentUserProvider" Collapsed="true">
+    <Position X="25.75" Y="22" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="BeautySaloon.DAL.Entities.Contracts.IAuditable" Collapsed="true">
+    <Position X="11.75" Y="18.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="BeautySaloon.DAL.Entities.Contracts.IEntity" Collapsed="true">
+    <Position X="13.5" Y="18.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="BeautySaloon.DAL.Entities.Contracts.IHasPhoneNumber" Collapsed="true">
+    <Position X="15.25" Y="18.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="BeautySaloon.DAL.Entities.Contracts.ISoftDeletable" Collapsed="true">
+    <Position X="17" Y="18.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
