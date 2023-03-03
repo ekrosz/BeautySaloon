@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BeautySaloon.Common.Exceptions;
+using BeautySaloon.Common.Utils;
 using BeautySaloon.Core.Dto.Common;
 using BeautySaloon.Core.Dto.Requests.User;
 using BeautySaloon.Core.Dto.Responses.User;
@@ -34,11 +35,24 @@ public class UserService : IUserService
 
     public async Task CreateUserAsync(CreateUserRequestDto request, CancellationToken cancellationToken = default)
     {
-        var user = await _userWriteRepository.GetFirstAsync(x => x.Login.Equals(request.Login), cancellationToken);
+        var isExistLogin = await _userQueryRepository.ExistAsync(
+            x => x.Login.Equals(request.Login),
+            cancellationToken);
 
-        if (user is not null)
+        if (isExistLogin)
         {
-            throw new EntityAlreadyExistException($"Пользователь {user.Login} уже существуюет.", typeof(User));
+            throw new UserAlreadyExistException(nameof(request.Login), request.Login);
+        }
+
+        var normalizedPhoneNumber = PhoneNumberUtilities.Normilize(request.PhoneNumber);
+
+        var isExistPhone = await _userQueryRepository.ExistAsync(
+            x => x.PhoneNumber.ToLower().Equals(normalizedPhoneNumber.ToLower()),
+            cancellationToken);
+
+        if (isExistPhone)
+        {
+            throw new PersonAlreadyExistException(nameof(request.PhoneNumber), request.PhoneNumber);
         }
 
         var entity = new User(
@@ -56,15 +70,28 @@ public class UserService : IUserService
     public async Task UpdateUserAsync(ByIdWithDataRequestDto<UpdateUserRequestDto> request, CancellationToken cancellationToken = default)
     {
         var user = await _userWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Пользователь {request.Id} не найден.", typeof(User));
+                ?? throw new UserNotFoundException(request.Id);
 
         var isExistLogin = await _userQueryRepository.ExistAsync(
-            x => x.Login.Equals(request.Data.Login) && x.Id != request.Id,
+            x => x.Login.Equals(request.Data.Login)
+                && x.Id != request.Id,
             cancellationToken);
 
         if (isExistLogin)
         {
-            throw new EntityAlreadyExistException($"Пользователь {request.Data.Login} уже существуюет.", typeof(User));
+            throw new UserAlreadyExistException(nameof(user.Login), user.Login);
+        }
+
+        var normalizedPhoneNumber = PhoneNumberUtilities.Normilize(request.Data.PhoneNumber);
+
+        var isExistPhone = await _userQueryRepository.ExistAsync(
+            x => x.Id != request.Id
+                && x.PhoneNumber.ToLower().Equals(normalizedPhoneNumber.ToLower()),
+            cancellationToken);
+
+        if (isExistPhone)
+        {
+            throw new PersonAlreadyExistException(nameof(request.Data.PhoneNumber), request.Data.PhoneNumber);
         }
 
         user.Update(
@@ -81,7 +108,7 @@ public class UserService : IUserService
     public async Task DeleteUserAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var user = await _userWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Пользователь {request.Id} не найден.", typeof(User));
+            ?? throw new UserNotFoundException(request.Id);
 
         _userWriteRepository.Delete(user);
 
@@ -91,7 +118,7 @@ public class UserService : IUserService
     public async Task<GetUserResponseDto> GetUserAsync(ByIdRequestDto request, CancellationToken cancellationToken)
     {
         var user = await _userQueryRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Пользователь {request.Id} не найден.", typeof(User));
+            ?? throw new UserNotFoundException(request.Id);
 
         return _mapper.Map<GetUserResponseDto>(user);
     }

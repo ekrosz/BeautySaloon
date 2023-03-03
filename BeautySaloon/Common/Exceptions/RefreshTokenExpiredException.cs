@@ -1,9 +1,12 @@
-﻿namespace BeautySaloon.Common.Exceptions;
+﻿using BeautySaloon.Common.Exceptions.Abstract;
+using System.Net;
 
-public class RefreshTokenExpiredException : Exception
+namespace BeautySaloon.Common.Exceptions;
+
+public class RefreshTokenExpiredException : BusinessExceptions
 {
     public RefreshTokenExpiredException()
-        : base("Время жизни токена обновления истек.")
+        : base(HttpStatusCode.Conflict, "Время жизни токена обновления истек.")
     {
     }
 }

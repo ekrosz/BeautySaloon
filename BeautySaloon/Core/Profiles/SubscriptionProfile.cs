@@ -2,6 +2,7 @@
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.Core.Dto.Responses.Subscription;
+using BeautySaloon.Core.Dto.Responses.Common;
 
 namespace BeautySaloon.Core.Profiles;
 
@@ -16,6 +17,6 @@ public class SubscriptionProfile : Profile
         CreateMap<Subscription, GetSubscriptionResponseDto>()
             .ForMember(dest => dest.CosmeticServices, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServices.Select(x => x.CosmeticService)));
 
-        CreateMap<CosmeticService, GetSubscriptionResponseDto.CosmeticServiceResponseDto>();
+        CreateMap<CosmeticService, CosmeticServiceResponseDto>();
     }
 }

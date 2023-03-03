@@ -45,7 +45,7 @@ public class SubscriptionService : ISubscriptionService
 
         if (isExistName)
         {
-            throw new EntityAlreadyExistException($"Абонемент {request.Name} уже существует.", typeof(Subscription));
+            throw new SubscriptionAlreadyExistException(nameof(request.Name), request.Name);
         }
 
         var cosmeticServices = await _cosmeticServiceQueryRepository.FindAsync(
@@ -57,7 +57,7 @@ public class SubscriptionService : ISubscriptionService
 
         if (notExistCosmeticServices.Any())
         {
-            throw new EntityNotFoundException($"Абонимент {notExistCosmeticServices.First()} не найден.", typeof(Subscription));
+            throw new CosmeticServiceNotFoundException(notExistCosmeticServices.First().Id);
         }
 
         var entity = new Subscription(
@@ -79,7 +79,7 @@ public class SubscriptionService : ISubscriptionService
     public async Task DeleteSubscriptionAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var entity = await _subscriptionWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Абонемент {request.Id} не найден.", typeof(Subscription));
+            ?? throw new SubscriptionNotFoundException(request.Id);
 
         _subscriptionWriteRepository.Delete(entity);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -88,7 +88,7 @@ public class SubscriptionService : ISubscriptionService
     public async Task<GetSubscriptionResponseDto> GetSubscriptionAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var subscription = await _subscriptionQueryRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Абонемент {request.Id} не найден.", typeof(Subscription));
+            ?? throw new SubscriptionNotFoundException(request.Id);
 
         return _mapper.Map<GetSubscriptionResponseDto>(subscription);
     }
@@ -108,7 +108,7 @@ public class SubscriptionService : ISubscriptionService
     public async Task UpdateSubscriptionAsync(ByIdWithDataRequestDto<UpdateSubscriptionRequestDto> request, CancellationToken cancellationToken = default)
     {
         var entity = await _subscriptionWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Абонемент {request.Id} не найден.", typeof(Subscription));
+            ?? throw new SubscriptionNotFoundException(request.Id);
 
         var isExistName = await _subscriptionQueryRepository.ExistAsync(
             x => x.Name.ToLower().Contains(request.Data.Name.ToLower()) && x.Id != request.Id,
@@ -116,7 +116,7 @@ public class SubscriptionService : ISubscriptionService
 
         if (isExistName)
         {
-            throw new EntityAlreadyExistException($"Абонемент {request.Data.Name} уже существует.", typeof(Subscription));
+            throw new SubscriptionAlreadyExistException(nameof(request.Data.Name), request.Data.Name);
         }
 
         var cosmeticServices = await _cosmeticServiceQueryRepository.FindAsync(
@@ -128,7 +128,7 @@ public class SubscriptionService : ISubscriptionService
 
         if (notExistCosmeticServices.Any())
         {
-            throw new EntityNotFoundException($"Абонимент {notExistCosmeticServices.First()} не найден.", typeof(Subscription));
+            throw new CosmeticServiceNotFoundException(notExistCosmeticServices.First().Id);
         }
 
         entity.Update(

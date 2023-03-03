@@ -1,9 +1,12 @@
-﻿namespace BeautySaloon.Common.Exceptions;
+﻿using BeautySaloon.Common.Exceptions.Abstract;
+using System.Net;
 
-public class InvalidSecretKeyException : Exception
+namespace BeautySaloon.Common.Exceptions;
+
+public class InvalidSecretKeyException : BusinessExceptions
 {
     public InvalidSecretKeyException()
-        : base("Неверный ключ токена обновления.")
+        : base(HttpStatusCode.Conflict, "Неверный секретный ключ токена обновления.")
     {
     }
 }

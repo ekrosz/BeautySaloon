@@ -1,9 +1,12 @@
-﻿namespace BeautySaloon.Common.Exceptions;
+﻿using BeautySaloon.Common.Exceptions.Abstract;
+using System.Net;
 
-public class OrderAlreadyPaidException : Exception
+namespace BeautySaloon.Common.Exceptions;
+
+public class OrderAlreadyPaidException : BusinessExceptions
 {
-    public OrderAlreadyPaidException(Guid orderId)
-        : base($"Заказ {orderId} уже был оплачен.")
+    public OrderAlreadyPaidException()
+        : base(HttpStatusCode.Conflict, $"Данный заказ уже оплачен.")
     {
     }
 }

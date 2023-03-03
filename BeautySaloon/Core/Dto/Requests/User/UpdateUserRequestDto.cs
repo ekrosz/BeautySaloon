@@ -15,7 +15,7 @@ public class UpdateUserRequestDto
 
     public string PhoneNumber { get; init; } = string.Empty;
 
-    public string? Email { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
 
     public FullName Name { get; init; } = FullName.Empty;
 }

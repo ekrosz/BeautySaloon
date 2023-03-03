@@ -45,15 +45,24 @@ public class AppointmentService : IAppointmentService
     public async Task CreateAppointmentAsync(CreateAppointmentRequestDto request, CancellationToken cancellationToken = default)
     {
         var person = await _personWriteRepositry.GetByIdAsync(request.PersonId, cancellationToken)
-            ?? throw new EntityNotFoundException($"Клиент {request.PersonId} не найден.", typeof(Person));
+            ?? throw new PersonNotFoundException(request.PersonId);
 
         var personSubscriptions = person.Orders.SelectMany(
             x => x.PersonSubscriptions.Where(
                 ps => request.PersonSubcriptionIds.Contains(ps.Id)));
 
+        var notExistPersonSubscription = request.PersonSubcriptionIds
+            .Except(personSubscriptions.Select(x => x.Id))
+            .ToArray();
+
+        if (notExistPersonSubscription.Any())
+        {
+            throw new PersonSubscriptionNotFoundException(notExistPersonSubscription.First());
+        }
+
         ValidateStatus(personSubscriptions);
 
-        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticService.CosmeticService.ExecuteTimeInMinutes);
+        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.ExecuteTimeInMinutes);
 
         await ValidateDate(
             personSubscriptions,
@@ -73,15 +82,24 @@ public class AppointmentService : IAppointmentService
     public async Task UpdateAppointmentAsync(ByIdWithDataRequestDto<UpdateAppointmentRequestDto> request, CancellationToken cancellationToken = default)
     {
         var entity = await _appointmentWriteRepositry.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Запись {request.Id} не найдена.", typeof(Appointment));
+            ?? throw new AppointmentNotFoundException(request.Id);
 
         var personSubscriptions = await _personSubscriptionQueryRepositry.FindAsync(
             x => request.Data.PersonSubcriptionIds.Contains(x.Id),
             cancellationToken);
 
+        var notExistPersonSubscription = request.Data.PersonSubcriptionIds
+            .Except(personSubscriptions.Select(x => x.Id))
+            .ToArray();
+
+        if (notExistPersonSubscription.Any())
+        {
+            throw new PersonSubscriptionNotFoundException(notExistPersonSubscription.First());
+        }
+
         ValidateStatus(personSubscriptions);
 
-        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticService.CosmeticService.ExecuteTimeInMinutes);
+        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.ExecuteTimeInMinutes);
 
         await ValidateDate(
             personSubscriptions,
@@ -99,7 +117,7 @@ public class AppointmentService : IAppointmentService
     public async Task CompleteAppointmentAsync(ByIdWithDataRequestDto<CompleteOrCancelAppointmentRequestDto> request, CancellationToken cancellationToken = default)
     {
         var entity = await _appointmentWriteRepositry.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Запись {request.Id} не найдена.", typeof(Appointment));
+            ?? throw new AppointmentNotFoundException(request.Id);
 
         entity.Complete(request.Data.Comment);
 
@@ -109,7 +127,7 @@ public class AppointmentService : IAppointmentService
     public async Task CancelAppointmentAsync(ByIdWithDataRequestDto<CompleteOrCancelAppointmentRequestDto> request, CancellationToken cancellationToken = default)
     {
         var entity = await _appointmentWriteRepositry.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Запись {request.Id} не найдена.", typeof(Appointment));
+            ?? throw new AppointmentNotFoundException(request.Id);
 
         entity.Cancel(request.Data.Comment);
 
@@ -135,7 +153,7 @@ public class AppointmentService : IAppointmentService
     public async Task<GetAppointmentResponseDto> GetAppointmentAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var appointment = await _appointmentQueryRepositry.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Запись {request.Id} не найдена.", typeof(Appointment));
+            ?? throw new AppointmentNotFoundException(request.Id);
 
         return _mapper.Map<GetAppointmentResponseDto>(appointment);
     }
@@ -143,21 +161,8 @@ public class AppointmentService : IAppointmentService
     private static void ValidateStatus(IEnumerable<PersonSubscription> personSubscriptions)
     {
         foreach (var personSubscription in personSubscriptions)
-        { 
-            if (personSubscription.Status == PersonSubscriptionStatus.NotPaid)
-            {
-                throw new Exception("Абонемент еще не оплачен");
-            }
-
-            if (personSubscription.Status == PersonSubscriptionStatus.Cancelled)
-            {
-                throw new Exception("Абонемент был отменен");
-            }
-
-            if (personSubscription.Status == PersonSubscriptionStatus.Completed)
-            {
-                throw new Exception("Уже создана запись на данную услугу");
-            }
+        {
+            personSubscription.ValidateStatusOrThrow();
         }
     }
 
@@ -168,26 +173,28 @@ public class AppointmentService : IAppointmentService
         Guid? appointmentId,
         CancellationToken cancellationToken = default)
     {
-        var endDateTine = appointmentDate.AddMinutes(duration);
+        var endDateTime = appointmentDate.AddMinutes(duration);
 
         var anyAppointmentInRange = await _appointmentQueryRepositry.ExistAsync(
             x => (!appointmentId.HasValue || appointmentId.Value != x.Id)
-            && (x.AppointmentDate < endDateTine && x.AppointmentDate > appointmentDate)
-                || (x.AppointmentDate.AddMinutes(x.DurationInMinutes) < endDateTine && x.AppointmentDate.AddMinutes(x.DurationInMinutes) > appointmentDate),
+            && (x.AppointmentDate < endDateTime && x.AppointmentDate > appointmentDate)
+                || (x.AppointmentDate.AddMinutes(x.DurationInMinutes) < endDateTime && x.AppointmentDate.AddMinutes(x.DurationInMinutes) > appointmentDate),
             cancellationToken);
 
         if (anyAppointmentInRange)
         {
-            throw new Exception($"В период времени с {appointmentDate:G} до {appointmentDate:G} уже существует запись.");
+            throw new InvalidAppointmentDateException(appointmentDate, endDateTime);
         }
 
         foreach (var personSubscription in personSubscriptions)
         {
-            var subscriptionLifeTime = personSubscription.SubscriptionCosmeticService.Subscription.LifeTimeInDays;
+            var subscriptionLifeTime = personSubscription.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.LifeTimeInDays;
 
             if (subscriptionLifeTime.HasValue && personSubscription.Order.UpdatedOn.AddDays(subscriptionLifeTime.Value).Date < appointmentDate.Date)
             {
-                throw new Exception($"Абонемент {personSubscription.SubscriptionCosmeticService.Subscription.Name} уже истечет до указанной даты.");
+                throw new PersonSubscriptionWillBeOverdueException(
+                    personSubscription.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name,
+                    personSubscription.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.Name);
             }
         }
     }

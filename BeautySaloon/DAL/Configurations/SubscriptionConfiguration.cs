@@ -12,6 +12,9 @@ public class SubscriptionConfiguration : EntityConfiguration<Subscription>
             .HasMaxLength(100)
             .IsRequired();
 
+        builder.HasIndex(x => x.Name)
+            .IsUnique();
+
         builder.Property(x => x.LifeTimeInDays)
             .IsRequired(false);
 

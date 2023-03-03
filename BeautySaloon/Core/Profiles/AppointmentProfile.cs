@@ -13,19 +13,19 @@ public class AppointmentProfile : Profile
         CreateMap<PageResponseDto<Appointment>, PageResponseDto<GetAppointmentListItemResponseDto>>();
 
         CreateMap<Appointment, GetAppointmentListItemResponseDto>()
-            .ForMember(dest => dest.Person, cfg => cfg.MapFrom(src => src.Person));
+            .ForMember(dest => dest.Person, cfg => cfg.MapFrom(src => src.Person))
+            .ForMember(dest => dest.Modifier, cfg => cfg.MapFrom(src => src.Modifier));
 
         CreateMap<Person, PersonResponseDto>();
 
         CreateMap<Appointment, GetAppointmentResponseDto>()
             .ForMember(dest => dest.Person, cfg => cfg.MapFrom(src => src.Person))
+            .ForMember(dest => dest.Modifier, cfg => cfg.MapFrom(src => src.Modifier))
             .ForMember(dest => dest.Subscriptions, cfg => cfg.MapFrom(src => src.PersonSubscriptions));
 
-        CreateMap<PersonSubscription, GetAppointmentResponseDto.PersonSubscriptionResponseDto>()
+        CreateMap<PersonSubscription, PersonSubscriptionResponseDto>()
             .ForMember(dest => dest.Id, cfg => cfg.MapFrom(src => src.Id))
-            .ForMember(dest => dest.CosmeticServiceId, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticService.CosmeticService.Id))
-            .ForMember(dest => dest.CosmeticServiceName, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticService.CosmeticService.Name))
-            .ForMember(dest => dest.SubscriptionId, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticService.Subscription.Id))
-            .ForMember(dest => dest.SubscriptionName, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticService.Subscription.Name));
+            .ForMember(dest => dest.Subscription, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot))
+            .ForMember(dest => dest.CosmeticService, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot));
     }
 }
