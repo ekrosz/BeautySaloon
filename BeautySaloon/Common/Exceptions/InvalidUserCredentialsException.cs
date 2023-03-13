@@ -1,9 +1,12 @@
-﻿namespace BeautySaloon.Common.Exceptions;
+﻿using BeautySaloon.Common.Exceptions.Abstract;
+using System.Net;
 
-public class InvalidUserCredentialsException : Exception
+namespace BeautySaloon.Common.Exceptions;
+
+public class InvalidUserCredentialsException : BusinessExceptions
 {
     public InvalidUserCredentialsException()
-        : base("Введен неверный логин и/или пароль.")
+        : base(HttpStatusCode.Conflict, "Введен неверный логин и/или пароль.")
     {
     }
 }

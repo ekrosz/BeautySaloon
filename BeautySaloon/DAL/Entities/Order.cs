@@ -35,6 +35,8 @@ public class Order : IEntity, IAuditable
 
     public Person Person { get; set; } = default!;
 
+    public User Modifier { get; set; } = default!;
+
     public List<PersonSubscription> PersonSubscriptions { get; set; } = new List<PersonSubscription>();
 
     [JsonIgnore]
@@ -94,12 +96,12 @@ public class Order : IEntity, IAuditable
     {
         if (PaymentStatus == PaymentStatus.Paid)
         {
-            throw new OrderAlreadyPaidException(Id);
+            throw new OrderAlreadyPaidException();
         }
 
         if (PaymentStatus == PaymentStatus.Cancelled)
         {
-            throw new OrderAlreadyCancelledException(Id);
+            throw new OrderAlreadyCancelledException();
         }
     }
 }

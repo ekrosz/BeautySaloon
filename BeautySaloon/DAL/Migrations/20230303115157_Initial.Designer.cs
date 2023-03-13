@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BeautySaloon.DAL.Migrations
 {
     [DbContext(typeof(BeautySaloonDbContext))]
-    [Migration("20230301125553_Initial")]
+    [Migration("20230303115157_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,6 @@ namespace BeautySaloon.DAL.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
@@ -56,6 +55,8 @@ namespace BeautySaloon.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PersonId");
+
+                    b.HasIndex("UserModifierId");
 
                     b.ToTable("Appointment");
                 });
@@ -90,6 +91,9 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("CosmeticService");
                 });
 
@@ -100,7 +104,6 @@ namespace BeautySaloon.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
@@ -116,9 +119,6 @@ namespace BeautySaloon.DAL.Migrations
                     b.Property<Guid>("PersonId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("PersonId1")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -129,7 +129,7 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.HasIndex("PersonId1");
+                    b.HasIndex("UserModifierId");
 
                     b.ToTable("Order");
                 });
@@ -142,10 +142,6 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Comment")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
@@ -204,6 +200,8 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppointmentId");
+
                     b.HasIndex("OrderId");
 
                     b.HasIndex("SubscriptionCosmeticServiceId");
@@ -239,6 +237,9 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Subscription");
                 });
 
@@ -260,9 +261,6 @@ namespace BeautySaloon.DAL.Migrations
                     b.Property<Guid>("SubscriptionId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubscriptionId1")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -274,8 +272,6 @@ namespace BeautySaloon.DAL.Migrations
                     b.HasIndex("CosmeticServiceId");
 
                     b.HasIndex("SubscriptionId");
-
-                    b.HasIndex("SubscriptionId1");
 
                     b.ToTable("SubscriptionCosmeticService");
                 });
@@ -318,6 +314,9 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Login")
+                        .IsUnique();
+
                     b.ToTable("User");
                 });
 
@@ -329,22 +328,32 @@ namespace BeautySaloon.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BeautySaloon.DAL.Entities.User", "Modifier")
+                        .WithMany()
+                        .HasForeignKey("UserModifierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Modifier");
+
                     b.Navigation("Person");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Order", b =>
                 {
-                    b.HasOne("BeautySaloon.DAL.Entities.Person", null)
+                    b.HasOne("BeautySaloon.DAL.Entities.Person", "Person")
                         .WithMany("Orders")
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeautySaloon.DAL.Entities.Person", "Person")
+                    b.HasOne("BeautySaloon.DAL.Entities.User", "Modifier")
                         .WithMany()
-                        .HasForeignKey("PersonId1")
+                        .HasForeignKey("UserModifierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Modifier");
 
                     b.Navigation("Person");
                 });
@@ -386,23 +395,102 @@ namespace BeautySaloon.DAL.Migrations
                 {
                     b.HasOne("BeautySaloon.DAL.Entities.Appointment", null)
                         .WithMany("PersonSubscriptions")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppointmentId");
 
-                    b.HasOne("BeautySaloon.DAL.Entities.Order", null)
+                    b.HasOne("BeautySaloon.DAL.Entities.Order", "Order")
                         .WithMany("PersonSubscriptions")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeautySaloon.DAL.Entities.SubscriptionCosmeticService", "SubscriptionCosmeticService")
+                    b.HasOne("BeautySaloon.DAL.Entities.SubscriptionCosmeticService", null)
                         .WithMany()
                         .HasForeignKey("SubscriptionCosmeticServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SubscriptionCosmeticService");
+                    b.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.SubscriptionCosmeticServiceSnapshot", "SubscriptionCosmeticServiceSnapshot", b1 =>
+                        {
+                            b1.Property<Guid>("PersonSubscriptionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Count")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("PersonSubscriptionId");
+
+                            b1.ToTable("PersonSubscription");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PersonSubscriptionId");
+
+                            b1.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.CosmeticServiceSnapshot", "CosmeticServiceSnapshot", b2 =>
+                                {
+                                    b2.Property<Guid>("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<string>("Description")
+                                        .IsRequired()
+                                        .HasMaxLength(500)
+                                        .HasColumnType("character varying(500)");
+
+                                    b2.Property<int>("ExecuteTimeInMinutes")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<Guid>("Id")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<string>("Name")
+                                        .IsRequired()
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)");
+
+                                    b2.HasKey("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId");
+
+                                    b2.ToTable("PersonSubscription");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId");
+                                });
+
+                            b1.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.SubscriptionSnapshot", "SubscriptionSnapshot", b2 =>
+                                {
+                                    b2.Property<Guid>("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<Guid>("Id")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int?>("LifeTimeInDays")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<string>("Name")
+                                        .IsRequired()
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)");
+
+                                    b2.Property<decimal>("Price")
+                                        .HasColumnType("numeric");
+
+                                    b2.HasKey("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId");
+
+                                    b2.ToTable("PersonSubscription");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId");
+                                });
+
+                            b1.Navigation("CosmeticServiceSnapshot")
+                                .IsRequired();
+
+                            b1.Navigation("SubscriptionSnapshot")
+                                .IsRequired();
+                        });
+
+                    b.Navigation("Order");
+
+                    b.Navigation("SubscriptionCosmeticServiceSnapshot")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.SubscriptionCosmeticService", b =>
@@ -413,15 +501,9 @@ namespace BeautySaloon.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeautySaloon.DAL.Entities.Subscription", null)
+                    b.HasOne("BeautySaloon.DAL.Entities.Subscription", "Subscription")
                         .WithMany("SubscriptionCosmeticServices")
                         .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BeautySaloon.DAL.Entities.Subscription", "Subscription")
-                        .WithMany()
-                        .HasForeignKey("SubscriptionId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

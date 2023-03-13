@@ -5,6 +5,7 @@ using BeautySaloon.Core.Dto.Requests.Order;
 using BeautySaloon.Core.Dto.Responses.Order;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities;
+using BeautySaloon.DAL.Entities.ValueObjects;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;
@@ -43,7 +44,7 @@ public class OrderService : IOrderService
     public async Task CreateOrderAsync(CreateOrderRequestDto request, CancellationToken cancellationToken = default)
     {
         var person = await _personWriteRepository.GetByIdAsync(request.PersonId, cancellationToken)
-            ?? throw new EntityNotFoundException($"Клиент {request.PersonId} не найден.", typeof(Person));
+            ?? throw new PersonNotFoundException(request.PersonId);
 
         var subscriptions = await _subscriptionQueryRepository.FindAsync(
             x => request.SubscriptionIds.Contains(x.Id),
@@ -55,13 +56,20 @@ public class OrderService : IOrderService
 
         if (notExistSubscriptions.Any())
         {
-            throw new EntityNotFoundException($"Абонемент {notExistSubscriptions.First()} не найден.", typeof(Subscription));
+            throw new SubscriptionNotFoundException(notExistSubscriptions.First());
         }
 
         var order = new Order(subscriptions.Sum(x => x.Price), request.Comment);
 
         var personSubscriptions = subscriptions.SelectMany(x => x.SubscriptionCosmeticServices)
-            .Select(x => new PersonSubscription(x.Id))
+            .Select(x => new PersonSubscription(
+                x.Id,
+                new SubscriptionCosmeticServiceSnapshot
+                {
+                    SubscriptionSnapshot = _mapper.Map<SubscriptionSnapshot>(x.Subscription),
+                    CosmeticServiceSnapshot = _mapper.Map<CosmeticServiceSnapshot>(x.CosmeticService),
+                    Count = x.Count
+                }))
             .ToArray();
 
         order.AddPersonSubscriptions(personSubscriptions);
@@ -73,7 +81,7 @@ public class OrderService : IOrderService
     public async Task UpdateOrderAsync(ByIdWithDataRequestDto<UpdateOrderRequestDto> request, CancellationToken cancellationToken = default)
     {
         var order = await _orderWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Заказ {request.Id} не найден.", typeof(Order));
+            ?? throw new OrderNotFoundException(request.Id);
 
         var subscriptions = await _subscriptionQueryRepository.FindAsync(
             x => request.Data.SubscriptionIds.Contains(x.Id),
@@ -85,11 +93,18 @@ public class OrderService : IOrderService
 
         if (notExistSubscriptions.Any())
         {
-            throw new EntityNotFoundException($"Абонемент {notExistSubscriptions.First()} не найден.", typeof(Subscription));
+            throw new SubscriptionNotFoundException(notExistSubscriptions.First());
         }
 
         var personSubscriptions = subscriptions.SelectMany(x => x.SubscriptionCosmeticServices)
-            .Select(x => new PersonSubscription(x.Id))
+            .Select(x => new PersonSubscription(
+                x.Id,
+                new SubscriptionCosmeticServiceSnapshot
+                {
+                    SubscriptionSnapshot = _mapper.Map<SubscriptionSnapshot>(x.Subscription),
+                    CosmeticServiceSnapshot = _mapper.Map<CosmeticServiceSnapshot>(x.CosmeticService),
+                    Count = x.Count
+                }))
             .ToArray();
 
         order.Update(subscriptions.Sum(x => x.Price), request.Data.Comment);
@@ -101,7 +116,7 @@ public class OrderService : IOrderService
     public async Task PayOrderAsync(ByIdWithDataRequestDto<PayOrderRequestDto> request, CancellationToken cancellationToken = default)
     {
         var order = await _orderWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Заказ {request.Id} не найден.", typeof(Order));
+            ?? throw new OrderNotFoundException(request.Id);
 
         order.Pay(request.Data.PaymentMethod, request.Data.Comment);
 
@@ -111,7 +126,7 @@ public class OrderService : IOrderService
     public async Task CancelOrderAsync(ByIdWithDataRequestDto<CancelOrderRequestDto> request, CancellationToken cancellationToken = default)
     {
         var order = await _orderWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Заказ {request.Id} не найден.", typeof(Order));
+            ?? throw new OrderNotFoundException(request.Id);
 
         order.Cancel(request.Data.Comment);
 
@@ -138,7 +153,7 @@ public class OrderService : IOrderService
     public async Task<GetOrderResponseDto> GetOrderAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var order = await _orderQueryRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Заказ {request.Id} не найден.", typeof(Order));
+            ?? throw new OrderNotFoundException(request.Id);
 
         return _mapper.Map<GetOrderResponseDto>(order);
     }

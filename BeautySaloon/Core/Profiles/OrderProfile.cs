@@ -2,6 +2,7 @@
 using BeautySaloon.Core.Dto.Responses.Common;
 using BeautySaloon.Core.Dto.Responses.Order;
 using BeautySaloon.DAL.Entities;
+using BeautySaloon.DAL.Entities.ValueObjects;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 
 namespace BeautySaloon.Core.Profiles;
@@ -14,11 +15,12 @@ public class OrderProfile : Profile
 
         CreateMap<Order, GetOrderResponseDto>()
             .ForMember(dest => dest.Subscriptions, cfg => cfg.MapFrom(src => src.PersonSubscriptions
-                .GroupBy(_ => _.SubscriptionCosmeticService.Subscription.Id)
-                .Select(_ => _.First().SubscriptionCosmeticService.Subscription)));
+                .GroupBy(_ => _.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Id)
+                .Select(_ => _.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot)))
+            .ForMember(dest => dest.Modifier, cfg => cfg.MapFrom(src => src.Modifier));
 
         CreateMap<Person, PersonResponseDto>();
 
-        CreateMap<Subscription, SubscriptionResponseDto>();
+        CreateMap<SubscriptionSnapshot, SubscriptionResponseDto>();
     }
 }

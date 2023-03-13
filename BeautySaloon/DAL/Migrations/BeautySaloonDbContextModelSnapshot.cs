@@ -54,7 +54,9 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("Appointment", (string)null);
+                    b.HasIndex("UserModifierId");
+
+                    b.ToTable("Appointment");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.CosmeticService", b =>
@@ -87,7 +89,10 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CosmeticService", (string)null);
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("CosmeticService");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Order", b =>
@@ -122,7 +127,9 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("Order", (string)null);
+                    b.HasIndex("UserModifierId");
+
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Person", b =>
@@ -159,7 +166,7 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Person", (string)null);
+                    b.ToTable("Person");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.PersonSubscription", b =>
@@ -197,7 +204,7 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasIndex("SubscriptionCosmeticServiceId");
 
-                    b.ToTable("PersonSubscription", (string)null);
+                    b.ToTable("PersonSubscription");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Subscription", b =>
@@ -228,7 +235,10 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subscription", (string)null);
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Subscription");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.SubscriptionCosmeticService", b =>
@@ -261,7 +271,7 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("SubscriptionCosmeticService", (string)null);
+                    b.ToTable("SubscriptionCosmeticService");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.User", b =>
@@ -302,7 +312,10 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User", (string)null);
+                    b.HasIndex("Login")
+                        .IsUnique();
+
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Appointment", b =>
@@ -312,6 +325,14 @@ namespace BeautySaloon.DAL.Migrations
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BeautySaloon.DAL.Entities.User", "Modifier")
+                        .WithMany()
+                        .HasForeignKey("UserModifierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Modifier");
 
                     b.Navigation("Person");
                 });
@@ -324,12 +345,20 @@ namespace BeautySaloon.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BeautySaloon.DAL.Entities.User", "Modifier")
+                        .WithMany()
+                        .HasForeignKey("UserModifierId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Modifier");
+
                     b.Navigation("Person");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Person", b =>
                 {
-                    b.OwnsOne("BeautySaloon.DAL.Entities.Person.Name#BeautySaloon.DAL.Entities.ValueObjects.FullName", "Name", b1 =>
+                    b.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.FullName", "Name", b1 =>
                         {
                             b1.Property<Guid>("PersonId")
                                 .HasColumnType("uuid");
@@ -350,7 +379,7 @@ namespace BeautySaloon.DAL.Migrations
 
                             b1.HasKey("PersonId");
 
-                            b1.ToTable("Person", (string)null);
+                            b1.ToTable("Person");
 
                             b1.WithOwner()
                                 .HasForeignKey("PersonId");
@@ -366,19 +395,100 @@ namespace BeautySaloon.DAL.Migrations
                         .WithMany("PersonSubscriptions")
                         .HasForeignKey("AppointmentId");
 
-                    b.HasOne("BeautySaloon.DAL.Entities.Order", null)
+                    b.HasOne("BeautySaloon.DAL.Entities.Order", "Order")
                         .WithMany("PersonSubscriptions")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeautySaloon.DAL.Entities.SubscriptionCosmeticService", "SubscriptionCosmeticService")
+                    b.HasOne("BeautySaloon.DAL.Entities.SubscriptionCosmeticService", null)
                         .WithMany()
                         .HasForeignKey("SubscriptionCosmeticServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SubscriptionCosmeticService");
+                    b.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.SubscriptionCosmeticServiceSnapshot", "SubscriptionCosmeticServiceSnapshot", b1 =>
+                        {
+                            b1.Property<Guid>("PersonSubscriptionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Count")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("PersonSubscriptionId");
+
+                            b1.ToTable("PersonSubscription");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PersonSubscriptionId");
+
+                            b1.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.CosmeticServiceSnapshot", "CosmeticServiceSnapshot", b2 =>
+                                {
+                                    b2.Property<Guid>("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<string>("Description")
+                                        .IsRequired()
+                                        .HasMaxLength(500)
+                                        .HasColumnType("character varying(500)");
+
+                                    b2.Property<int>("ExecuteTimeInMinutes")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<Guid>("Id")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<string>("Name")
+                                        .IsRequired()
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)");
+
+                                    b2.HasKey("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId");
+
+                                    b2.ToTable("PersonSubscription");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId");
+                                });
+
+                            b1.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.SubscriptionSnapshot", "SubscriptionSnapshot", b2 =>
+                                {
+                                    b2.Property<Guid>("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<Guid>("Id")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int?>("LifeTimeInDays")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<string>("Name")
+                                        .IsRequired()
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)");
+
+                                    b2.Property<decimal>("Price")
+                                        .HasColumnType("numeric");
+
+                                    b2.HasKey("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId");
+
+                                    b2.ToTable("PersonSubscription");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("SubscriptionCosmeticServiceSnapshotPersonSubscriptionId");
+                                });
+
+                            b1.Navigation("CosmeticServiceSnapshot")
+                                .IsRequired();
+
+                            b1.Navigation("SubscriptionSnapshot")
+                                .IsRequired();
+                        });
+
+                    b.Navigation("Order");
+
+                    b.Navigation("SubscriptionCosmeticServiceSnapshot")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.SubscriptionCosmeticService", b =>
@@ -402,7 +512,7 @@ namespace BeautySaloon.DAL.Migrations
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.User", b =>
                 {
-                    b.OwnsOne("BeautySaloon.DAL.Entities.User.Name#BeautySaloon.DAL.Entities.ValueObjects.FullName", "Name", b1 =>
+                    b.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.FullName", "Name", b1 =>
                         {
                             b1.Property<Guid>("UserId")
                                 .HasColumnType("uuid");
@@ -423,7 +533,7 @@ namespace BeautySaloon.DAL.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("User", (string)null);
+                            b1.ToTable("User");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");

@@ -8,7 +8,7 @@ public class GetOrderListRequestDto
 {
     public Guid PersonId { get; init; }
 
-    public string? SearchString { get; init; } = string.Empty;
+    public string SearchString { get; init; } = string.Empty;
 
     public DateTime? StartCreatedOn { get; init; }
 

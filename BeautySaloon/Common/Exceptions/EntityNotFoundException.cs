@@ -1,9 +1,13 @@
-﻿namespace BeautySaloon.Common.Exceptions;
+﻿using BeautySaloon.Common.Exceptions.Abstract;
+using System.Net;
 
-public class EntityNotFoundException : Exception
+namespace BeautySaloon.Common.Exceptions;
+
+public class EntityNotFoundException : BusinessExceptions
 {
-    public EntityNotFoundException(string message, Type entityType)
-        : base($"Запрашиваемая запись типа {entityType.Name} не найдена: {message}")
+    public EntityNotFoundException(string message, Guid entityId)
+        : base(HttpStatusCode.NotFound, message)
     {
+        Data.Add("EntityId", entityId);
     }
 }

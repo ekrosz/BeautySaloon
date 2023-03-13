@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BeautySaloon.Core.Dto.Responses.Common;
 using BeautySaloon.Core.Dto.Responses.User;
 using BeautySaloon.DAL.Entities;
 
@@ -8,5 +9,7 @@ public class UserProfile : Profile
     public UserProfile()
     {
         CreateMap<User, GetUserResponseDto>();
+
+        CreateMap<User, ModifierResponseDto>();
     }
 }

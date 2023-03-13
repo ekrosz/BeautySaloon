@@ -1,5 +1,6 @@
 ﻿using BeautySaloon.Core.Dto.Responses.Common;
 using BeautySaloon.DAL.Entities.Enums;
+using BeautySaloon.DAL.Entities.ValueObjects;
 
 namespace BeautySaloon.Core.Dto.Responses.Appointment;
 
@@ -17,18 +18,7 @@ public record GetAppointmentResponseDto
 
     public PersonResponseDto Person { get; init; } = new();
 
+    public ModifierResponseDto Modifier { get; set; } = new();
+
     public IReadOnlyCollection<PersonSubscriptionResponseDto> Subscriptions { get; init; } = Array.Empty<PersonSubscriptionResponseDto>();
-
-    public record PersonSubscriptionResponseDto
-    {
-        public Guid Id { get; init; }
-
-        public Guid SubscriptionId { get; init; }
-
-        public Guid CosmeticServiceId { get; init; }
-
-        public string SubscriptionName { get; init; } = string.Empty;
-
-        public string CosmeticServiceName { get; init; } = string.Empty;
-    }
 }

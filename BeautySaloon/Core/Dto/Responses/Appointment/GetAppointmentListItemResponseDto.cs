@@ -16,4 +16,6 @@ public record GetAppointmentListItemResponseDto
     public string? Comment { get; init; }
 
     public PersonResponseDto Person { get; init; } = new();
+
+    public ModifierResponseDto Modifier { get; set; } = new();
 }

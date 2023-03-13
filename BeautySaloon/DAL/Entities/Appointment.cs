@@ -35,6 +35,8 @@ public class Appointment : IEntity, IAuditable
 
     public Person Person { get; set; } = default!;
 
+    public User Modifier { get; set; } = default!;
+
     public List<PersonSubscription> PersonSubscriptions { get; set; } = new List<PersonSubscription>();
 
     [JsonIgnore]
@@ -54,8 +56,11 @@ public class Appointment : IEntity, IAuditable
 
     public void AddPersonSubscription(IEnumerable<PersonSubscription> entities)
     {
+        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Paid);
         PersonSubscriptions.Clear();
+
         PersonSubscriptions.AddRange(entities);
+        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.InProgress);
     }
 
     public void Complete(string? comment)
@@ -71,6 +76,7 @@ public class Appointment : IEntity, IAuditable
         ThrowIfFinalStatus();
 
         Comment = comment;
+        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Paid);
         PersonSubscriptions.Clear();
     }
 
@@ -86,6 +92,11 @@ public class Appointment : IEntity, IAuditable
             return AppointmentStatus.NotImplemented;
         }
 
+        if (PersonSubscriptions.Any(x => x.Status == PersonSubscriptionStatus.InProgress))
+        {
+            return AppointmentStatus.InProgress;
+        }
+
         return AppointmentStatus.Completed;
     }
 
@@ -93,12 +104,12 @@ public class Appointment : IEntity, IAuditable
     {
         if (Status == AppointmentStatus.Cancelled)
         {
-            throw new Exception($"Запись {Id} уже была отменена.");
+            throw new AppointmentAlreadyCancelledException();
         }
 
         if (Status == AppointmentStatus.Completed)
         {
-            throw new Exception($"Запись {Id} уже выполнена.");
+            throw new AppointmentAlreadyCompletedException();
         }
     }
 }

@@ -1,9 +1,13 @@
-﻿namespace BeautySaloon.Common.Exceptions;
+﻿using BeautySaloon.Common.Exceptions.Abstract;
+using System.Net;
 
-public class EntityAlreadyExistException : Exception
+namespace BeautySaloon.Common.Exceptions;
+
+public class EntityAlreadyExistException : BusinessExceptions
 {
-    public EntityAlreadyExistException(string message, Type entityType)
-        : base($"Запись типа {entityType.Name} уже существует: {message}")
+    public EntityAlreadyExistException(string message, string propertyName, object value)
+        : base(HttpStatusCode.Conflict, message)
     {
+        Data.Add(propertyName, value);
     }
 }

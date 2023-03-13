@@ -12,6 +12,9 @@ public class UserConfiguration : EntityConfiguration<User>
             .HasMaxLength(255)
             .IsRequired();
 
+        builder.HasIndex(x => x.Login)
+            .IsUnique();
+
         builder.Property(x => x.Password)
             .HasMaxLength(255)
             .IsRequired();

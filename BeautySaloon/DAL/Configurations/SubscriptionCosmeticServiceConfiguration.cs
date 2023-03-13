@@ -8,6 +8,9 @@ public class SubscriptionCosmeticServiceConfiguration : EntityConfiguration<Subs
 {
     public override void Configure(EntityTypeBuilder<SubscriptionCosmeticService> builder)
     {
+        builder.Property(x => x.Count)
+            .IsRequired();
+
         builder.Navigation(x => x.CosmeticService)
             .AutoInclude();
 

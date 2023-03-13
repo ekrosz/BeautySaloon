@@ -17,6 +17,9 @@ public class CosmeticServiceConfiguration : EntityConfiguration<CosmeticService>
             .HasMaxLength(100)
             .IsRequired();
 
+        builder.HasIndex(x => x.Name)
+            .IsUnique();
+
         builder.Property(x => x.ExecuteTimeInMinutes)
             .IsRequired();
 

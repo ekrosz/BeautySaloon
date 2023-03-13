@@ -41,7 +41,7 @@ public class CosmeticServiceService : ICosmeticServiceService
 
         if (isExistName)
         {
-            throw new EntityAlreadyExistException($"Косметическая услуга {request.Name} уже существует.", typeof(CosmeticService));
+            throw new CosmeticServiceAlreadyExistException(nameof(request.Name), request.Name);
         }
 
         var entity = new CosmeticService(
@@ -56,7 +56,7 @@ public class CosmeticServiceService : ICosmeticServiceService
     public async Task DeleteCosmeticServiceAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var entity = await _cosmeticServiceWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Косметическая услуга {request.Id} не найдена.", typeof(CosmeticService));
+            ?? throw new CosmeticServiceNotFoundException(request.Id);
 
         _cosmeticServiceWriteRepository.Delete(entity);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -65,7 +65,7 @@ public class CosmeticServiceService : ICosmeticServiceService
     public async Task<GetCosmeticServiceResponseDto> GetCosmeticServiceAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var cosmeticService = await _cosmeticServiceQueryRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Косметическая услуга {request.Id} не найдена.", typeof(CosmeticService));
+            ?? throw new CosmeticServiceNotFoundException(request.Id);
 
         return _mapper.Map<GetCosmeticServiceResponseDto>(cosmeticService);
     }
@@ -90,11 +90,11 @@ public class CosmeticServiceService : ICosmeticServiceService
 
         if (isExistName)
         {
-            throw new EntityAlreadyExistException($"Косметическая услуга {request.Data.Name} уже существует.", typeof(CosmeticService));
+            throw new CosmeticServiceAlreadyExistException(nameof(request.Data.Name), request.Data.Name);
         }
 
         var entity = await _cosmeticServiceWriteRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new EntityNotFoundException($"Косметическая услуга {request.Id} не найдена.", typeof(CosmeticService));
+            ?? throw new CosmeticServiceNotFoundException(request.Id);
 
         entity.Update(
             request.Data.Name,

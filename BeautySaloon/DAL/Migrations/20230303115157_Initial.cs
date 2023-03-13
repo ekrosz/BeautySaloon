@@ -37,7 +37,6 @@ namespace BeautySaloon.DAL.Migrations
                     BirthDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     PhoneNumber = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false),
-                    Comment = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -87,72 +86,16 @@ namespace BeautySaloon.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Appointment",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PersonId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AppointmentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DurationInMinutes = table.Column<int>(type: "integer", nullable: false),
-                    Comment = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserModifierId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Appointment", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Appointment_Person_PersonId",
-                        column: x => x.PersonId,
-                        principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Order",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PersonId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Cost = table.Column<decimal>(type: "numeric", nullable: false),
-                    PaymentMethod = table.Column<int>(type: "integer", nullable: false),
-                    Comment = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserModifierId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PersonId1 = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Order", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Order_Person_PersonId",
-                        column: x => x.PersonId,
-                        principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Order_Person_PersonId1",
-                        column: x => x.PersonId1,
-                        principalTable: "Person",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SubscriptionCosmeticService",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CosmeticServiceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SubscriptionId = table.Column<Guid>(type: "uuid", nullable: false),
                     Count = table.Column<int>(type: "integer", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserModifierId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SubscriptionId1 = table.Column<Guid>(type: "uuid", nullable: false)
+                    SubscriptionId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -169,10 +112,64 @@ namespace BeautySaloon.DAL.Migrations
                         principalTable: "Subscription",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Appointment",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AppointmentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DurationInMinutes = table.Column<int>(type: "integer", nullable: false),
+                    Comment = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserModifierId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PersonId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Appointment", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SubscriptionCosmeticService_Subscription_SubscriptionId1",
-                        column: x => x.SubscriptionId1,
-                        principalTable: "Subscription",
+                        name: "FK_Appointment_Person_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "Person",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Appointment_User_UserModifierId",
+                        column: x => x.UserModifierId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Order",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Cost = table.Column<decimal>(type: "numeric", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "integer", nullable: false),
+                    Comment = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserModifierId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PersonId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Order_Person_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "Person",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Order_User_UserModifierId",
+                        column: x => x.UserModifierId,
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -183,22 +180,30 @@ namespace BeautySaloon.DAL.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SubscriptionCosmeticServiceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AppointmentId = table.Column<Guid>(type: "uuid", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
+                    SubscriptionCosmeticServiceSnapshot_SubscriptionSnapshot_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SubscriptionCosmeticServiceSnapshot_SubscriptionSnapshot_Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SubscriptionCosmeticServiceSnapshot_SubscriptionSnapshot_Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    SubscriptionCosmeticServiceSnapshot_SubscriptionSnapshot_LifeT = table.Column<int>(name: "SubscriptionCosmeticServiceSnapshot_SubscriptionSnapshot_LifeT~", type: "integer", nullable: true),
+                    SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Na = table.Column<string>(name: "SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Na~", type: "character varying(100)", maxLength: 100, nullable: false),
+                    SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_De = table.Column<string>(name: "SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_De~", type: "character varying(500)", maxLength: 500, nullable: false),
+                    SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Ex = table.Column<int>(name: "SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Ex~", type: "integer", nullable: false),
+                    SubscriptionCosmeticServiceSnapshot_Count = table.Column<int>(type: "integer", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserModifierId = table.Column<Guid>(type: "uuid", nullable: false)
+                    UserModifierId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AppointmentId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersonSubscription", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PersonSubscription_Appointment_OrderId",
-                        column: x => x.OrderId,
+                        name: "FK_PersonSubscription_Appointment_AppointmentId",
+                        column: x => x.AppointmentId,
                         principalTable: "Appointment",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PersonSubscription_Order_OrderId",
                         column: x => x.OrderId,
@@ -219,14 +224,30 @@ namespace BeautySaloon.DAL.Migrations
                 column: "PersonId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Appointment_UserModifierId",
+                table: "Appointment",
+                column: "UserModifierId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CosmeticService_Name",
+                table: "CosmeticService",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Order_PersonId",
                 table: "Order",
                 column: "PersonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Order_PersonId1",
+                name: "IX_Order_UserModifierId",
                 table: "Order",
-                column: "PersonId1");
+                column: "UserModifierId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PersonSubscription_AppointmentId",
+                table: "PersonSubscription",
+                column: "AppointmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersonSubscription_OrderId",
@@ -239,6 +260,12 @@ namespace BeautySaloon.DAL.Migrations
                 column: "SubscriptionCosmeticServiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Subscription_Name",
+                table: "Subscription",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SubscriptionCosmeticService_CosmeticServiceId",
                 table: "SubscriptionCosmeticService",
                 column: "CosmeticServiceId");
@@ -249,18 +276,16 @@ namespace BeautySaloon.DAL.Migrations
                 column: "SubscriptionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubscriptionCosmeticService_SubscriptionId1",
-                table: "SubscriptionCosmeticService",
-                column: "SubscriptionId1");
+                name: "IX_User_Login",
+                table: "User",
+                column: "Login",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "PersonSubscription");
-
-            migrationBuilder.DropTable(
-                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Appointment");
@@ -273,6 +298,9 @@ namespace BeautySaloon.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Person");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "CosmeticService");

@@ -1,4 +1,5 @@
 ﻿using BeautySaloon.WebApi.Extensions;
+using BeautySaloon.WebApi.Middlewares;
 using System.Text.Json.Serialization;
 
 namespace BeautySaloon.WebApi;
@@ -20,10 +21,8 @@ public class Startup
         services.AddSwaggerGen();
 
         services.AddAuthorization(Configuration);
-
         services.AddDatabaseLayer(Configuration);
-        services.AddBusinessLayer();
-
+        services.AddBusinessLayer(Configuration);
         services.AddProviders();
     }
 
@@ -44,6 +43,8 @@ public class Startup
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
+
+        app.UseMiddleware<CustomExceptionHandlingMiddleware>();
 
         app.UseRouting();
 

@@ -26,6 +26,14 @@ public class OrderConfiguration : EntityConfiguration<Order>
         builder.Navigation(x => x.PersonSubscriptions)
             .AutoInclude();
 
+        builder.HasOne(x => x.Modifier)
+            .WithMany()
+            .HasForeignKey(x => x.UserModifierId)
+            .IsRequired();
+
+        builder.Navigation(x => x.Modifier)
+            .AutoInclude();
+
         builder.Navigation(x => x.Person)
             .AutoInclude();
 

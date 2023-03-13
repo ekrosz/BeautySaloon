@@ -37,7 +37,7 @@ public class AuthService : IAuthService
     public async Task<AuthorizeResponseDto> AuthorizeByCredentialsAsync(AuthorizeByCredentialsRequestDto request, CancellationToken cancellationToken = default)
     {
         var user = await _userWriteRepository.GetFirstAsync(x => x.Login.Equals(request.Login), cancellationToken)
-            ?? throw new EntityNotFoundException($"Пользователь {request.Login} не найден.", typeof(User));
+            ?? throw new InvalidUserCredentialsException();
 
         if (!user.IsValidPassword(request.Password))
         {
@@ -60,7 +60,7 @@ public class AuthService : IAuthService
         }
 
         var user = await _userWriteRepository.GetByIdAsync(refreshData.UserId, cancellationToken)
-            ?? throw new EntityNotFoundException($"Пользователь {refreshData.UserId} не найден.", typeof(User));
+            ?? throw new UserNotFoundException(refreshData.UserId);
 
         if (!user.IsValidRefreshSecret(refreshData.RefreshSecretKey))
         {
@@ -94,7 +94,7 @@ public class AuthService : IAuthService
         return jwtTokenHandler.CreateEncodedJwt(jwtDescription);
     }
 
-    private async Task<string> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken = default)
+    private async System.Threading.Tasks.Task<string> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken = default)
     {
         var refreshSecret = user.GenerateNewRefreshSecret();
 

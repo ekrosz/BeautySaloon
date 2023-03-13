@@ -8,5 +8,9 @@ public enum PersonSubscriptionStatus
 
     Cancelled = 3,
 
-    Completed = 4
+    InProgress = 4,
+
+    Completed = 5,
+
+    Overdue = 6
 }

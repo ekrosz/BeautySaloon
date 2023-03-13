@@ -1,9 +1,12 @@
-﻿namespace BeautySaloon.Common.Exceptions;
+﻿using BeautySaloon.Common.Exceptions.Abstract;
+using System.Net;
 
-public class OrderAlreadyCancelledException : Exception
+namespace BeautySaloon.Common.Exceptions;
+
+public class OrderAlreadyCancelledException : BusinessExceptions
 {
-    public OrderAlreadyCancelledException(Guid orderId)
-        : base($"Заказ {orderId} уже отменен")
+    public OrderAlreadyCancelledException()
+        : base(HttpStatusCode.Conflict, $"Данный заказ уже отменен.")
     {
     }
 }
