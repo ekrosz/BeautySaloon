@@ -1,12 +1,12 @@
-﻿using BeautySaloon.Common;
-using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Order;
-using BeautySaloon.Core.Dto.Responses.Order;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Order;
+using BeautySaloon.Api.Dto.Responses.Order;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeautySaloon.WebApi.Controllers;
@@ -14,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/orders")]
 [ApiController]
-public class OrdersController : ControllerBase
+public class OrdersController : ControllerBase, IOrderClient
 {
     private readonly IOrderService _orderService;
 

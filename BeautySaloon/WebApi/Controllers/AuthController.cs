@@ -1,5 +1,6 @@
-﻿using BeautySaloon.Core.Dto.Requests.Auth;
-using BeautySaloon.Core.Dto.Responses.Auth;
+﻿using BeautySaloon.Api.Dto.Requests.Auth;
+using BeautySaloon.Api.Dto.Responses.Auth;
+using BeautySaloon.Api.Services;
 using BeautySaloon.Core.Services.Contracts;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ namespace BeautySaloon.WebApi.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController : ControllerBase, IAuthClient
 {
     private readonly IAuthService _authService;
 
@@ -25,7 +26,7 @@ public class AuthController : ControllerBase
         _authorizeByRefreshTokenValidator = authorizeByRefreshTokenValidator;
     }
 
-    [HttpPost("/auth/credentials")]
+    [HttpPost("credentials")]
     public async Task<AuthorizeResponseDto> AuthorizeAsync([FromBody] AuthorizeByCredentialsRequestDto request, CancellationToken cancellationToken = default)
     {
         await _authorizeByCredentialsValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -33,7 +34,7 @@ public class AuthController : ControllerBase
         return await _authService.AuthorizeByCredentialsAsync(request, cancellationToken);
     }
 
-    [HttpPost("/auth/refresh")]
+    [HttpPost("refresh")]
     public async Task<AuthorizeResponseDto> AuthorizeAsync([FromBody] AuthorizeByRefreshTokenRequestDto request, CancellationToken cancellationToken = default)
     {
         await _authorizeByRefreshTokenValidator.ValidateAndThrowAsync(request, cancellationToken);

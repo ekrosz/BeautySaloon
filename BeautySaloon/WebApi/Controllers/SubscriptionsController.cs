@@ -1,7 +1,8 @@
-﻿using BeautySaloon.Common;
-using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Subscription;
-using BeautySaloon.Core.Dto.Responses.Subscription;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Subscription;
+using BeautySaloon.Api.Dto.Responses.Subscription;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using FluentValidation;
@@ -13,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/subscriptions")]
 [ApiController]
-public class SubscriptionsController : ControllerBase
+public class SubscriptionsController : ControllerBase, ISubscriptionClient
 {
     private readonly ISubscriptionService _personService;
 

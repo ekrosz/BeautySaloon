@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using BeautySaloon.Core.Dto.Responses.Common;
+﻿using BeautySaloon.Api.Dto.Responses.Common;
+using AutoMapper;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.ValueObjects;
 

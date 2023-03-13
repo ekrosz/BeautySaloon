@@ -1,8 +1,8 @@
-﻿using BeautySaloon.Common;
-using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Person;
-using BeautySaloon.Core.Dto.Responses.Common;
-using BeautySaloon.Core.Dto.Responses.Person;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Person;
+using BeautySaloon.Api.Dto.Responses.Person;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using FluentValidation;
@@ -14,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/persons")]
 [ApiController]
-public class PersonsController : ControllerBase
+public class PersonsController : ControllerBase, IPersonClient
 {
     private readonly IPersonService _personService;
 
@@ -81,15 +81,5 @@ public class PersonsController : ControllerBase
         await _getPersonListRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
         return await _personService.GetPersonListAsync(request, cancellationToken);
-    }
-
-    [HttpGet("{id}/subscriptions")]
-    public async Task<ItemListResponseDto<PersonSubscriptionResponseDto>> GetSubscriptionListAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
-    {
-        var requestById = new ByIdRequestDto(id);
-
-        await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
-
-        return await _personService.GetPersonSubscriptionListAsync(requestById, cancellationToken);
     }
 }

@@ -1,12 +1,12 @@
-﻿using BeautySaloon.Common;
-using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Appointment;
-using BeautySaloon.Core.Dto.Responses.Appointment;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Appointment;
+using BeautySaloon.Api.Dto.Responses.Appointment;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeautySaloon.WebApi.Controllers;
@@ -14,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/appointments")]
 [ApiController]
-public class AppointmentsController : ControllerBase
+public class AppointmentsController : ControllerBase, IAppointmentClient
 {
     private readonly IAppointmentService _orderService;
 

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Entities;
-using BeautySaloon.Core.Dto.Responses.Subscription;
-using BeautySaloon.Core.Dto.Responses.Common;
+using BeautySaloon.Api.Dto.Responses.Subscription;
+using BeautySaloon.Api.Dto.Responses.Common;
 
 namespace BeautySaloon.Core.Profiles;
 

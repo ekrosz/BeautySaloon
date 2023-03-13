@@ -1,6 +1,6 @@
-﻿using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Appointment;
-using BeautySaloon.Core.Dto.Responses.Appointment;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Appointment;
+using BeautySaloon.Api.Dto.Responses.Appointment;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 
 namespace BeautySaloon.Core.Services.Contracts;

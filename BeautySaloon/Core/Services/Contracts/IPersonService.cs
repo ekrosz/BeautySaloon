@@ -1,7 +1,7 @@
-﻿using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Person;
-using BeautySaloon.Core.Dto.Responses.Common;
-using BeautySaloon.Core.Dto.Responses.Person;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Person;
+using BeautySaloon.Api.Dto.Responses.Common;
+using BeautySaloon.Api.Dto.Responses.Person;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 
 namespace BeautySaloon.Core.Services.Contracts;

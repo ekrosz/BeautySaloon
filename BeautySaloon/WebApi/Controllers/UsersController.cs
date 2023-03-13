@@ -1,8 +1,8 @@
-﻿using BeautySaloon.Common;
-using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Auth;
-using BeautySaloon.Core.Dto.Requests.User;
-using BeautySaloon.Core.Dto.Responses.User;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.User;
+using BeautySaloon.Api.Dto.Responses.User;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +13,7 @@ namespace BeautySaloon.WebApi.Controllers;
 //[Authorize(Roles = Constants.Roles.Admin)]
 [Route("api/users")]
 [ApiController]
-public class UsersController : ControllerBase
+public class UsersController : ControllerBase, IUserClient
 {
     private readonly IUserService _userService;
 

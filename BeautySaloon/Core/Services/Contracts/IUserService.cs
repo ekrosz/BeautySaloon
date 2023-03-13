@@ -1,6 +1,6 @@
-﻿using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.User;
-using BeautySaloon.Core.Dto.Responses.User;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.User;
+using BeautySaloon.Api.Dto.Responses.User;
 
 namespace BeautySaloon.Core.Services.Contracts;
 

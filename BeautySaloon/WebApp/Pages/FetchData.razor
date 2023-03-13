@@ -2,14 +2,15 @@
 
 <PageTitle>Weather forecast</PageTitle>
 
-@using WebApp.Data
-@inject WeatherForecastService ForecastService
+@using BeautySaloon.Api.Dto.Common;
+@using BeautySaloon.Api.Services;
+@inject IUserClient UserClient
 
 <h1>Weather forecast</h1>
 
 <p>This component demonstrates fetching data from a service.</p>
 
-@if (forecasts == null)
+@if (data == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -18,20 +19,20 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+                <th>ФИО</th>
+                <th>Логин</th>
+                <th>Телефон</th>
+                <th>Эл. почта</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var item in data.Items)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <td>@item.Name.ConcatedName</td>
+                    <td>@item.Login</td>
+                    <td>@item.PhoneNumber</td>
+                    <td>@item.Email</td>
                 </tr>
             }
         </tbody>
@@ -39,10 +40,10 @@ else
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private ItemListResponseDto<BeautySaloon.Api.Dto.Responses.User.GetUserResponseDto>? data;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        data = await UserClient.GetListAsync(new BeautySaloon.Api.Dto.Requests.User.GetUserListRequestDto(null), CancellationToken.None);
     }
 }

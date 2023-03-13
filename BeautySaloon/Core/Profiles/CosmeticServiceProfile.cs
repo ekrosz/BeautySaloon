@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using BeautySaloon.Core.Dto.Responses.CosmeticService;
+﻿using BeautySaloon.Api.Dto.Responses.CosmeticService;
+using AutoMapper;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 

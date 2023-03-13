@@ -1,7 +1,8 @@
-﻿using BeautySaloon.Common;
-using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.CosmeticService;
-using BeautySaloon.Core.Dto.Responses.CosmeticService;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.CosmeticService;
+using BeautySaloon.Api.Dto.Responses.CosmeticService;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using FluentValidation;
@@ -13,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/cosmetic-services")]
 [ApiController]
-public class CosmeticServicesController : ControllerBase
+public class CosmeticServicesController : ControllerBase, ICosmeticServiceClient
 {
     private readonly ICosmeticServiceService _cosmeticServiceService;
 

@@ -1,7 +1,7 @@
-﻿using BeautySaloon.Common.Exceptions;
+﻿using BeautySaloon.Api.Dto.Requests.Auth;
+using BeautySaloon.Api.Dto.Responses.Auth;
+using BeautySaloon.Common.Exceptions;
 using BeautySaloon.Common.Utils;
-using BeautySaloon.Core.Dto.Requests.Auth;
-using BeautySaloon.Core.Dto.Responses.Auth;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.Core.Settings;
 using BeautySaloon.DAL.Entities;

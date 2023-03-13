@@ -1,6 +1,5 @@
-﻿using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Auth;
-using BeautySaloon.Core.Dto.Responses.Auth;
+﻿using BeautySaloon.Api.Dto.Requests.Auth;
+using BeautySaloon.Api.Dto.Responses.Auth;
 
 namespace BeautySaloon.Core.Services.Contracts;
 

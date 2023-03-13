@@ -1,10 +1,10 @@
-﻿using AutoMapper;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Person;
+using BeautySaloon.Api.Dto.Responses.Common;
+using BeautySaloon.Api.Dto.Responses.Person;
+using AutoMapper;
 using BeautySaloon.Common.Exceptions;
 using BeautySaloon.Common.Utils;
-using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Person;
-using BeautySaloon.Core.Dto.Responses.Common;
-using BeautySaloon.Core.Dto.Responses.Person;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.Enums;

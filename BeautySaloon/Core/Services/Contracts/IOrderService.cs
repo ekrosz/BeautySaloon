@@ -1,6 +1,6 @@
-﻿using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Order;
-using BeautySaloon.Core.Dto.Responses.Order;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Order;
+using BeautySaloon.Api.Dto.Responses.Order;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 
 namespace BeautySaloon.Core.Services.Contracts;

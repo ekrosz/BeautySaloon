@@ -1,11 +1,10 @@
-﻿using AutoMapper;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Appointment;
+using BeautySaloon.Api.Dto.Responses.Appointment;
+using AutoMapper;
 using BeautySaloon.Common.Exceptions;
-using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Appointment;
-using BeautySaloon.Core.Dto.Responses.Appointment;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities;
-using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;

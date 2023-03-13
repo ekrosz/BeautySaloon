@@ -1,6 +1,6 @@
-﻿using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Subscription;
-using BeautySaloon.Core.Dto.Responses.Subscription;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Subscription;
+using BeautySaloon.Api.Dto.Responses.Subscription;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 
 namespace BeautySaloon.Core.Services.Contracts;

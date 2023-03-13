@@ -1,6 +1,6 @@
-﻿using AutoMapper;
-using BeautySaloon.Core.Dto.Responses.Common;
-using BeautySaloon.Core.Dto.Responses.User;
+﻿using BeautySaloon.Api.Dto.Responses.Common;
+using BeautySaloon.Api.Dto.Responses.User;
+using AutoMapper;
 using BeautySaloon.DAL.Entities;
 
 namespace BeautySaloon.Core.Profiles;

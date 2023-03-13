@@ -1,8 +1,8 @@
-﻿using AutoMapper;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Subscription;
+using BeautySaloon.Api.Dto.Responses.Subscription;
+using AutoMapper;
 using BeautySaloon.Common.Exceptions;
-using BeautySaloon.Core.Dto.Common;
-using BeautySaloon.Core.Dto.Requests.Subscription;
-using BeautySaloon.Core.Dto.Responses.Subscription;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;

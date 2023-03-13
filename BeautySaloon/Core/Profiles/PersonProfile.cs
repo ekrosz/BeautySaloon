@@ -1,8 +1,7 @@
-﻿using AutoMapper;
-using BeautySaloon.Core.Dto.Responses.Common;
-using BeautySaloon.Core.Dto.Responses.Person;
+﻿using BeautySaloon.Api.Dto.Responses.Common;
+using BeautySaloon.Api.Dto.Responses.Person;
+using AutoMapper;
 using BeautySaloon.DAL.Entities;
-using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 

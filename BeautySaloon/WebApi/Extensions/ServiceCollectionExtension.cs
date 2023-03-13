@@ -1,5 +1,4 @@
-﻿using BeautySaloon.Core.Dto.Requests.Auth;
-using BeautySaloon.Core.Jobs;
+﻿using BeautySaloon.Api.Dto.Requests.Auth;
 using BeautySaloon.Core.Profiles;
 using BeautySaloon.Core.Services;
 using BeautySaloon.Core.Services.Contracts;
@@ -43,7 +42,7 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddBusinessLayer(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddBusinessLayer(this IServiceCollection services)
     {
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
@@ -52,10 +51,6 @@ public static class ServiceCollectionExtension
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
-
-        services.AddHostedService<RefreshPersonSubscriptionStatusJob>();
-
-        services.Configure<BLayerSettings>(configuration.GetSection(nameof(BLayerSettings)));
 
         services.AddValidatorsFromAssembly(typeof(AuthorizeByCredentialsRequestValidator).Assembly);
         services.AddAutoMapper(typeof(UserProfile).Assembly);
