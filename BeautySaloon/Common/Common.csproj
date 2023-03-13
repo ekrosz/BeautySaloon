@@ -14,8 +14,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.14" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dto\" />
-  </ItemGroup>
-
 </Project>
