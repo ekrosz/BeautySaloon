@@ -14,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/subscriptions")]
 [ApiController]
-public class SubscriptionsController : ControllerBase, ISubscriptionClient
+public class SubscriptionsController : ControllerBase, ISubscriptionHttpClient
 {
     private readonly ISubscriptionService _personService;
 

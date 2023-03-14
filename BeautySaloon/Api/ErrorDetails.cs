@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Net;
 
-namespace BeautySaloon.Common.Exceptions.Abstract;
+namespace BeautySaloon.Api;
 
 public record ErrorDetails
 {

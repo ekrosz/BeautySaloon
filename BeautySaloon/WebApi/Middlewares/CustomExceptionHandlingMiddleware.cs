@@ -1,4 +1,6 @@
-﻿using BeautySaloon.Common.Exceptions.Abstract;
+﻿using BeautySaloon.Api;
+using BeautySaloon.Common.Exceptions.Abstract;
+using FluentValidation;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -34,6 +36,19 @@ public class CustomExceptionHandlingMiddleware
                     errorDetails = new ErrorDetails
                     {
                         StatusCode = e.StatusCode,
+                        ErrorMessage = e.Message,
+                        ErrorType = e.GetType().Name,
+                        ErrorCatrgory = e.GetType().BaseType!.Name,
+                        Data = e.Data
+                    };
+
+                    break;
+                case ValidationException e:
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                    errorDetails = new ErrorDetails
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
                         ErrorMessage = e.Message,
                         ErrorType = e.GetType().Name,
                         ErrorCatrgory = e.GetType().BaseType!.Name,

@@ -14,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/persons")]
 [ApiController]
-public class PersonsController : ControllerBase, IPersonClient
+public class PersonsController : ControllerBase, IPersonHttpClient
 {
     private readonly IPersonService _personService;
 

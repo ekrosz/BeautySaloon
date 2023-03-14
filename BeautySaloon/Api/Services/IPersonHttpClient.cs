@@ -6,7 +6,7 @@ using Refit;
 namespace BeautySaloon.Api.Services;
 
 [Headers("Content-Type: application/json")]
-public interface IPersonClient
+public interface IPersonHttpClient
 {
     [Post("/api/persons")]
     Task CreateAsync([Body] CreatePersonRequestDto request, CancellationToken cancellationToken = default);

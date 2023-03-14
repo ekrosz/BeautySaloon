@@ -6,7 +6,7 @@ using Refit;
 namespace BeautySaloon.Api.Services;
 
 [Headers("Content-Type: application/json")]
-public interface IUserClient
+public interface IUserHttpClient
 {
     [Post("/api/users")]
     Task CreateAsync([Body] CreateUserRequestDto request, CancellationToken cancellationToken = default);

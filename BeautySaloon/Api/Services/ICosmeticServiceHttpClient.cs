@@ -6,7 +6,7 @@ using Refit;
 namespace BeautySaloon.Api.Services;
 
 [Headers("Content-Type: application/json")]
-public interface ICosmeticServiceClient
+public interface ICosmeticServiceHttpClient
 {
     [Get("/api/cosmetic-services")]
     Task<PageResponseDto<GetCosmeticServiceResponseDto>> GetListAsync([Query] GetCosmeticServiceListRequestDto request, CancellationToken cancellationToken = default);

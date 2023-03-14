@@ -14,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/orders")]
 [ApiController]
-public class OrdersController : ControllerBase, IOrderClient
+public class OrdersController : ControllerBase, IOrderHttpClient
 {
     private readonly IOrderService _orderService;
 

@@ -5,7 +5,7 @@ using Refit;
 namespace BeautySaloon.Api.Services;
 
 [Headers("Content-Type: application/json")]
-public interface IAuthClient
+public interface IAuthHttpClient
 {
     [Post("/api/auth/credentials")]
     Task<AuthorizeResponseDto> AuthorizeAsync([Body] AuthorizeByCredentialsRequestDto request, CancellationToken cancellationToken = default);

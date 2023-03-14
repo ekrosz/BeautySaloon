@@ -4,7 +4,10 @@
 
 @using BeautySaloon.Api.Dto.Common;
 @using BeautySaloon.Api.Services;
-@inject IUserClient UserClient
+@using WebApp.Handlers
+@using Radzen
+@inject IUserHttpClient UserClient
+@inject NotificationService Notifier;
 
 <h1>Weather forecast</h1>
 
@@ -44,6 +47,19 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        data = await UserClient.GetListAsync(new BeautySaloon.Api.Dto.Requests.User.GetUserListRequestDto(null), CancellationToken.None);
+        try
+        {
+            data = await UserClient.GetListAsync(new BeautySaloon.Api.Dto.Requests.User.GetUserListRequestDto(null), CancellationToken.None);
+        }
+        catch (CustomApiException ex)
+        {
+            Notifier.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = ex.Message,
+                Detail = ex.Details.ErrorMessage,
+                Duration = 4000
+            });
+        }
     }
 }

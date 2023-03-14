@@ -1,5 +1,7 @@
 using BeautySaloon.Api.Services;
+using Radzen;
 using Refit;
+using WebApp.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +9,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddRefitClient<IUserClient>()
-    .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"));
+builder.Services.AddTransient<CustomRefitErrorHandler>();
+builder.Services.AddTransient<TokenStorageHandler>();
+builder.Services.AddTransient<HeaderPropagationHandler>();
+
+builder.Services.AddSingleton<ITokenStorage, TokenStorage>();
+
+builder.Services.AddRefitClient<IUserHttpClient>()
+    .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
+    .AddHttpMessageHandler<CustomRefitErrorHandler>()
+    .AddHttpMessageHandler<HeaderPropagationHandler>();
+
+builder.Services.AddRefitClient<IAuthHttpClient>()
+    .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
+    .AddHttpMessageHandler<CustomRefitErrorHandler>()
+    .AddHttpMessageHandler<TokenStorageHandler>();
+
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<DialogService>();
 
 var app = builder.Build();
 

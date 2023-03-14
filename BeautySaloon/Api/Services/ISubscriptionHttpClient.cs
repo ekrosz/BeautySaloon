@@ -6,7 +6,7 @@ using Refit;
 namespace BeautySaloon.Api.Services;
 
 [Headers("Content-Type: application/json")]
-public interface ISubscriptionClient
+public interface ISubscriptionHttpClient
 {
     [Post("/api/subscriptions")]
     Task CreateAsync([Body] CreateSubscriptionRequestDto request, CancellationToken cancellationToken = default);

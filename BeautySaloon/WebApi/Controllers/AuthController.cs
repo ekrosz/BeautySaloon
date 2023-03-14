@@ -9,7 +9,7 @@ namespace BeautySaloon.WebApi.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthController : ControllerBase, IAuthClient
+public class AuthController : ControllerBase, IAuthHttpClient
 {
     private readonly IAuthService _authService;
 
