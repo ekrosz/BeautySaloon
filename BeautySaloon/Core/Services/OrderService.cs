@@ -62,14 +62,14 @@ public class OrderService : IOrderService
         var order = new Order(subscriptions.Sum(x => x.Price), request.Comment);
 
         var personSubscriptions = subscriptions.SelectMany(x => x.SubscriptionCosmeticServices)
-            .Select(x => new PersonSubscription(
+            .SelectMany(x => Enumerable.Range(0, x.Count).Select(_ => new PersonSubscription(
                 x.Id,
                 new SubscriptionCosmeticServiceSnapshot
                 {
                     SubscriptionSnapshot = _mapper.Map<SubscriptionSnapshot>(x.Subscription),
                     CosmeticServiceSnapshot = _mapper.Map<CosmeticServiceSnapshot>(x.CosmeticService),
                     Count = x.Count
-                }))
+                })))
             .ToArray();
 
         order.AddPersonSubscriptions(personSubscriptions);
