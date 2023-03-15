@@ -1,0 +1,157 @@
+﻿@using BeautySaloon.Api.Dto.Common;
+@using BeautySaloon.Api.Dto.Requests.User
+@using BeautySaloon.Api.Dto.Responses.User
+@using BeautySaloon.Api.Services;
+@using WebApp.Handlers
+@using BeautySaloon.DAL.Entities.Enums;
+@using Radzen;
+@using AutoMapper;
+
+@inject IUserHttpClient _userClient;
+@inject IMapper _mapper;
+@inject NotificationService _notificationService;
+@inject NavigationManager _navigationManager;
+@inject DialogService _dialogService;
+
+@if(_updateUserRequest == null)
+{
+    <p><em>Загрузка...</em></p>
+}
+else
+{
+    <RadzenTemplateForm TItem="UpdateUserRequestDto" Data=@_updateUserRequest Submit=@OnAccept>
+        <div class="row px-3">
+            <div class="col-5 px-0">Имя</div>
+            <div class="col-7 px-0">
+                <RadzenTextBox Trim="true" Name="FirstName" Placeholder="Имя" @bind-Value=@_updateUserRequest.Name.FirstName />
+                <RadzenRequiredValidator Component="FirstName" Text="Обязательное поле" Style="position: absolute" />
+            </div>
+        </div><br>
+
+        <div class="row px-3">
+            <div class="col-5 px-0">Фамилия</div>
+            <div class="col-7 px-0">
+                <RadzenTextBox Trim="true" Name="LastName" Placeholder="Фамилия" @bind-Value=@_updateUserRequest.Name.LastName />
+                <RadzenRequiredValidator Component="LastName" Text="Обязательное поле" Style="position: absolute" />
+            </div>
+        </div><br>
+
+        <div class="row px-3">
+            <div class="col-5 px-0">Отчество</div>
+            <div class="col-7 px-0">
+                <RadzenTextBox Trim="true" Name="MiddleName" Placeholder="Имя" @bind-Value=@_updateUserRequest.Name.MiddleName />
+            </div>
+        </div><br>
+
+        <div class="row px-3">
+            <div class="col-5 px-0">Роль</div>
+            <div class="col-7 px-0">
+                <RadzenDropDown Placeholder="Роль" @bind-Value=@_updateUserRequest.Role
+                            Data=@_roles
+                            TextProperty="Value"
+                            ValueProperty="Key" />
+            </div>
+        </div><br>
+
+        <div class="row px-3">
+            <div class="col-5 px-0">Логин</div>
+            <div class="col-7 px-0">
+                <RadzenTextBox Trim="true" Name="Login" Placeholder="Логин" @bind-Value=@_updateUserRequest.Login />
+                <RadzenRequiredValidator Component="Login" Text="Обязательное поле" Style="position: absolute" />
+            </div>
+        </div><br>
+
+        <div class="row px-3">
+            <div class="col-5 px-0">Пароль</div>
+            <div class="col-7 px-0">
+                <RadzenTextBox Trim="true" Name="Password" Placeholder="Пароль" @bind-Value=@_updateUserRequest.Password />
+                <RadzenRequiredValidator Component="Password" Text="Обязательное поле" Style="position: absolute" />
+            </div>
+        </div><br>
+
+        <div class="row px-3">
+            <div class="col-5 px-0">Телефон</div>
+            <div class="col-7 px-0">
+                <RadzenTextBox Trim="true" Name="PhoneNumber" Placeholder="Телефон" @bind-Value=@_updateUserRequest.PhoneNumber />
+                <RadzenRequiredValidator Component="PhoneNumber" Text="Обязательное поле" Style="position: absolute" />
+            </div>
+        </div><br>
+
+        <div class="row px-3">
+            <div class="col-5 px-0">Электронная почта</div>
+            <div class="col-7 px-0">
+                <RadzenTextBox Trim="true" Name="Email" Placeholder="Электронная почта" @bind-Value=@_updateUserRequest.Email />
+            </div>
+        </div><br>
+
+        <div class="row px-3">
+            <div class="col-4 px-0 d-flex justify-content-start">
+                <RadzenButton Text="Сохранить" Style="min-width: 150px" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Success" />
+            </div>
+            <div class="col-4 px-0"></div>
+            <div class="col-4 px-0 d-flex justify-content-end">
+                <RadzenButton Click=@OnCancel ButtonStyle="ButtonStyle.Secondary" Text="Отмена" Style="min-width: 150px;" />
+            </div>
+        </div>
+    </RadzenTemplateForm>
+}
+
+@code {
+    [Parameter]
+    public Guid UserId { get; init; }
+
+    private UpdateUserRequestDto _updateUserRequest = default!;
+
+    private Dictionary<Role, string> _roles = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _roles = Enum.GetValues<Role>().ToDictionary(
+            k => k,
+            v => v switch
+            {
+                Role.Admin => "Админ",
+                Role.Employee => "Сотрудник",
+                _ => string.Empty
+            });
+
+        try
+        {
+            var user = await _userClient.GetAsync(UserId, CancellationToken.None);
+
+            _updateUserRequest = _mapper.Map<UpdateUserRequestDto>(user);
+        }
+        catch (CustomApiException ex)
+        {
+            _notificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = ex.Message,
+                Detail = ex.Details.ErrorMessage,
+                Duration = 4000
+            });
+        }
+    }
+
+    private async Task OnAccept()
+    {
+        try
+        {
+            await _userClient.UpdateAsync(UserId, _updateUserRequest, CancellationToken.None);
+
+            _dialogService.Close(true);
+        }
+        catch (CustomApiException ex)
+        {
+            _notificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = ex.Message,
+                Detail = ex.Details.ErrorMessage,
+                Duration = 4000
+            });
+        }
+    }
+
+    private void OnCancel() => _dialogService.Close(false);
+}

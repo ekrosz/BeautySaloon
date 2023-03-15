@@ -8,17 +8,17 @@ namespace BeautySaloon.Api.Dto.Requests.User;
 
 public record CreateUserRequestDto
 {
-    public Role Role { get; init; }
+    public Role Role { get; set; }
 
-    public string Login { get; init; } = string.Empty;
+    public string Login { get; set; } = string.Empty;
 
-    public string Password { get; init; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 
-    public string PhoneNumber { get; init; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
 
-    public string? Email { get; init; } = string.Empty;
+    public string? Email { get; set; }
 
-    public FullName Name { get; init; } = FullName.Empty;
+    public FullName Name { get; set; } = FullName.Empty;
 }
 
 public class RegisterRequestValidator : AbstractValidator<CreateUserRequestDto>

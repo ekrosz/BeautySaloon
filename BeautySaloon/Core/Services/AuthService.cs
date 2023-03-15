@@ -94,7 +94,7 @@ public class AuthService : IAuthService
         return jwtTokenHandler.CreateEncodedJwt(jwtDescription);
     }
 
-    private async System.Threading.Tasks.Task<string> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken = default)
+    private async Task<string> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken = default)
     {
         var refreshSecret = user.GenerateNewRefreshSecret();
 

@@ -4,6 +4,7 @@ using BeautySaloon.Api.Dto.Responses.User;
 using BeautySaloon.Api.Services;
 using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
+using BeautySaloon.DAL.Providers;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,17 +18,21 @@ public class UsersController : ControllerBase, IUserHttpClient
 {
     private readonly IUserService _userService;
 
+    private readonly ICurrentUserProvider _currentUserProvider;
+
     private readonly IValidator<CreateUserRequestDto> _createUserValidator;
     private readonly IValidator<UpdateUserRequestDto> _updateUserByIdValidator;
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
     public UsersController(
         IUserService userService,
+        ICurrentUserProvider currentUserProvider,
         IValidator<CreateUserRequestDto> createUserValidator,
         IValidator<UpdateUserRequestDto> updateUserByIdValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
         _userService = userService;
+        _currentUserProvider = currentUserProvider;
         _createUserValidator = createUserValidator;
         _updateUserByIdValidator = updateUserByIdValidator;
         _byIdRequestValidator = byIdRequestValidator;
@@ -67,6 +72,16 @@ public class UsersController : ControllerBase, IUserHttpClient
         var requestById = new ByIdRequestDto(id);
 
         await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
+
+        return await _userService.GetUserAsync(requestById, cancellationToken);
+    }
+
+    [HttpGet("me")]
+    public async Task<GetUserResponseDto> GetAsync(CancellationToken cancellationToken = default)
+    {
+        var currentUserId = _currentUserProvider.GetUserId();
+
+        var requestById = new ByIdRequestDto(currentUserId);
 
         return await _userService.GetUserAsync(requestById, cancellationToken);
     }

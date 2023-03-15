@@ -2,6 +2,7 @@ using BeautySaloon.Api.Services;
 using Radzen;
 using Refit;
 using WebApp.Handlers;
+using WebApp.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,9 @@ builder.Services.AddRefitClient<IAuthHttpClient>()
 
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<TooltipService>();
+
+builder.Services.AddAutoMapper(typeof(UserProfile).Assembly);
 
 var app = builder.Build();
 

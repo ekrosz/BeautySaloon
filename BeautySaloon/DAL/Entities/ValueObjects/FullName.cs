@@ -1,8 +1,14 @@
 ﻿namespace BeautySaloon.DAL.Entities.ValueObjects;
 
-public record FullName(string FirstName, string LastName, string? MiddleName)
+public record FullName
 {
-    public static FullName Empty => new(string.Empty, string.Empty, null);
+    public string FirstName { get; set; } = string.Empty;
+
+    public string LastName { get; set; } = string.Empty;
+
+    public string? MiddleName { get; set; }
+
+    public static FullName Empty => new();
 
     public string ConcatedName => $"{LastName} {FirstName} {MiddleName}".TrimEnd(' ');
 }

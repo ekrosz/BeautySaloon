@@ -78,7 +78,9 @@ public static class ServiceCollectionExtension
                 ValidAudience = authenticationSettings.Audience,
                 ValidateLifetime = true,
                 IssuerSigningKey = authenticationSettings.AccessSecurityKey,
-                ValidateIssuerSigningKey = true
+                ValidateIssuerSigningKey = true,
+                RequireExpirationTime = true,
+                ClockSkew = TimeSpan.Zero
             };
         });
 

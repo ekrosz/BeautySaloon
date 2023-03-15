@@ -1,0 +1,17 @@
+﻿@page "/logout"
+@using WebApp.Handlers
+
+@inject ITokenStorage _tokenStorage;
+@inject NavigationManager _navigationManager;
+
+<h3>Logout</h3>
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        _tokenStorage.Clear();
+        _navigationManager.NavigateTo("/login");
+
+        return Task.CompletedTask;
+    }
+}
