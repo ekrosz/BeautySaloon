@@ -1,0 +1,600 @@
+{
+  "components": [
+    {
+      "type": "content",
+      "container": "main",
+      "components": [
+        {
+          "type": "row",
+          "components": [
+            {
+              "type": "col",
+              "class": "col-md-12",
+              "components": [
+                {
+                  "type": "template-form",
+                  "name": "form0",
+                  "components": [
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Birth Date",
+                              "component": "BirthDate",
+                              "name": "BirthDateLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "DateTime",
+                              "dateFormat": "dd.MM.yyyy",
+                              "type": "datepicker",
+                              "name": "BirthDate",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${person.BirthDate}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "BirthDateRequiredValidator",
+                              "component": "BirthDate",
+                              "text": "BirthDate is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "User Modifier Id",
+                              "component": "UserModifierId",
+                              "name": "UserModifierIdLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "${person.UserModifierId}",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Updated On",
+                              "component": "UpdatedOn",
+                              "name": "UpdatedOnLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "DateTime",
+                              "dateFormat": "dd.MM.yyyy",
+                              "type": "datepicker",
+                              "name": "UpdatedOn",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${person.UpdatedOn}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "UpdatedOnRequiredValidator",
+                              "component": "UpdatedOn",
+                              "text": "UpdatedOn is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Name First Name",
+                              "component": "Name_FirstName",
+                              "name": "Name_FirstNameLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "string",
+                              "maxLength": 50,
+                              "type": "textbox",
+                              "name": "Name_FirstName",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${person.Name_FirstName}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "Name_FirstNameRequiredValidator",
+                              "component": "Name_FirstName",
+                              "text": "Name_FirstName is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Name Last Name",
+                              "component": "Name_LastName",
+                              "name": "Name_LastNameLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "string",
+                              "maxLength": 50,
+                              "type": "textbox",
+                              "name": "Name_LastName",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${person.Name_LastName}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "Name_LastNameRequiredValidator",
+                              "component": "Name_LastName",
+                              "text": "Name_LastName is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Created On",
+                              "component": "CreatedOn",
+                              "name": "CreatedOnLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "DateTime",
+                              "dateFormat": "dd.MM.yyyy",
+                              "type": "datepicker",
+                              "name": "CreatedOn",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${person.CreatedOn}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "CreatedOnRequiredValidator",
+                              "component": "CreatedOn",
+                              "text": "CreatedOn is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Phone Number",
+                              "component": "PhoneNumber",
+                              "name": "PhoneNumberLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "string",
+                              "maxLength": 12,
+                              "type": "textbox",
+                              "name": "PhoneNumber",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${person.PhoneNumber}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "PhoneNumberRequiredValidator",
+                              "component": "PhoneNumber",
+                              "text": "PhoneNumber is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Name Middle Name",
+                              "component": "Name_MiddleName",
+                              "name": "Name_MiddleNameLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "string",
+                              "maxLength": 50,
+                              "type": "textbox",
+                              "name": "Name_MiddleName",
+                              "style": {
+                                "width": "100%"
+                              },
+                              "value": "${person.Name_MiddleName}"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Id",
+                              "component": "Id",
+                              "name": "IdLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "${person.Id}",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Email",
+                              "component": "Email",
+                              "name": "EmailLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "string",
+                              "maxLength": 255,
+                              "type": "textbox",
+                              "name": "Email",
+                              "style": {
+                                "width": "100%"
+                              },
+                              "value": "${person.Email}"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Is Deleted",
+                              "component": "IsDeleted",
+                              "name": "IsDeletedLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "bool",
+                              "type": "checkbox",
+                              "name": "IsDeleted",
+                              "value": "${person.IsDeleted}"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col offset-sm-3",
+                          "components": [
+                            {
+                              "type": "button",
+                              "buttonType": "submit",
+                              "icon": "save",
+                              "text": "Save",
+                              "buttonStyle": "primary"
+                            },
+                            {
+                              "type": "button",
+                              "buttonStyle": "light",
+                              "style": {
+                                "marginLeft": "1rem"
+                              },
+                              "text": "Cancel",
+                              "events": {
+                                "click": [
+                                  {
+                                    "type": "close-popup"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "events": {
+                    "submit": [
+                      {
+                        "error": [
+                          {
+                            "detail": "Unable to update Person",
+                            "severity": "error",
+                            "summary": "Error",
+                            "type": "notify"
+                          }
+                        ],
+                        "name": "LocalDb.updatePerson",
+                        "parameters": [
+                          {
+                            "name": "Id",
+                            "value": "${parameters.Id}"
+                          },
+                          {
+                            "name": "Person",
+                            "value": "${person}"
+                          }
+                        ],
+                        "then": [
+                          {
+                            "type": "close-popup",
+                            "result": "${person}",
+                            "condition": ""
+                          }
+                        ],
+                        "type": "invoke"
+                      }
+                    ]
+                  },
+                  "itemType": "WebApplication.Models.LocalDb.Person",
+                  "data": "${person}",
+                  "visible": "${person != null}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": {
+    "load": [
+      {
+        "name": "LocalDb.getPersonById",
+        "parameters": [
+          {
+            "name": "Id",
+            "value": "${parameters.Id}"
+          }
+        ],
+        "then": [
+          {
+            "name": "person",
+            "type": "set",
+            "value": "${result}",
+            "valueType": "WebApplication.Models.LocalDb.Person"
+          }
+        ],
+        "error": [],
+        "type": "invoke"
+      }
+    ]
+  },
+  "name": "Edit Person",
+  "layout": "Main"
+}

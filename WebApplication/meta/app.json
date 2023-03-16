@@ -1,0 +1,56 @@
+{
+  "cssFiles": [],
+  "dataSources": [
+    "LocalDb"
+  ],
+  "generator": "@radzen/blazor-server",
+  "https": false,
+  "ignore": [
+    ""
+  ],
+  "javaScriptFiles": [],
+  "layouts": [
+    "Login",
+    "Main"
+  ],
+  "logo": "",
+  "name": "WebApplication",
+  "namespaces": [],
+  "navigation": [
+    "Appointments",
+    "Cosmetic Services",
+    "Orders",
+    "People",
+    "Subscriptions",
+    "Users"
+  ],
+  "pages": [
+    "Appointments",
+    "Add Appointment",
+    "Edit Appointment",
+    "Cosmetic Services",
+    "Add Cosmetic Service",
+    "Edit Cosmetic Service",
+    "Orders",
+    "Add Order",
+    "Edit Order",
+    "People",
+    "Add Person",
+    "Edit Person",
+    "Subscriptions",
+    "Add Subscription",
+    "Edit Subscription",
+    "Users",
+    "Add User",
+    "Edit User"
+  ],
+  "port": 8000,
+  "serverLang": "cs",
+  "serverPort": 5000,
+  "serverProject": true,
+  "serverVersion": "6",
+  "startPage": "Appointments",
+  "theme": "default",
+  "themeSettings": null,
+  "title": "WebApplication"
+}

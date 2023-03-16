@@ -1,0 +1,41 @@
+﻿@page "/"
+@page "/persons"
+@layout MainLayout
+@inherits WebApplication.Pages.PeopleComponent
+
+@using Radzen
+@using Radzen.Blazor
+@using WebApplication.Models.LocalDb
+<PageTitle>Клиенты</PageTitle>
+<RadzenContent Container="main">
+  <ChildContent>
+    <RadzenHeading Size="H1" Text="Клиенты">
+    </RadzenHeading>
+    <div class="row">
+      <div class="col-md-12">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+        </RadzenButton>
+        <RadzenTextBox Placeholder="Поиск по ФИО или телефону..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        </RadzenTextBox>
+        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" LoadData="@LoadDataAsync" AllowSorting="false" Data="@GetPeopleResult" TItem="GetPersonListItemResponseDto" RowSelect="@Grid0RowSelect">
+          <Columns>
+            <RadzenDataGridColumn TItem="GetPersonListItemResponseDto" Property="Name.ConcatedName" Title="ФИО">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetPersonListItemResponseDto" Property="BirthDate" FormatString="{0:dd.MM.yyyy}" Title="Дата рождения">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetPersonListItemResponseDto" Property="PhoneNumber" Title="Телефон">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetPersonListItemResponseDto" Property="Email" Title="Почта">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetPersonListItemResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+              <Template Context="webApplicationModelsLocalDbPerson">
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbPerson))" @onclick:stopPropagation="true">
+                </RadzenButton>
+              </Template>
+            </RadzenDataGridColumn>
+          </Columns>
+        </RadzenDataGrid>
+      </div>
+    </div>
+  </ChildContent>
+</RadzenContent>

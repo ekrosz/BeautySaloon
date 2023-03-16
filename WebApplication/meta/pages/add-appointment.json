@@ -1,0 +1,503 @@
+{
+  "components": [
+    {
+      "type": "content",
+      "container": "main",
+      "components": [
+        {
+          "type": "row",
+          "components": [
+            {
+              "type": "col",
+              "class": "col-md-12",
+              "components": [
+                {
+                  "type": "template-form",
+                  "name": "form0",
+                  "components": [
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Comment",
+                              "component": "Comment",
+                              "name": "CommentLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "string",
+                              "maxLength": 500,
+                              "type": "textbox",
+                              "name": "Comment",
+                              "style": {
+                                "width": "100%"
+                              },
+                              "value": "${appointment.Comment}"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Id",
+                              "component": "Id",
+                              "name": "IdLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "${appointment.Id}",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Duration In Minutes",
+                              "component": "DurationInMinutes",
+                              "name": "DurationInMinutesLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "int",
+                              "type": "numeric",
+                              "name": "DurationInMinutes",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${appointment.DurationInMinutes}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "DurationInMinutesRequiredValidator",
+                              "component": "DurationInMinutes",
+                              "text": "DurationInMinutes is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "User",
+                              "component": "UserModifierId",
+                              "name": "UserModifierIdLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "data": "${getUsersResult}",
+                              "textProperty": "PhoneNumber",
+                              "valueProperty": "Id",
+                              "placeholder": "Choose User",
+                              "valueType": "Guid",
+                              "type": "dropdown",
+                              "name": "UserModifierId",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${appointment.UserModifierId}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "UserModifierIdRequiredValidator",
+                              "component": "UserModifierId",
+                              "text": "UserModifierId is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Person",
+                              "component": "PersonId",
+                              "name": "PersonIdLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "data": "${getPeopleResult}",
+                              "textProperty": "Name_FirstName",
+                              "valueProperty": "Id",
+                              "placeholder": "Choose Person",
+                              "valueType": "Guid",
+                              "type": "dropdown",
+                              "name": "PersonId",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${appointment.PersonId}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "PersonIdRequiredValidator",
+                              "component": "PersonId",
+                              "text": "PersonId is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Updated On",
+                              "component": "UpdatedOn",
+                              "name": "UpdatedOnLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "DateTime",
+                              "dateFormat": "dd.MM.yyyy",
+                              "type": "datepicker",
+                              "name": "UpdatedOn",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${appointment.UpdatedOn}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "UpdatedOnRequiredValidator",
+                              "component": "UpdatedOn",
+                              "text": "UpdatedOn is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Created On",
+                              "component": "CreatedOn",
+                              "name": "CreatedOnLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "DateTime",
+                              "dateFormat": "dd.MM.yyyy",
+                              "type": "datepicker",
+                              "name": "CreatedOn",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${appointment.CreatedOn}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "CreatedOnRequiredValidator",
+                              "component": "CreatedOn",
+                              "text": "CreatedOn is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Appointment Date",
+                              "component": "AppointmentDate",
+                              "name": "AppointmentDateLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "DateTime",
+                              "dateFormat": "dd.MM.yyyy",
+                              "type": "datepicker",
+                              "name": "AppointmentDate",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${appointment.AppointmentDate}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "AppointmentDateRequiredValidator",
+                              "component": "AppointmentDate",
+                              "text": "AppointmentDate is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col offset-sm-3",
+                          "components": [
+                            {
+                              "type": "button",
+                              "buttonType": "submit",
+                              "icon": "save",
+                              "text": "Save",
+                              "buttonStyle": "primary"
+                            },
+                            {
+                              "type": "button",
+                              "buttonStyle": "light",
+                              "style": {
+                                "marginLeft": "1rem"
+                              },
+                              "text": "Cancel",
+                              "events": {
+                                "click": [
+                                  {
+                                    "type": "close-popup"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "events": {
+                    "submit": [
+                      {
+                        "error": [
+                          {
+                            "detail": "Unable to create new Appointment!",
+                            "severity": "error",
+                            "summary": "Error",
+                            "type": "notify"
+                          }
+                        ],
+                        "name": "LocalDb.createAppointment",
+                        "parameters": [
+                          {
+                            "name": "Appointment",
+                            "value": "${appointment}"
+                          }
+                        ],
+                        "then": [
+                          {
+                            "type": "close-popup",
+                            "result": "${appointment}"
+                          }
+                        ],
+                        "type": "invoke"
+                      }
+                    ]
+                  },
+                  "data": "${appointment}",
+                  "visible": "${appointment != null}",
+                  "itemType": "WebApplication.Models.LocalDb.Appointment"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": {
+    "load": [
+      {
+        "name": "LocalDb.getUsers",
+        "parameters": [],
+        "then": [
+          {
+            "name": "getUsersResult",
+            "type": "set",
+            "value": "${result}",
+            "valueType": "IEnumerable<WebApplication.Models.LocalDb.User>"
+          }
+        ],
+        "type": "invoke"
+      },
+      {
+        "name": "LocalDb.getPeople",
+        "parameters": [],
+        "then": [
+          {
+            "name": "getPeopleResult",
+            "type": "set",
+            "value": "${result}",
+            "valueType": "IEnumerable<WebApplication.Models.LocalDb.Person>"
+          }
+        ],
+        "type": "invoke"
+      },
+      {
+        "name": "appointment",
+        "type": "set",
+        "value": "new WebApplication.Models.LocalDb.Appointment(){}",
+        "valueType": "WebApplication.Models.LocalDb.Appointment"
+      }
+    ]
+  },
+  "name": "Add Appointment",
+  "layout": "Main"
+}

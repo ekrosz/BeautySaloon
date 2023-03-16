@@ -1,0 +1,120 @@
+﻿@page "/edit-user/{Id}"
+@layout MainLayout
+@inherits WebApplication.Pages.EditUserComponent
+
+@using Radzen
+@using Radzen.Blazor
+@using WebApplication.Models.LocalDb
+<PageTitle>Редактирование пользователя</PageTitle>
+<RadzenContent Container="main">
+  <ChildContent>
+    <div class="row">
+      <div class="col-md-12">
+        <RadzenTemplateForm TItem="UserRequest" Data="@User" Visible="@(User != null)" Submit="@Form0Submit">
+          <ChildContent>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Имя" Component="FirstName" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenTextBox MaxLength="50" style="display: block; width: 100%" @bind-Value="@(User.Name.FirstName)" Name="FirstName">
+                </RadzenTextBox>
+                <RadzenRequiredValidator Component="FirstName" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Фамилия" Component="LastName" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenTextBox MaxLength="50" style="display: block; width: 100%" @bind-Value="@(User.Name.LastName)" Name="LastName">
+                </RadzenTextBox>
+                <RadzenRequiredValidator Component="LastName" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Отчество" Component="MiddleName" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenTextBox MaxLength="50" style="width: 100%" @bind-Value="@(User.Name.MiddleName)" Name="MiddleName">
+                </RadzenTextBox>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Role" Component="Role" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenDropDown Data="Roles" ValueProperty="Key" TextProperty="Value" style="display: block; width: 100%" @bind-Value="@(User.Role)" Name="Role">
+                </RadzenDropDown>
+                <RadzenRequiredValidator Component="Role" Text="Role is required" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Login" Component="Login" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenTextBox MaxLength="255" style="display: block; width: 100%" @bind-Value="@(User.Login)" Name="Login">
+                </RadzenTextBox>
+                <RadzenRequiredValidator Component="Login" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Password" Component="Password" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenTextBox MaxLength="255" style="display: block; width: 100%" @bind-Value="@(User.Password)" Name="Password">
+                </RadzenTextBox>
+                <RadzenRequiredValidator Component="Password" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Phone Number" Component="PhoneNumber" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenMask Mask="***********" Pattern="[^0-9]" MaxLength="12" Placeholder="79993331122" Name="PhoneNumber" style="display: block; width: 100%" @bind-Value="User.PhoneNumber">
+                </RadzenMask>
+                <RadzenRequiredValidator Component="PhoneNumber" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Email" Component="Email" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenTextBox MaxLength="255" style="width: 100%" @bind-Value="@(User.Email)" Name="Email">
+                </RadzenTextBox>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col offset-sm-3">
+                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" ButtonStyle="ButtonStyle.Primary">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Light" style="margin-left: 1rem" Text="Cancel" Click="@Button2Click">
+                </RadzenButton>
+              </div>
+            </div>
+          </ChildContent>
+        </RadzenTemplateForm>
+      </div>
+    </div>
+  </ChildContent>
+</RadzenContent>

@@ -1,0 +1,243 @@
+{
+  "components": [
+    {
+      "type": "content",
+      "container": "main",
+      "components": [
+        {
+          "type": "heading",
+          "name": "pageTitle",
+          "size": "H1",
+          "text": "Appointments"
+        },
+        {
+          "type": "row",
+          "components": [
+            {
+              "type": "col",
+              "class": "col-md-12",
+              "components": [
+                {
+                  "icon": "add_circle_outline",
+                  "name": "button0",
+                  "style": {
+                    "marginBottom": "10px"
+                  },
+                  "text": "Add",
+                  "type": "button",
+                  "events": {
+                    "click": [
+                      {
+                        "path": "add-appointment",
+                        "type": "popup",
+                        "then": [
+                          {
+                            "code": "await grid0.Reload();",
+                            "type": "execute"
+                          },
+                          {
+                            "code": "await InvokeAsync(() => { StateHasChanged(); });",
+                            "type": "execute"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "attributes": [
+                    {
+                      "name": "@oninput",
+                      "value": "@(async(args) => {search = $\"{args.Value}\";await grid0.GoToPage(0);await Load();})"
+                    }
+                  ],
+                  "name": "textbox0",
+                  "placeholder": "Search ...",
+                  "style": {
+                    "display": "block",
+                    "marginBottom": "10px",
+                    "width": "100%"
+                  },
+                  "type": "textbox",
+                  "value": ""
+                },
+                {
+                  "name": "grid0",
+                  "allowFiltering": false,
+                  "filterMode": "advanced",
+                  "allowPaging": true,
+                  "allowSorting": false,
+                  "data": "${getAppointmentsResult}",
+                  "events": {
+                    "loadData": [],
+                    "rowSelect": [
+                      {
+                        "parameters": [
+                          {
+                            "name": "Id",
+                            "value": "${event.Id}"
+                          }
+                        ],
+                        "path": "edit-appointment",
+                        "type": "popup",
+                        "then": [
+                          {
+                            "code": "await InvokeAsync(() => { StateHasChanged(); });",
+                            "type": "execute"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "title": "",
+                  "columns": [
+                    {
+                      "property": "Comment",
+                      "title": "Comment"
+                    },
+                    {
+                      "property": "Id",
+                      "title": "Id"
+                    },
+                    {
+                      "property": "DurationInMinutes",
+                      "title": "Duration In Minutes"
+                    },
+                    {
+                      "property": "UserModifierId",
+                      "sortProperty": "User.PhoneNumber",
+                      "groupProperty": "User.PhoneNumber",
+                      "filterProperty": "User.PhoneNumber",
+                      "template": "${data.User?.PhoneNumber}",
+                      "title": "User"
+                    },
+                    {
+                      "property": "PersonId",
+                      "sortProperty": "Person.Name_FirstName",
+                      "groupProperty": "Person.Name_FirstName",
+                      "filterProperty": "Person.Name_FirstName",
+                      "template": "${data.Person?.Name_FirstName}",
+                      "title": "Person"
+                    },
+                    {
+                      "property": "UpdatedOn",
+                      "formatString": "{0:dd.MM.yyyy}",
+                      "title": "Updated On"
+                    },
+                    {
+                      "property": "CreatedOn",
+                      "formatString": "{0:dd.MM.yyyy}",
+                      "title": "Created On"
+                    },
+                    {
+                      "property": "AppointmentDate",
+                      "formatString": "{0:dd.MM.yyyy}",
+                      "title": "Appointment Date"
+                    },
+                    {
+                      "filterable": false,
+                      "sortable": false,
+                      "width": "70px",
+                      "textAlign": "center",
+                      "template": [
+                        {
+                          "attributes": [
+                            {
+                              "name": "@onclick:stopPropagation",
+                              "value": true
+                            }
+                          ],
+                          "buttonStyle": "danger",
+                          "icon": "close",
+                          "name": "gridDeleteButton",
+                          "text": "",
+                          "size": "sm",
+                          "type": "button",
+                          "events": {
+                            "click": [
+                              {
+                                "condition": "await DialogService.Confirm(\"Are you sure you want to delete this record?\") == true",
+                                "error": [
+                                  {
+                                    "detail": "Unable to delete Appointment",
+                                    "severity": "error",
+                                    "summary": "Error",
+                                    "type": "notify"
+                                  }
+                                ],
+                                "name": "LocalDb.deleteAppointment",
+                                "parameters": [
+                                  {
+                                    "name": "Id",
+                                    "value": "${data.Id}"
+                                  }
+                                ],
+                                "then": [
+                                  {
+                                    "code": "await grid0.Reload();",
+                                    "condition": "result != null",
+                                    "type": "execute"
+                                  }
+                                ],
+                                "type": "invoke"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "type": "datagrid",
+                  "itemType": "WebApplication.Models.LocalDb.Appointment"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": {
+    "load": [
+      {
+        "condition": "string.IsNullOrEmpty(search)",
+        "name": "search",
+        "type": "set",
+        "value": "\"\"",
+        "valueType": "string"
+      },
+      {
+        "name": "LocalDb.getAppointments",
+        "parameters": [
+          {
+            "name": "$filter",
+            "operator": "or",
+            "value": [
+              {
+                "operation": "contains",
+                "property": "Comment",
+                "type": "string",
+                "value": "\"${search}\""
+              }
+            ]
+          },
+          {
+            "name": "$expand",
+            "value": "User,Person"
+          }
+        ],
+        "then": [
+          {
+            "name": "getAppointmentsResult",
+            "type": "set",
+            "value": "${result}",
+            "valueType": "IEnumerable<WebApplication.Models.LocalDb.Appointment>"
+          }
+        ],
+        "type": "invoke"
+      }
+    ]
+  },
+  "name": "Appointments",
+  "layout": "Main"
+}

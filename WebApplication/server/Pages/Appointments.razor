@@ -1,0 +1,54 @@
+﻿@page "/appointments"
+@layout MainLayout
+@inherits WebApplication.Pages.AppointmentsComponent
+
+@using Radzen
+@using Radzen.Blazor
+@using WebApplication.Models.LocalDb
+<PageTitle>Appointments</PageTitle>
+<RadzenContent Container="main">
+  <ChildContent>
+    <RadzenHeading Size="H1" Text="Appointments">
+    </RadzenHeading>
+    <div class="row">
+      <div class="col-md-12">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add" Click="@Button0Click">
+        </RadzenButton>
+        <RadzenTextBox Placeholder="Search ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        </RadzenTextBox>
+        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" AllowSorting="false" Data="@getAppointmentsResult" TItem="WebApplication.Models.LocalDb.Appointment" RowSelect="@Grid0RowSelect">
+          <Columns>
+            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="Comment" Title="Comment">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="Id" Title="Id">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="DurationInMinutes" Title="Duration In Minutes">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="UserModifierId" SortProperty="User.PhoneNumber" GroupProperty="User.PhoneNumber" FilterProperty="User.PhoneNumber" Title="User">
+              <Template Context="data">
+              @(data.User?.PhoneNumber)
+              </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="PersonId" SortProperty="Person.Name_FirstName" GroupProperty="Person.Name_FirstName" FilterProperty="Person.Name_FirstName" Title="Person">
+              <Template Context="data">
+              @(data.Person?.Name_FirstName)
+              </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="UpdatedOn" FormatString="{0:dd.MM.yyyy}" Title="Updated On">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="CreatedOn" FormatString="{0:dd.MM.yyyy}" Title="Created On">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="AppointmentDate" FormatString="{0:dd.MM.yyyy}" Title="Appointment Date">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+              <Template Context="webApplicationModelsLocalDbAppointment">
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbAppointment))" @onclick:stopPropagation="true">
+                </RadzenButton>
+              </Template>
+            </RadzenDataGridColumn>
+          </Columns>
+        </RadzenDataGrid>
+      </div>
+    </div>
+  </ChildContent>
+</RadzenContent>

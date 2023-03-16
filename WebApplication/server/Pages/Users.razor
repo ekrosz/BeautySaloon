@@ -1,0 +1,53 @@
+﻿@page "/users"
+@layout MainLayout
+@inherits WebApplication.Pages.UsersComponent
+
+@using Radzen
+@using Radzen.Blazor
+@using WebApplication.Models.LocalDb
+<PageTitle>Пользователи</PageTitle>
+<RadzenContent Container="main">
+  <ChildContent>
+    <RadzenHeading Size="H1" Text="Пользователи">
+    </RadzenHeading>
+    <div class="row">
+      <div class="col-md-12">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+        </RadzenButton>
+        <RadzenTextBox Placeholder="Поиск по ФИО или телефону..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        </RadzenTextBox>
+        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@GetUsersResult" TItem="GetUserResponseDto" RowSelect="@Grid0RowSelect">
+          <Columns>
+            <RadzenDataGridColumn TItem="GetUserResponseDto" Property="Name.ConcatedName" Title="ФИО">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetUserResponseDto" Property="Role" Title="Роль">
+                <Template Context="user">
+                    @switch (user.Role)
+                    {
+                        case Role.Admin:
+                            <span>Администратор</span>
+                            break;
+                        case Role.Employee:
+                            <span>Сотрудник</span>
+                            break;
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetUserResponseDto" Property="Login" Title="Логин">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetUserResponseDto" Property="PhoneNumber" Title="Телефон">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetUserResponseDto" Property="Email" Title="Почта">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetUserResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+              <Template Context="webApplicationModelsLocalDbUser">
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbUser))" @onclick:stopPropagation="true">
+                </RadzenButton>
+              </Template>
+            </RadzenDataGridColumn>
+          </Columns>
+        </RadzenDataGrid>
+      </div>
+    </div>
+  </ChildContent>
+</RadzenContent>

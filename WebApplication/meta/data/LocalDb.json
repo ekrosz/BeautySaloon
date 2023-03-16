@@ -1,0 +1,1489 @@
+{
+  "info": {
+    "title": "LocalDb",
+    "x-type": "odata",
+    "x-connector": "postgresql"
+  },
+  "definitions": {
+    "Appointment": {
+      "x-table": "public.Appointment",
+      "resource": "Appointments",
+      "required": [
+        "Id",
+        "DurationInMinutes",
+        "UserModifierId",
+        "PersonId",
+        "UpdatedOn",
+        "CreatedOn",
+        "AppointmentDate"
+      ],
+      "properties": {
+        "Comment": {
+          "type": "string",
+          "length": 500
+        },
+        "Id": {
+          "x-key": true,
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-navigation": []
+        },
+        "DurationInMinutes": {
+          "x-nullable": false,
+          "type": "integer"
+        },
+        "User": {
+          "type": "object",
+          "$ref": "#/definitions/User"
+        },
+        "UserModifierId": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-foreignKey": {
+            "parentTable": "User",
+            "parentEntityType": "User",
+            "type": "User",
+            "principalKey": "Id",
+            "name": "User",
+            "textProperty": "PhoneNumber",
+            "navigationProperty": "Appointments"
+          }
+        },
+        "Person": {
+          "type": "object",
+          "$ref": "#/definitions/Person"
+        },
+        "PersonId": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-foreignKey": {
+            "parentTable": "Person",
+            "parentEntityType": "Person",
+            "type": "Person",
+            "principalKey": "Id",
+            "name": "Person",
+            "textProperty": "Name_FirstName",
+            "navigationProperty": "Appointments"
+          }
+        },
+        "UpdatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        },
+        "CreatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        },
+        "AppointmentDate": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "CosmeticService": {
+      "x-table": "public.CosmeticService",
+      "resource": "CosmeticServices",
+      "required": [
+        "CreatedOn",
+        "Name",
+        "UserModifierId",
+        "Description",
+        "Id",
+        "ExecuteTimeInMinutes",
+        "UpdatedOn"
+      ],
+      "properties": {
+        "CreatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        },
+        "Name": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 100
+        },
+        "UserModifierId": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid"
+        },
+        "Description": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 500
+        },
+        "Id": {
+          "x-key": true,
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-navigation": []
+        },
+        "ExecuteTimeInMinutes": {
+          "x-nullable": false,
+          "type": "integer"
+        },
+        "UpdatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Order": {
+      "x-table": "public.Order",
+      "resource": "Orders",
+      "required": [
+        "UpdatedOn",
+        "PersonId",
+        "UserModifierId",
+        "PaymentMethod",
+        "Id",
+        "Cost",
+        "CreatedOn"
+      ],
+      "properties": {
+        "UpdatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        },
+        "Person": {
+          "type": "object",
+          "$ref": "#/definitions/Person"
+        },
+        "PersonId": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-foreignKey": {
+            "parentTable": "Person",
+            "parentEntityType": "Person",
+            "type": "Person",
+            "principalKey": "Id",
+            "name": "Person",
+            "textProperty": "Name_FirstName",
+            "navigationProperty": "Orders"
+          }
+        },
+        "User": {
+          "type": "object",
+          "$ref": "#/definitions/User"
+        },
+        "UserModifierId": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-foreignKey": {
+            "parentTable": "User",
+            "parentEntityType": "User",
+            "type": "User",
+            "principalKey": "Id",
+            "name": "User",
+            "textProperty": "PhoneNumber",
+            "navigationProperty": "Orders"
+          }
+        },
+        "PaymentMethod": {
+          "x-nullable": false,
+          "type": "integer"
+        },
+        "Id": {
+          "x-key": true,
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-navigation": []
+        },
+        "Comment": {
+          "type": "string",
+          "length": 500
+        },
+        "Cost": {
+          "x-nullable": false,
+          "type": "number",
+          "format": "decimal"
+        },
+        "CreatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Person": {
+      "x-table": "public.Person",
+      "resource": "People",
+      "required": [
+        "BirthDate",
+        "UserModifierId",
+        "UpdatedOn",
+        "Name_FirstName",
+        "Name_LastName",
+        "CreatedOn",
+        "PhoneNumber",
+        "Id"
+      ],
+      "properties": {
+        "BirthDate": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        },
+        "UserModifierId": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid"
+        },
+        "UpdatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        },
+        "Name_FirstName": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 50
+        },
+        "Name_LastName": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 50
+        },
+        "CreatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        },
+        "PhoneNumber": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 12
+        },
+        "Name_MiddleName": {
+          "type": "string",
+          "length": 50
+        },
+        "Id": {
+          "x-key": true,
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-navigation": [
+            {
+              "inversePropertyName": "Person",
+              "name": "Appointments",
+              "type": "Appointment"
+            },
+            {
+              "inversePropertyName": "Person",
+              "name": "Orders",
+              "type": "Order"
+            }
+          ]
+        },
+        "Email": {
+          "type": "string",
+          "length": 255
+        },
+        "IsDeleted": {
+          "x-default-sql": "false",
+          "x-nullable": false,
+          "type": "boolean"
+        },
+        "Appointments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Appointment"
+          }
+        },
+        "Orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Order"
+          }
+        }
+      }
+    },
+    "Subscription": {
+      "x-table": "public.Subscription",
+      "resource": "Subscriptions",
+      "required": [
+        "UserModifierId",
+        "Id",
+        "Price",
+        "UpdatedOn",
+        "CreatedOn",
+        "Name"
+      ],
+      "properties": {
+        "UserModifierId": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid"
+        },
+        "LifeTimeInDays": {
+          "type": "integer"
+        },
+        "Id": {
+          "x-key": true,
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-navigation": []
+        },
+        "Price": {
+          "x-nullable": false,
+          "type": "number",
+          "format": "decimal"
+        },
+        "UpdatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        },
+        "CreatedOn": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time"
+        },
+        "Name": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 100
+        }
+      }
+    },
+    "User": {
+      "x-table": "public.User",
+      "resource": "Users",
+      "required": [
+        "Role",
+        "PhoneNumber",
+        "Name_LastName",
+        "Id",
+        "Password",
+        "Name_FirstName",
+        "Login"
+      ],
+      "properties": {
+        "RefreshSecretKey": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "Role": {
+          "x-nullable": false,
+          "type": "integer"
+        },
+        "IsDeleted": {
+          "x-default-sql": "false",
+          "x-nullable": false,
+          "type": "boolean"
+        },
+        "PhoneNumber": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 12
+        },
+        "Name_LastName": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 50
+        },
+        "Email": {
+          "type": "string",
+          "length": 255
+        },
+        "Id": {
+          "x-key": true,
+          "x-nullable": false,
+          "type": "string",
+          "format": "uuid",
+          "x-navigation": [
+            {
+              "inversePropertyName": "User",
+              "name": "Appointments",
+              "type": "Appointment"
+            },
+            {
+              "inversePropertyName": "User",
+              "name": "Orders",
+              "type": "Order"
+            }
+          ]
+        },
+        "Password": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 255
+        },
+        "Name_MiddleName": {
+          "type": "string",
+          "length": 50
+        },
+        "Name_FirstName": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 50
+        },
+        "Login": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 255
+        },
+        "Appointments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Appointment"
+          }
+        },
+        "Orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Order"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/Appointments": {
+      "get": {
+        "operationId": "getAppointments",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$orderby",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$expand",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$skip",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$format",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "$ref": "#/definitions/Appointment"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createAppointment",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Appointment",
+            "schema": {
+              "$ref": "#/definitions/Appointment"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/Appointment"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/CosmeticServices": {
+      "get": {
+        "operationId": "getCosmeticServices",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$orderby",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$expand",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$skip",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$format",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "$ref": "#/definitions/CosmeticService"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createCosmeticService",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "CosmeticService",
+            "schema": {
+              "$ref": "#/definitions/CosmeticService"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/CosmeticService"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/Orders": {
+      "get": {
+        "operationId": "getOrders",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$orderby",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$expand",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$skip",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$format",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "$ref": "#/definitions/Order"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createOrder",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Order",
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/People": {
+      "get": {
+        "operationId": "getPeople",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$orderby",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$expand",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$skip",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$format",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "$ref": "#/definitions/Person"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPerson",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Person",
+            "schema": {
+              "$ref": "#/definitions/Person"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/Person"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/Subscriptions": {
+      "get": {
+        "operationId": "getSubscriptions",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$orderby",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$expand",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$skip",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$format",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "$ref": "#/definitions/Subscription"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createSubscription",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Subscription",
+            "schema": {
+              "$ref": "#/definitions/Subscription"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/Subscription"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/Users": {
+      "get": {
+        "operationId": "getUsers",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$orderby",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$expand",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$skip",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$format",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "$ref": "#/definitions/User"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createUser",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "User",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/Appointments({Id})": {
+      "delete": {
+        "operationId": "deleteAppointment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getAppointmentById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/Appointment"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateAppointment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "in": "body",
+            "name": "Appointment",
+            "schema": {
+              "$ref": "#/definitions/Appointment"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "cancel": {
+        "operationId": "cancelAppointmentChanges",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Appointment",
+            "schema": {
+              "$ref": "#/definitions/Appointment"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/CosmeticServices({Id})": {
+      "delete": {
+        "operationId": "deleteCosmeticService",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getCosmeticServiceById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/CosmeticService"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateCosmeticService",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "in": "body",
+            "name": "CosmeticService",
+            "schema": {
+              "$ref": "#/definitions/CosmeticService"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "cancel": {
+        "operationId": "cancelCosmeticServiceChanges",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "CosmeticService",
+            "schema": {
+              "$ref": "#/definitions/CosmeticService"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/Orders({Id})": {
+      "delete": {
+        "operationId": "deleteOrder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getOrderById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateOrder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "in": "body",
+            "name": "Order",
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "cancel": {
+        "operationId": "cancelOrderChanges",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Order",
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/People({Id})": {
+      "delete": {
+        "operationId": "deletePerson",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getPersonById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/Person"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updatePerson",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "in": "body",
+            "name": "Person",
+            "schema": {
+              "$ref": "#/definitions/Person"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "cancel": {
+        "operationId": "cancelPersonChanges",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Person",
+            "schema": {
+              "$ref": "#/definitions/Person"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/Subscriptions({Id})": {
+      "delete": {
+        "operationId": "deleteSubscription",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getSubscriptionById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/Subscription"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateSubscription",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "in": "body",
+            "name": "Subscription",
+            "schema": {
+              "$ref": "#/definitions/Subscription"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "cancel": {
+        "operationId": "cancelSubscriptionChanges",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Subscription",
+            "schema": {
+              "$ref": "#/definitions/Subscription"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/Users({Id})": {
+      "delete": {
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getUserById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "in": "body",
+            "name": "User",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "cancel": {
+        "operationId": "cancelUserChanges",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "User",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": "/odata/LocalDb",
+  "host": "localhost:5000",
+  "schemes": [
+    "http"
+  ]
+}

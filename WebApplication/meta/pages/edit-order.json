@@ -1,0 +1,520 @@
+{
+  "components": [
+    {
+      "type": "content",
+      "container": "main",
+      "components": [
+        {
+          "type": "row",
+          "components": [
+            {
+              "type": "col",
+              "class": "col-md-12",
+              "components": [
+                {
+                  "type": "template-form",
+                  "name": "form0",
+                  "components": [
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Updated On",
+                              "component": "UpdatedOn",
+                              "name": "UpdatedOnLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "DateTime",
+                              "dateFormat": "dd.MM.yyyy",
+                              "type": "datepicker",
+                              "name": "UpdatedOn",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${order.UpdatedOn}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "UpdatedOnRequiredValidator",
+                              "component": "UpdatedOn",
+                              "text": "UpdatedOn is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Person",
+                              "component": "PersonId",
+                              "name": "PersonIdLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "data": "${getPeopleResult}",
+                              "textProperty": "Name_FirstName",
+                              "valueProperty": "Id",
+                              "placeholder": "Choose Person",
+                              "valueType": "Guid",
+                              "type": "dropdown",
+                              "name": "PersonId",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${order.PersonId}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "PersonIdRequiredValidator",
+                              "component": "PersonId",
+                              "text": "PersonId is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "User",
+                              "component": "UserModifierId",
+                              "name": "UserModifierIdLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "data": "${getUsersResult}",
+                              "textProperty": "PhoneNumber",
+                              "valueProperty": "Id",
+                              "placeholder": "Choose User",
+                              "valueType": "Guid",
+                              "type": "dropdown",
+                              "name": "UserModifierId",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${order.UserModifierId}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "UserModifierIdRequiredValidator",
+                              "component": "UserModifierId",
+                              "text": "UserModifierId is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Payment Method",
+                              "component": "PaymentMethod",
+                              "name": "PaymentMethodLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "int",
+                              "type": "numeric",
+                              "name": "PaymentMethod",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${order.PaymentMethod}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "PaymentMethodRequiredValidator",
+                              "component": "PaymentMethod",
+                              "text": "PaymentMethod is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Id",
+                              "component": "Id",
+                              "name": "IdLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "${order.Id}",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Comment",
+                              "component": "Comment",
+                              "name": "CommentLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "string",
+                              "maxLength": 500,
+                              "type": "textbox",
+                              "name": "Comment",
+                              "style": {
+                                "width": "100%"
+                              },
+                              "value": "${order.Comment}"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Cost",
+                              "component": "Cost",
+                              "name": "CostLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "decimal",
+                              "type": "numeric",
+                              "name": "Cost",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${order.Cost}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "CostRequiredValidator",
+                              "component": "Cost",
+                              "text": "Cost is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "style": {
+                        "marginBottom": "1rem"
+                      },
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col-md-3",
+                          "components": [
+                            {
+                              "type": "label",
+                              "text": "Created On",
+                              "component": "CreatedOn",
+                              "name": "CreatedOnLabel",
+                              "style": {
+                                "width": "100%"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "col",
+                          "class": "col-md-9",
+                          "components": [
+                            {
+                              "valueType": "DateTime",
+                              "dateFormat": "dd.MM.yyyy",
+                              "type": "datepicker",
+                              "name": "CreatedOn",
+                              "style": {
+                                "display": "block",
+                                "width": "100%"
+                              },
+                              "value": "${order.CreatedOn}"
+                            },
+                            {
+                              "type": "required-validator",
+                              "name": "CreatedOnRequiredValidator",
+                              "component": "CreatedOn",
+                              "text": "CreatedOn is required",
+                              "style": {
+                                "position": "absolute"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "row",
+                      "components": [
+                        {
+                          "type": "col",
+                          "class": "col offset-sm-3",
+                          "components": [
+                            {
+                              "type": "button",
+                              "buttonType": "submit",
+                              "icon": "save",
+                              "text": "Save",
+                              "buttonStyle": "primary"
+                            },
+                            {
+                              "type": "button",
+                              "buttonStyle": "light",
+                              "style": {
+                                "marginLeft": "1rem"
+                              },
+                              "text": "Cancel",
+                              "events": {
+                                "click": [
+                                  {
+                                    "type": "close-popup"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "events": {
+                    "submit": [
+                      {
+                        "error": [
+                          {
+                            "detail": "Unable to update Order",
+                            "severity": "error",
+                            "summary": "Error",
+                            "type": "notify"
+                          }
+                        ],
+                        "name": "LocalDb.updateOrder",
+                        "parameters": [
+                          {
+                            "name": "Id",
+                            "value": "${parameters.Id}"
+                          },
+                          {
+                            "name": "Order",
+                            "value": "${order}"
+                          }
+                        ],
+                        "then": [
+                          {
+                            "type": "close-popup",
+                            "result": "${order}",
+                            "condition": ""
+                          }
+                        ],
+                        "type": "invoke"
+                      }
+                    ]
+                  },
+                  "itemType": "WebApplication.Models.LocalDb.Order",
+                  "data": "${order}",
+                  "visible": "${order != null}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": {
+    "load": [
+      {
+        "name": "LocalDb.getOrderById",
+        "parameters": [
+          {
+            "name": "Id",
+            "value": "${parameters.Id}"
+          }
+        ],
+        "then": [
+          {
+            "name": "order",
+            "type": "set",
+            "value": "${result}",
+            "valueType": "WebApplication.Models.LocalDb.Order"
+          }
+        ],
+        "error": [],
+        "type": "invoke"
+      },
+      {
+        "name": "LocalDb.getPeople",
+        "parameters": [],
+        "then": [
+          {
+            "name": "getPeopleResult",
+            "type": "set",
+            "value": "${result}",
+            "valueType": "IEnumerable<WebApplication.Models.LocalDb.Person>"
+          }
+        ],
+        "type": "invoke"
+      },
+      {
+        "name": "LocalDb.getUsers",
+        "parameters": [],
+        "then": [
+          {
+            "name": "getUsersResult",
+            "type": "set",
+            "value": "${result}",
+            "valueType": "IEnumerable<WebApplication.Models.LocalDb.User>"
+          }
+        ],
+        "type": "invoke"
+      }
+    ]
+  },
+  "name": "Edit Order",
+  "layout": "Main"
+}

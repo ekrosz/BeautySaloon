@@ -1,0 +1,60 @@
+﻿@page "/login"
+
+@using BeautySaloon.Api.Services;
+@using Radzen
+@using WebApplication.Handlers
+
+@inject IAuthHttpClient AuthClient;
+@inject NotificationService NotificationService;
+@inject NavigationManager NavigationManager;
+@layout LoginLayout;
+
+<div class="login-main-section d-flex p-2">
+    <div class="m-auto">
+        <div style="width:30rem;">
+            <RadzenTemplateForm Data=@("SimpleLogin") Submit=@((string args) => OnLogin(args))>
+                <div class="row mb-1">
+                    Логин
+                </div>
+                <div class="row mb-2">
+                    <RadzenTextBox Name="UserName" Placeholder="Введите логин" Style="width:100%;" @bind-Value=UserName></RadzenTextBox>
+                    <RadzenRequiredValidator Component="UserName" Text="Обязательное поле"></RadzenRequiredValidator>
+                </div>
+                <div class="row mb-1">
+                    Пароль
+                </div>
+                <div class="row mb-4">
+                    <RadzenPassword Name="Password" Placeholder="Введите пароль" Style="width:100%;" @bind-Value=Password></RadzenPassword>
+                    <RadzenRequiredValidator Component="Password" Text="Обязательное поле"></RadzenRequiredValidator>
+                </div>
+                <div class="row pt-2">
+                    <RadzenButton Text="Войти" Style="width:100%;" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Dark" />
+                </div>
+            </RadzenTemplateForm>
+        </div>
+    </div>
+</div>
+@code {
+    private string UserName = string.Empty;
+    private string Password = string.Empty;
+
+    private async Task OnLogin(string args)
+    {
+        try
+        {
+            var response = await AuthClient.AuthorizeAsync(new BeautySaloon.Api.Dto.Requests.Auth.AuthorizeByCredentialsRequestDto { Login = UserName, Password = Password });
+
+            NavigationManager.NavigateTo("/persons");
+        }
+        catch(CustomApiException ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = ex.Message,
+                Detail = ex.Details.ErrorMessage,
+                Duration = 4000
+            });
+        }
+    }
+}
