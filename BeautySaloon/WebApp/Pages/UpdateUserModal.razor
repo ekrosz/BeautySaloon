@@ -13,17 +13,17 @@
 @inject NavigationManager _navigationManager;
 @inject DialogService _dialogService;
 
-@if(_updateUserRequest == null)
+@if (_user == null)
 {
     <p><em>Загрузка...</em></p>
 }
 else
 {
-    <RadzenTemplateForm TItem="UpdateUserRequestDto" Data=@_updateUserRequest Submit=@OnAccept>
+    <RadzenTemplateForm TItem="User" Data=@_user Submit=@OnAccept>
         <div class="row px-3">
             <div class="col-5 px-0">Имя</div>
             <div class="col-7 px-0">
-                <RadzenTextBox Trim="true" Name="FirstName" Placeholder="Имя" @bind-Value=@_updateUserRequest.Name.FirstName />
+                <RadzenTextBox Trim="true" Name="FirstName" Placeholder="Имя" @bind-Value=@_user.Name.FirstName />
                 <RadzenRequiredValidator Component="FirstName" Text="Обязательное поле" Style="position: absolute" />
             </div>
         </div><br>
@@ -31,7 +31,7 @@ else
         <div class="row px-3">
             <div class="col-5 px-0">Фамилия</div>
             <div class="col-7 px-0">
-                <RadzenTextBox Trim="true" Name="LastName" Placeholder="Фамилия" @bind-Value=@_updateUserRequest.Name.LastName />
+                <RadzenTextBox Trim="true" Name="LastName" Placeholder="Фамилия" @bind-Value=@_user.Name.LastName />
                 <RadzenRequiredValidator Component="LastName" Text="Обязательное поле" Style="position: absolute" />
             </div>
         </div><br>
@@ -39,14 +39,14 @@ else
         <div class="row px-3">
             <div class="col-5 px-0">Отчество</div>
             <div class="col-7 px-0">
-                <RadzenTextBox Trim="true" Name="MiddleName" Placeholder="Имя" @bind-Value=@_updateUserRequest.Name.MiddleName />
+                <RadzenTextBox Trim="true" Name="MiddleName" Placeholder="Имя" @bind-Value=@_user.Name.MiddleName />
             </div>
         </div><br>
 
         <div class="row px-3">
             <div class="col-5 px-0">Роль</div>
             <div class="col-7 px-0">
-                <RadzenDropDown Placeholder="Роль" @bind-Value=@_updateUserRequest.Role
+                <RadzenDropDown Placeholder="Роль" @bind-Value=@_user.Role
                             Data=@_roles
                             TextProperty="Value"
                             ValueProperty="Key" />
@@ -56,7 +56,7 @@ else
         <div class="row px-3">
             <div class="col-5 px-0">Логин</div>
             <div class="col-7 px-0">
-                <RadzenTextBox Trim="true" Name="Login" Placeholder="Логин" @bind-Value=@_updateUserRequest.Login />
+                <RadzenTextBox Trim="true" Name="Login" Placeholder="Логин" @bind-Value=@_user.Login />
                 <RadzenRequiredValidator Component="Login" Text="Обязательное поле" Style="position: absolute" />
             </div>
         </div><br>
@@ -64,7 +64,7 @@ else
         <div class="row px-3">
             <div class="col-5 px-0">Пароль</div>
             <div class="col-7 px-0">
-                <RadzenTextBox Trim="true" Name="Password" Placeholder="Пароль" @bind-Value=@_updateUserRequest.Password />
+                <RadzenTextBox Trim="true" Name="Password" Placeholder="Пароль" @bind-Value=@_user.Password />
                 <RadzenRequiredValidator Component="Password" Text="Обязательное поле" Style="position: absolute" />
             </div>
         </div><br>
@@ -72,7 +72,7 @@ else
         <div class="row px-3">
             <div class="col-5 px-0">Телефон</div>
             <div class="col-7 px-0">
-                <RadzenTextBox Trim="true" Name="PhoneNumber" Placeholder="Телефон" @bind-Value=@_updateUserRequest.PhoneNumber />
+                <RadzenTextBox Trim="true" Name="PhoneNumber" Placeholder="Телефон" @bind-Value=@_user.PhoneNumber />
                 <RadzenRequiredValidator Component="PhoneNumber" Text="Обязательное поле" Style="position: absolute" />
             </div>
         </div><br>
@@ -80,7 +80,7 @@ else
         <div class="row px-3">
             <div class="col-5 px-0">Электронная почта</div>
             <div class="col-7 px-0">
-                <RadzenTextBox Trim="true" Name="Email" Placeholder="Электронная почта" @bind-Value=@_updateUserRequest.Email />
+                <RadzenTextBox Trim="true" Name="Email" Placeholder="Электронная почта" @bind-Value=@_user.Email />
             </div>
         </div><br>
 
@@ -100,7 +100,22 @@ else
     [Parameter]
     public Guid UserId { get; init; }
 
-    private UpdateUserRequestDto _updateUserRequest = default!;
+    public record User
+    {
+        public Role Role { get; set; } = Role.Employee;
+
+        public string Login { get; set; } = string.Empty;
+
+        public string Password { get; set; } = string.Empty;
+
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        public string? Email { get; set; }
+
+        public FullName Name { get; set; } = FullName.Empty;
+    }
+
+    private User _user = new();
 
     private Dictionary<Role, string> _roles = default!;
 
@@ -119,7 +134,7 @@ else
         {
             var user = await _userClient.GetAsync(UserId, CancellationToken.None);
 
-            _updateUserRequest = _mapper.Map<UpdateUserRequestDto>(user);
+            _user = _mapper.Map<User>(user);
         }
         catch (CustomApiException ex)
         {
@@ -137,7 +152,9 @@ else
     {
         try
         {
-            await _userClient.UpdateAsync(UserId, _updateUserRequest, CancellationToken.None);
+            var request = _mapper.Map<UpdateUserRequestDto>(_user);
+
+            await _userClient.UpdateAsync(UserId, request, CancellationToken.None);
 
             _dialogService.Close(true);
         }

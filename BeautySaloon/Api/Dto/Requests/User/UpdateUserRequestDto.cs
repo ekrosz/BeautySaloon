@@ -7,17 +7,17 @@ using FluentValidation;
 namespace BeautySaloon.Api.Dto.Requests.User;
 public class UpdateUserRequestDto
 {
-    public Role Role { get; set; }
+    public Role Role { get; init; }
 
-    public string Login { get; set; } = string.Empty;
+    public string Login { get; init; } = string.Empty;
 
-    public string Password { get; set; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
 
-    public string PhoneNumber { get; set; } = string.Empty;
+    public string PhoneNumber { get; init; } = string.Empty;
 
-    public string? Email { get; set; }
+    public string? Email { get; init; }
 
-    public FullName Name { get; set; } = FullName.Empty;
+    public FullName Name { get; init; } = FullName.Empty;
 }
 
 public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequestDto>

@@ -10,9 +10,7 @@ public record GetPersonListItemResponseDto
 
     public DateTime BirthDate { get; init; }
 
-    public string? Email { get; init; } = string.Empty;
+    public string? Email { get; init; }
 
     public string PhoneNumber { get; init; } = string.Empty;
-
-    public string? Comment { get; init; }
 }

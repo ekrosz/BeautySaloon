@@ -21,6 +21,11 @@ builder.Services.AddRefitClient<IUserHttpClient>()
     .AddHttpMessageHandler<CustomRefitErrorHandler>()
     .AddHttpMessageHandler<HeaderPropagationHandler>();
 
+builder.Services.AddRefitClient<IPersonHttpClient>()
+    .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
+    .AddHttpMessageHandler<CustomRefitErrorHandler>()
+    .AddHttpMessageHandler<HeaderPropagationHandler>();
+
 builder.Services.AddRefitClient<IAuthHttpClient>()
     .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
     .AddHttpMessageHandler<CustomRefitErrorHandler>()

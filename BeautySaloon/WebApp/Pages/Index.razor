@@ -14,11 +14,13 @@
 @inject NavigationManager _navigationManager;
 @inject DialogService _dialogService;
 
-<h1>Пользователи</h1>
+<div class="row px-2">
+    <h1>Пользователи</h1>
+</div>
 
-<div class="row px-1">
+<div class="row px-2">
     <div class="col-4">
-        <RadzenTextBox Name="SearchInput" Placeholder="Поиск по наименованию" @bind-bind-Value=@_searchString
+        <RadzenTextBox Name="SearchInput" Placeholder="Поиск по наименованию" @bind-Value=@_searchString
                        class="w-100"
                        @onkeyup=OnChangeSearchInputAsync />
     </div>
@@ -36,11 +38,10 @@ else
 {
     <div class="row px-3">
         <div class="col-md-12 p-1">
-            <RadzenDataGrid Data="@_data!.Items.Where(x => x.Id != _currentUser.Id)"
+            <RadzenDataGrid Data="@_data!.Items"
                         TItem="GetUserResponseDto"
                         ColumnWidth="200px"
-                        AllowColumnResize="true"
-                        AllowSorting="true">
+                        AllowColumnResize="true">
                 <Columns>
                     <RadzenDataGridColumn TItem="GetUserResponseDto" Property="Name.ConcatedName" Title="ФИО" />
                     <RadzenDataGridColumn TItem="GetUserResponseDto" Property="Role" Title="Роль">

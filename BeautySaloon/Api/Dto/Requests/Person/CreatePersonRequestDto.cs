@@ -11,7 +11,7 @@ public record CreatePersonRequestDto
 
     public DateTime BirthDate { get; init; }
 
-    public string? Email { get; init; } = string.Empty;
+    public string? Email { get; init; }
 
     public string PhoneNumber { get; init; } = string.Empty;
 }
