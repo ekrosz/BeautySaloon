@@ -1,15 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Services;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Api.Dto.Responses.CosmeticService;
+using BeautySaloon.Api.Dto.Requests.CosmeticService;
+using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
+using WebApplication.Handlers;
 
 namespace WebApplication.Pages
 {
@@ -21,10 +19,6 @@ namespace WebApplication.Pages
         public void Reload()
         {
             InvokeAsync(StateHasChanged);
-        }
-
-        public void OnPropertyChanged(PropertyChangedEventArgs args)
-        {
         }
 
         [Inject]
@@ -46,11 +40,15 @@ namespace WebApplication.Pages
         protected NotificationService NotificationService { get; set; }
 
         [Inject]
-        protected LocalDbService LocalDb { get; set; }
-        protected RadzenDataGrid<WebApplication.Models.LocalDb.CosmeticService> grid0;
+        protected NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        protected ICosmeticServiceHttpClient CosmeticServiceHttpClient { get; set; }
+
+        protected RadzenDataGrid<GetCosmeticServiceResponseDto> grid0;
 
         string _search;
-        protected string search
+        protected string Search
         {
             get
             {
@@ -60,16 +58,15 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_search, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "search", NewValue = value, OldValue = _search };
                     _search = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
-        IEnumerable<WebApplication.Models.LocalDb.CosmeticService> _getCosmeticServicesResult;
-        protected IEnumerable<WebApplication.Models.LocalDb.CosmeticService> getCosmeticServicesResult
+        IReadOnlyCollection<GetCosmeticServiceResponseDto> _getCosmeticServicesResult;
+
+        protected IReadOnlyCollection<GetCosmeticServiceResponseDto> GetCosmeticServicesResult
         {
             get
             {
@@ -79,58 +76,160 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_getCosmeticServicesResult, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "getCosmeticServicesResult", NewValue = value, OldValue = _getCosmeticServicesResult };
                     _getCosmeticServicesResult = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
+        private int _pageSize = 10;
+
+        protected int PageSize
+        {
+            get
+            {
+                return _pageSize;
+            }
+            set
+            {
+                if (!object.Equals(_pageSize, value))
+                {
+                    _pageSize = value;
+                    Reload();
+                }
+            }
+        }
+
+        private int _pageNumber = 1;
+
+        protected int PageNumber
+        {
+            get
+            {
+                return _pageNumber;
+            }
+            set
+            {
+                if (!object.Equals(_pageNumber, value))
+                {
+                    _pageNumber = value;
+                    Reload();
+                }
+            }
+        }
+
+        protected int TotalCount { get; set; }
+
         protected override async System.Threading.Tasks.Task OnInitializedAsync()
         {
             await Load();
         }
-        protected async System.Threading.Tasks.Task Load()
+
+        protected async Task LoadDataAsync(LoadDataArgs args)
         {
-            if (string.IsNullOrEmpty(search)) {
-                search = "";
+            PageSize = args.Top ?? PageSize;
+            PageNumber = args.Skip.HasValue
+            ? (args.Skip.Value / PageSize) + 1
+            : PageNumber;
+
+            await Load();
+        }
+
+        protected async Task Load()
+        {
+            if (string.IsNullOrEmpty(Search))
+            {
+                Search = string.Empty;
             }
 
-            var localDbGetCosmeticServicesResult = await LocalDb.GetCosmeticServices(new Query() { Filter = $@"i => i.Name.Contains(@0) || i.Description.Contains(@1)", FilterParameters = new object[] { search, search } });
-            getCosmeticServicesResult = localDbGetCosmeticServicesResult;
+            try
+            {
+                var cosmeticServices = await CosmeticServiceHttpClient.GetListAsync(new GetCosmeticServiceListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = Search }, CancellationToken.None);
+
+                GetCosmeticServicesResult = cosmeticServices.Items;
+                TotalCount = cosmeticServices.TotalCount;
+            }
+            catch (CustomApiException ex)
+            {
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = ex.Message,
+                    Detail = ex.Details.ErrorMessage
+                });
+
+                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    NavigationManager.NavigateTo("/login");
+                }
+            }
         }
 
-        protected async System.Threading.Tasks.Task Button0Click(MouseEventArgs args)
+        protected async Task Button0Click(MouseEventArgs args)
         {
-            var dialogResult = await DialogService.OpenAsync<AddCosmeticService>("Add Cosmetic Service", null);
-            await grid0.Reload();
+            var dialogResult = await DialogService.OpenAsync<AddCosmeticService>("Создание услуги", null);
 
-            await InvokeAsync(() => { StateHasChanged(); });
+            if ((dialogResult as bool?).GetValueOrDefault())
+            {
+                await Load();
+                await grid0.Reload();
+                await InvokeAsync(() => { StateHasChanged(); });
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно сохранена"
+                });
+            }
         }
 
-        protected async System.Threading.Tasks.Task Grid0RowSelect(WebApplication.Models.LocalDb.CosmeticService args)
+        protected async Task Grid0RowSelect(GetCosmeticServiceResponseDto args)
         {
-            var dialogResult = await DialogService.OpenAsync<EditCosmeticService>("Edit Cosmetic Service", new Dictionary<string, object>() { {"Id", args.Id} });
-            await InvokeAsync(() => { StateHasChanged(); });
+            var dialogResult = await DialogService.OpenAsync<EditCosmeticService>("Редактирование услуги", new Dictionary<string, object>() { {"Id", args.Id} });
+
+            if ((dialogResult as bool?).GetValueOrDefault())
+            {
+                await Load();
+                await InvokeAsync(() => { StateHasChanged(); });
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно сохранена"
+                });
+            }
         }
 
-        protected async System.Threading.Tasks.Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
+        protected async Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
         {
             try
             {
                 if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
                 {
-                    var localDbDeleteCosmeticServiceResult = await LocalDb.DeleteCosmeticService(data.Id);
-                    if (localDbDeleteCosmeticServiceResult != null)
+                    await CosmeticServiceHttpClient.DeleteAsync(data.Id, CancellationToken.None);
+                    await Load();
+                    await grid0.Reload();
+
+                    NotificationService.Notify(new NotificationMessage()
                     {
-                        await grid0.Reload();
-                    }
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Запись успешно удалена"
+                    });
                 }
             }
-            catch (System.Exception localDbDeleteCosmeticServiceException)
+            catch (CustomApiException ex)
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error,Summary = $"Error",Detail = $"Unable to delete CosmeticService" });
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = ex.Message,
+                    Detail = ex.Details.ErrorMessage
+                });
+
+                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    NavigationManager.NavigateTo("/login");
+                }
             }
         }
     }

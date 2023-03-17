@@ -152,10 +152,10 @@ namespace WebApplication.Pages
 
             try
             {
-                var localDbGetPeopleResult = await PersonHttpClient.GetListAsync(new GetPersonListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = search }, CancellationToken.None);
+                var persons = await PersonHttpClient.GetListAsync(new GetPersonListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = search }, CancellationToken.None);
 
-                GetPeopleResult = localDbGetPeopleResult.Items;
-                TotalCount = localDbGetPeopleResult.TotalCount;
+                GetPeopleResult = persons.Items;
+                TotalCount = persons.TotalCount;
             }
             catch (CustomApiException ex)
             {
@@ -218,6 +218,12 @@ namespace WebApplication.Pages
 
                     await Load();
                     await grid0.Reload();
+
+                    NotificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Запись успешно удалена"
+                    });
                 }
             }
             catch (CustomApiException ex)

@@ -82,6 +82,11 @@ namespace WebApplication
 
             services.AddSingleton<ITokenStorage, TokenStorage>();
 
+            services.AddRefitClient<IAuthHttpClient>()
+                .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
+                .AddHttpMessageHandler<CustomRefitErrorHandler>()
+                .AddHttpMessageHandler<TokenStorageHandler>();
+
             services.AddRefitClient<IUserHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>()
@@ -92,10 +97,25 @@ namespace WebApplication
                 .AddHttpMessageHandler<CustomRefitErrorHandler>()
                 .AddHttpMessageHandler<HeaderPropagationHandler>();
 
-            services.AddRefitClient<IAuthHttpClient>()
+            services.AddRefitClient<ICosmeticServiceHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>()
-                .AddHttpMessageHandler<TokenStorageHandler>();
+                .AddHttpMessageHandler<HeaderPropagationHandler>();
+
+            services.AddRefitClient<ISubscriptionHttpClient>()
+                .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
+                .AddHttpMessageHandler<CustomRefitErrorHandler>()
+                .AddHttpMessageHandler<HeaderPropagationHandler>();
+
+            services.AddRefitClient<IOrderHttpClient>()
+                .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
+                .AddHttpMessageHandler<CustomRefitErrorHandler>()
+                .AddHttpMessageHandler<HeaderPropagationHandler>();
+
+            services.AddRefitClient<IAppointmentHttpClient>()
+                .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
+                .AddHttpMessageHandler<CustomRefitErrorHandler>()
+                .AddHttpMessageHandler<HeaderPropagationHandler>();
 
             services.AddAutoMapper(typeof(UserProfile).Assembly);
 

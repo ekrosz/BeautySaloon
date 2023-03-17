@@ -5,34 +5,47 @@
 @using Radzen
 @using Radzen.Blazor
 @using WebApplication.Models.LocalDb
-<PageTitle>Cosmetic Services</PageTitle>
+<PageTitle>Косметические услуги</PageTitle>
 <RadzenContent Container="main">
   <ChildContent>
-    <RadzenHeading Size="H1" Text="Cosmetic Services">
+    <RadzenHeading Size="H1" Text="Косметические услуги">
     </RadzenHeading>
     <div class="row">
       <div class="col-md-12">
-        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add" Click="@Button0Click">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
         </RadzenButton>
-        <RadzenTextBox Placeholder="Search ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        <RadzenTextBox Placeholder="Search ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
         </RadzenTextBox>
-        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" AllowSorting="false" Data="@getCosmeticServicesResult" TItem="WebApplication.Models.LocalDb.CosmeticService" RowSelect="@Grid0RowSelect">
+        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" LoadData="@LoadDataAsync" AllowSorting="false" Data="@GetCosmeticServicesResult" TItem="GetCosmeticServiceResponseDto" RowSelect="@Grid0RowSelect">
           <Columns>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.CosmeticService" Property="CreatedOn" FormatString="{0:dd.MM.yyyy}" Title="Created On">
+            <RadzenDataGridColumn TItem="GetCosmeticServiceResponseDto" Property="Name" Title="Наименование">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.CosmeticService" Property="Name" Title="Name">
+            <RadzenDataGridColumn TItem="GetCosmeticServiceResponseDto" Property="ExecuteTimeInMinutes" Title="Длительность сеанса">
+                <Template Context="cosmeticService">
+                    @{
+                       const int MinutesInHour = 60;
+
+                       if (cosmeticService.ExecuteTimeInMinutes >= MinutesInHour)
+                       {
+                           if (cosmeticService.ExecuteTimeInMinutes % MinutesInHour == 0)
+                           {
+                               <span>@($"{cosmeticService.ExecuteTimeInMinutes / MinutesInHour} ч.")</span>
+                           }
+                           else
+                           {
+                               <span>@($"{cosmeticService.ExecuteTimeInMinutes / MinutesInHour} ч. {cosmeticService.ExecuteTimeInMinutes % MinutesInHour} мин.")</span>
+                           }
+                       }
+                       else
+                       {
+                           <span>@($"{cosmeticService.ExecuteTimeInMinutes} мин.")</span>
+                       }
+                    }
+                </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.CosmeticService" Property="UserModifierId" Title="User Modifier Id">
+            <RadzenDataGridColumn TItem="GetCosmeticServiceResponseDto" Property="Description" Title="Описание">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.CosmeticService" Property="Description" Title="Description">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.CosmeticService" Property="Id" Title="Id">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.CosmeticService" Property="ExecuteTimeInMinutes" Title="Execute Time In Minutes">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.CosmeticService" Property="UpdatedOn" FormatString="{0:dd.MM.yyyy}" Title="Updated On">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.CosmeticService" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+            <RadzenDataGridColumn TItem="GetCosmeticServiceResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
               <Template Context="webApplicationModelsLocalDbCosmeticService">
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbCosmeticService))" @onclick:stopPropagation="true">
                 </RadzenButton>

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
-using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Services;
+using BeautySaloon.Api.Dto.Requests.CosmeticService;
+using BeautySaloon.Api.Services;
+using AutoMapper;
+using WebApplication.Handlers;
 
 namespace WebApplication.Pages
 {
@@ -21,10 +17,6 @@ namespace WebApplication.Pages
         public void Reload()
         {
             InvokeAsync(StateHasChanged);
-        }
-
-        public void OnPropertyChanged(PropertyChangedEventArgs args)
-        {
         }
 
         [Inject]
@@ -46,10 +38,17 @@ namespace WebApplication.Pages
         protected NotificationService NotificationService { get; set; }
 
         [Inject]
-        protected LocalDbService LocalDb { get; set; }
+        protected NavigationManager NavigationManager { get; set; }
 
-        WebApplication.Models.LocalDb.CosmeticService _cosmeticservice;
-        protected WebApplication.Models.LocalDb.CosmeticService cosmeticservice
+        [Inject]
+        protected ICosmeticServiceHttpClient CosmeticServiceHttpClient { get; set; }
+
+        [Inject]
+        protected IMapper Mapper { get; set; }
+
+        private CosmeticServiceRequest _cosmeticservice;
+
+        protected CosmeticServiceRequest CosmeticService
         {
             get
             {
@@ -59,39 +58,59 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_cosmeticservice, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "cosmeticservice", NewValue = value, OldValue = _cosmeticservice };
                     _cosmeticservice = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
-        protected override async System.Threading.Tasks.Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
             await Load();
         }
-        protected async System.Threading.Tasks.Task Load()
+        protected async Task Load()
         {
-            cosmeticservice = new WebApplication.Models.LocalDb.CosmeticService(){};
+            CosmeticService = new CosmeticServiceRequest(){};
         }
 
-        protected async System.Threading.Tasks.Task Form0Submit(WebApplication.Models.LocalDb.CosmeticService args)
+        protected async Task Form0Submit(CosmeticServiceRequest args)
         {
             try
             {
-                var localDbCreateCosmeticServiceResult = await LocalDb.CreateCosmeticService(cosmeticservice);
-                DialogService.Close(cosmeticservice);
+                var request = Mapper.Map<CreateCosmeticServiceRequestDto>(CosmeticService);
+
+                await CosmeticServiceHttpClient.CreateAsync(request, CancellationToken.None);
+
+                DialogService.Close(true);
             }
-            catch (System.Exception localDbCreateCosmeticServiceException)
+            catch (CustomApiException ex)
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error,Summary = $"Error",Detail = $"Unable to create new CosmeticService!" });
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = ex.Message,
+                    Detail = ex.Details.ErrorMessage
+                });
+
+                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    NavigationManager.NavigateTo("/login");
+                }
             }
         }
 
-        protected async System.Threading.Tasks.Task Button2Click(MouseEventArgs args)
+        protected async Task Button2Click(MouseEventArgs args)
         {
-            DialogService.Close(null);
+            DialogService.Close(false);
+        }
+
+        public record CosmeticServiceRequest
+        {
+            public string Name { get; set; } = string.Empty;
+
+            public string Description { get; set; } = string.Empty;
+
+            public int ExecuteTimeInMinutes { get; set; }
         }
     }
 }
