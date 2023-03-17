@@ -124,6 +124,12 @@ namespace WebApplication.Pages
                 await Load();
                 await grid0.Reload();
                 await InvokeAsync(() => { StateHasChanged(); });
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно сохранена"
+                });
             }
         }
 
@@ -135,6 +141,12 @@ namespace WebApplication.Pages
             {
                 await Load();
                 await InvokeAsync(() => { StateHasChanged(); });
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно сохранена"
+                });
             }
         }
 

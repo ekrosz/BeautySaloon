@@ -175,24 +175,36 @@ namespace WebApplication.Pages
 
         protected async System.Threading.Tasks.Task Button0Click(MouseEventArgs args)
         {
-            var dialogResult = await DialogService.OpenAsync<AddPerson>("Add Person", null);
+            var dialogResult = await DialogService.OpenAsync<AddPerson>("Создание клиента", null);
 
             if ((dialogResult as bool?).GetValueOrDefault())
             {
                 await Load();
                 await grid0.Reload();
                 await InvokeAsync(() => { StateHasChanged(); });
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно сохранена"
+                });
             }
         }
 
         protected async Task Grid0RowSelect(GetPersonListItemResponseDto args)
         {
-            var dialogResult = await DialogService.OpenAsync<EditPerson>("Edit Person", new Dictionary<string, object>() { {"Id", args.Id} });
+            var dialogResult = await DialogService.OpenAsync<EditPerson>("Редактирование клиента", new Dictionary<string, object>() { {"Id", args.Id} });
 
             if ((dialogResult as bool?).GetValueOrDefault())
             {
                 await Load();
                 await InvokeAsync(() => { StateHasChanged(); });
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно сохранена"
+                });
             }
         }
 

@@ -48,7 +48,7 @@
             </div>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
-                <RadzenLabel Text="Role" Component="Role" style="width: 100%">
+                <RadzenLabel Text="Роль" Component="Role" style="width: 100%">
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
@@ -60,7 +60,7 @@
             </div>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
-                <RadzenLabel Text="Login" Component="Login" style="width: 100%">
+                <RadzenLabel Text="Логин" Component="Login" style="width: 100%">
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
@@ -72,19 +72,19 @@
             </div>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
-                <RadzenLabel Text="Password" Component="Password" style="width: 100%">
+                <RadzenLabel Text="Пароль" Component="Password" style="width: 100%">
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
-                <RadzenTextBox MaxLength="255" style="display: block; width: 100%" @bind-Value="@(User.Password)" Name="Password">
-                </RadzenTextBox>
+                <RadzenPassword style="display: block; width: 100%" @bind-Value="@(User.Password)" Name="Password">
+                </RadzenPassword>
                 <RadzenRequiredValidator Component="Password" Text="Обязательное поле" style="position: absolute">
                 </RadzenRequiredValidator>
               </div>
             </div>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
-                <RadzenLabel Text="Phone Number" Component="PhoneNumber" style="width: 100%">
+                <RadzenLabel Text="Телефон" Component="PhoneNumber" style="width: 100%">
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
@@ -96,7 +96,7 @@
             </div>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
-                <RadzenLabel Text="Email" Component="Email" style="width: 100%">
+                <RadzenLabel Text="Почта" Component="Email" style="width: 100%">
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
