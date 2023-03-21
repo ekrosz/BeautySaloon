@@ -6,7 +6,7 @@ namespace BeautySaloon.Api.Dto.Requests.Subscription;
 
 public record GetSubscriptionListRequestDto
 {
-    public string SearchString { get; init; } = string.Empty;
+    public string? SearchString { get; init; }
 
     public PageRequestDto Page { get; init; } = new();
 }

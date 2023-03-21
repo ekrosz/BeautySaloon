@@ -25,9 +25,6 @@ public partial class DetailsPersonComponent : ComponentBase
     protected IJSRuntime JSRuntime { get; set; }
 
     [Inject]
-    protected NavigationManager NavigationManager { get; set; }
-
-    [Inject]
     protected DialogService DialogService { get; set; }
 
     [Inject]
@@ -38,6 +35,9 @@ public partial class DetailsPersonComponent : ComponentBase
 
     [Inject]
     protected NotificationService NotificationService { get; set; }
+
+    [Inject]
+    protected NavigationManager NavigationManager { get; set; }
 
     [Inject]
     protected IPersonHttpClient PersonHttpClient { get; set; }

@@ -24,9 +24,6 @@ namespace WebApplication.Pages
         protected IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        protected NavigationManager UriHelper { get; set; }
-
-        [Inject]
         protected DialogService DialogService { get; set; }
 
         [Inject]

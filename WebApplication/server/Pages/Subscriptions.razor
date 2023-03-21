@@ -5,34 +5,26 @@
 @using Radzen
 @using Radzen.Blazor
 @using WebApplication.Models.LocalDb
-<PageTitle>Subscriptions</PageTitle>
+<PageTitle>Абонементы</PageTitle>
 <RadzenContent Container="main">
   <ChildContent>
-    <RadzenHeading Size="H1" Text="Subscriptions">
+    <RadzenHeading Size="H1" Text="Абонементы">
     </RadzenHeading>
     <div class="row">
       <div class="col-md-12">
         <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add" Click="@Button0Click">
         </RadzenButton>
-        <RadzenTextBox Placeholder="Search ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        <RadzenTextBox Placeholder="Поиск по наименованию..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
         </RadzenTextBox>
-        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" AllowSorting="false" Data="@getSubscriptionsResult" TItem="WebApplication.Models.LocalDb.Subscription" RowSelect="@Grid0RowSelect">
+        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" AllowSorting="false" Data="@GetSubscriptionsResult" TItem="GetSubscriptionListItemResponseDto" RowSelect="@Grid0RowSelect" LoadData="@LoadDataAsync">
           <Columns>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Subscription" Property="UserModifierId" Title="User Modifier Id">
+            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Property="Name" Title="Name">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Subscription" Property="LifeTimeInDays" Title="Life Time In Days">
+            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Property="LifeTimeInDays" Title="Life Time In Days">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Subscription" Property="Id" Title="Id">
+            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Property="Price" Title="Price">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Subscription" Property="Price" Title="Price">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Subscription" Property="UpdatedOn" FormatString="{0:dd.MM.yyyy}" Title="Updated On">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Subscription" Property="CreatedOn" FormatString="{0:dd.MM.yyyy}" Title="Created On">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Subscription" Property="Name" Title="Name">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Subscription" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
               <Template Context="webApplicationModelsLocalDbSubscription">
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbSubscription))" @onclick:stopPropagation="true">
                 </RadzenButton>

@@ -15,8 +15,13 @@ public class SubscriptionProfile : Profile
         CreateMap<Subscription, GetSubscriptionListItemResponseDto>();
 
         CreateMap<Subscription, GetSubscriptionResponseDto>()
-            .ForMember(dest => dest.CosmeticServices, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServices.Select(x => x.CosmeticService)));
+            .ForMember(dest => dest.CosmeticServices, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServices));
 
-        CreateMap<CosmeticService, CosmeticServiceResponseDto>();
+        CreateMap<SubscriptionCosmeticService, CosmeticServiceResponseDto>()
+            .ForMember(dest => dest.Id, cfg => cfg.MapFrom(src => src.CosmeticService.Id))
+            .ForMember(dest => dest.Name, cfg => cfg.MapFrom(src => src.CosmeticService.Id))
+            .ForMember(dest => dest.ExecuteTimeInMinutes, cfg => cfg.MapFrom(src => src.CosmeticService.Id))
+            .ForMember(dest => dest.Description, cfg => cfg.MapFrom(src => src.CosmeticService.Id))
+            .ForMember(dest => dest.Count, cfg => cfg.MapFrom(src => src.Count));
     }
 }

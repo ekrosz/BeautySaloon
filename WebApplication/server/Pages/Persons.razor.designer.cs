@@ -33,9 +33,6 @@ namespace WebApplication.Pages
         protected IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        protected NavigationManager UriHelper { get; set; }
-
-        [Inject]
         protected DialogService DialogService { get; set; }
 
         [Inject]
@@ -129,7 +126,7 @@ namespace WebApplication.Pages
 
         protected int TotalCount { get; set; }
 
-        protected override async System.Threading.Tasks.Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
             await Load();
         }
@@ -144,7 +141,7 @@ namespace WebApplication.Pages
             await Load();
         }
 
-        protected async System.Threading.Tasks.Task Load()
+        protected async Task Load()
         {
             if (string.IsNullOrEmpty(search))
             {
@@ -174,7 +171,7 @@ namespace WebApplication.Pages
             }
         }
 
-        protected async System.Threading.Tasks.Task Button0Click(MouseEventArgs args)
+        protected async Task Button0Click(MouseEventArgs args)
         {
             var dialogResult = await DialogService.OpenAsync<AddPerson>("Создание клиента", null);
 

@@ -1,15 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Services;
+using BeautySaloon.Api.Dto.Responses.Subscription;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Api.Dto.Requests.Subscription;
+using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
+using WebApplication.Handlers;
 
 namespace WebApplication.Pages
 {
@@ -21,10 +19,6 @@ namespace WebApplication.Pages
         public void Reload()
         {
             InvokeAsync(StateHasChanged);
-        }
-
-        public void OnPropertyChanged(PropertyChangedEventArgs args)
-        {
         }
 
         [Inject]
@@ -46,11 +40,16 @@ namespace WebApplication.Pages
         protected NotificationService NotificationService { get; set; }
 
         [Inject]
-        protected LocalDbService LocalDb { get; set; }
-        protected RadzenDataGrid<WebApplication.Models.LocalDb.Subscription> grid0;
+        protected NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        protected ISubscriptionHttpClient SubscriptionHttpClient { get; set; }
+
+        protected RadzenDataGrid<GetSubscriptionListItemResponseDto> grid0;
 
         string _search;
-        protected string search
+
+        protected string Search
         {
             get
             {
@@ -60,16 +59,15 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_search, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "search", NewValue = value, OldValue = _search };
                     _search = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
-        IEnumerable<WebApplication.Models.LocalDb.Subscription> _getSubscriptionsResult;
-        protected IEnumerable<WebApplication.Models.LocalDb.Subscription> getSubscriptionsResult
+        IReadOnlyCollection<GetSubscriptionListItemResponseDto> _getSubscriptionsResult;
+
+        protected IReadOnlyCollection<GetSubscriptionListItemResponseDto> GetSubscriptionsResult
         {
             get
             {
@@ -79,58 +77,137 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_getSubscriptionsResult, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "getSubscriptionsResult", NewValue = value, OldValue = _getSubscriptionsResult };
                     _getSubscriptionsResult = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
-        protected override async System.Threading.Tasks.Task OnInitializedAsync()
+        private int _pageSize = 10;
+
+        protected int PageSize
+        {
+            get
+            {
+                return _pageSize;
+            }
+            set
+            {
+                if (!object.Equals(_pageSize, value))
+                {
+                    _pageSize = value;
+                    Reload();
+                }
+            }
+        }
+
+        private int _pageNumber = 1;
+
+        protected int PageNumber
+        {
+            get
+            {
+                return _pageNumber;
+            }
+            set
+            {
+                if (!object.Equals(_pageNumber, value))
+                {
+                    _pageNumber = value;
+                    Reload();
+                }
+            }
+        }
+
+        protected int TotalCount { get; set; }
+
+        protected override async Task OnInitializedAsync()
         {
             await Load();
         }
-        protected async System.Threading.Tasks.Task Load()
+
+        protected async Task LoadDataAsync(LoadDataArgs args)
         {
-            if (string.IsNullOrEmpty(search)) {
-                search = "";
+            PageSize = args.Top ?? PageSize;
+            PageNumber = args.Skip.HasValue
+            ? (args.Skip.Value / PageSize) + 1
+            : PageNumber;
+
+            await Load();
+        }
+
+        protected async Task Load()
+        {
+            if (string.IsNullOrEmpty(Search))
+            {
+                Search = string.Empty;
             }
 
-            var localDbGetSubscriptionsResult = await LocalDb.GetSubscriptions(new Query() { Filter = $@"i => i.Name.Contains(@0)", FilterParameters = new object[] { search } });
-            getSubscriptionsResult = localDbGetSubscriptionsResult;
+            try
+            {
+                var subscriptions = await SubscriptionHttpClient.GetListAsync(new GetSubscriptionListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = Search }, CancellationToken.None);
+
+                GetSubscriptionsResult = subscriptions.Items;
+                TotalCount = subscriptions.TotalCount;
+            }
+            catch (CustomApiException ex)
+            {
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = ex.Message,
+                    Detail = ex.Details.ErrorMessage
+                });
+
+                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    NavigationManager.NavigateTo("/login");
+                }
+            }
         }
 
-        protected async System.Threading.Tasks.Task Button0Click(MouseEventArgs args)
+        protected async Task Button0Click(MouseEventArgs args)
         {
-            var dialogResult = await DialogService.OpenAsync<AddSubscription>("Add Subscription", null);
-            await grid0.Reload();
+            var dialogResult = await DialogService.OpenAsync<AddSubscription>("Создание абонемента", null);
 
-            await InvokeAsync(() => { StateHasChanged(); });
+            if ((dialogResult as bool?).GetValueOrDefault())
+            {
+                await grid0.Reload();
+                await InvokeAsync(() => { StateHasChanged(); });
+                await Load();
+            }
         }
 
-        protected async System.Threading.Tasks.Task Grid0RowSelect(WebApplication.Models.LocalDb.Subscription args)
+        protected async Task Grid0RowSelect(GetSubscriptionListItemResponseDto args)
         {
-            var dialogResult = await DialogService.OpenAsync<EditSubscription>("Edit Subscription", new Dictionary<string, object>() { {"Id", args.Id} });
-            await InvokeAsync(() => { StateHasChanged(); });
+            NavigationManager.NavigateTo($"/edit-subscrioption/{args.Id}");
         }
 
-        protected async System.Threading.Tasks.Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
+        protected async Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
         {
             try
             {
                 if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
                 {
-                    var localDbDeleteSubscriptionResult = await LocalDb.DeleteSubscription(data.Id);
-                    if (localDbDeleteSubscriptionResult != null)
-                    {
-                        await grid0.Reload();
-                    }
+                    var localDbDeleteSubscriptionResult = await SubscriptionHttpClient.DeleteAsync(data.Id, CancellationToken.None);
+
+                    await grid0.Reload();
+                    await Load();
                 }
             }
-            catch (System.Exception localDbDeleteSubscriptionException)
+            catch (CustomApiException ex)
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error,Summary = $"Error",Detail = $"Unable to delete Subscription" });
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = ex.Message,
+                    Detail = ex.Details.ErrorMessage
+                });
+
+                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    NavigationManager.NavigateTo("/login");
+                }
             }
         }
     }

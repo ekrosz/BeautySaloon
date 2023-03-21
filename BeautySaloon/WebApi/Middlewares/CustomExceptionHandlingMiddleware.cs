@@ -79,5 +79,4 @@ public class CustomExceptionHandlingMiddleware
             await response.WriteAsync(result);
         }
     }
-
 }

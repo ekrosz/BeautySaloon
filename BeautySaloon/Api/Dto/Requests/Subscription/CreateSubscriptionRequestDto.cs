@@ -32,8 +32,11 @@ public class CreateSubscriptionRequestValidator : AbstractValidator<CreateSubscr
             .NotEmpty()
             .GreaterThan(0);
 
-        RuleForEach(_ => _.CosmeticServices)
+        RuleFor(_ => _.CosmeticServices)
             .NotNull()
-            .SetValidator(new CosmeticServiceRequestValidator());
+            .NotEmpty()
+            .ChildRules(_ => _.RuleForEach(list => list)
+                .NotNull()
+                .SetValidator(new CosmeticServiceRequestValidator()));
     }
 }

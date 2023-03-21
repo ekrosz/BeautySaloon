@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
-using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Services;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Api.Dto.Requests.Subscription;
+using AutoMapper;
+using WebApplication.Handlers;
 
 namespace WebApplication.Pages
 {
@@ -23,15 +19,8 @@ namespace WebApplication.Pages
             InvokeAsync(StateHasChanged);
         }
 
-        public void OnPropertyChanged(PropertyChangedEventArgs args)
-        {
-        }
-
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
-
-        [Inject]
-        protected NavigationManager UriHelper { get; set; }
 
         [Inject]
         protected DialogService DialogService { get; set; }
@@ -46,13 +35,20 @@ namespace WebApplication.Pages
         protected NotificationService NotificationService { get; set; }
 
         [Inject]
-        protected LocalDbService LocalDb { get; set; }
+        protected NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        protected ISubscriptionHttpClient SubscriptionHttpClient { get; set; }
+
+        [Inject]
+        protected IMapper Mapper { get; set; }
 
         [Parameter]
         public dynamic Id { get; set; }
 
-        WebApplication.Models.LocalDb.Subscription _subscription;
-        protected WebApplication.Models.LocalDb.Subscription subscription
+        private SubscriptionRequest _subscription;
+
+        protected SubscriptionRequest Subscription
         {
             get
             {
@@ -62,40 +58,93 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_subscription, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "subscription", NewValue = value, OldValue = _subscription };
                     _subscription = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
-        protected override async System.Threading.Tasks.Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
             await Load();
         }
-        protected async System.Threading.Tasks.Task Load()
-        {
-            var localDbGetSubscriptionByIdResult = await LocalDb.GetSubscriptionById(Id);
-            subscription = localDbGetSubscriptionByIdResult;
-        }
-
-        protected async System.Threading.Tasks.Task Form0Submit(WebApplication.Models.LocalDb.Subscription args)
+        protected async Task Load()
         {
             try
             {
-                var localDbUpdateSubscriptionResult = await LocalDb.UpdateSubscription(Id, subscription);
-                DialogService.Close(subscription);
+                var subscription = await SubscriptionHttpClient.GetAsync(Guid.Parse(Id), CancellationToken.None);
+
+                Subscription = Mapper.Map<SubscriptionRequest>(subscription);
             }
-            catch (System.Exception localDbUpdateSubscriptionException)
+            catch (CustomApiException ex)
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error,Summary = $"Error",Detail = $"Unable to update Subscription" });
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = ex.Message,
+                    Detail = ex.Details.ErrorMessage
+                });
+
+                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    NavigationManager.NavigateTo("/login");
+                }
             }
         }
 
-        protected async System.Threading.Tasks.Task Button2Click(MouseEventArgs args)
+        protected async Task Form0Submit(SubscriptionRequest args)
         {
-            DialogService.Close(null);
+            try
+            {
+                var request = Mapper.Map<UpdateSubscriptionRequestDto>(Subscription);
+
+                await SubscriptionHttpClient.UpdateAsync(Id, request, CancellationToken.None);
+
+                DialogService.Close(true);
+            }
+            catch (CustomApiException ex)
+            {
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = ex.Message,
+                    Detail = ex.Details.ErrorMessage
+                });
+
+                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    NavigationManager.NavigateTo("/login");
+                }
+            }
+        }
+
+        protected async Task Button2Click(MouseEventArgs args)
+        {
+            DialogService.Close(false);
+        }
+
+        public record SubscriptionRequest
+        {
+            public string Name { get; set; } = string.Empty;
+
+            public int? LifeTimeInDays { get; set; }
+
+            public decimal Price { get; set; }
+
+            public IReadOnlyCollection<CosmeticServiceRequest> CosmeticServices { get; set; } = Array.Empty<CosmeticServiceRequest>();
+
+            public record CosmeticServiceRequest
+            {
+                public Guid Id { get; init; }
+
+                public string Name { get; init; } = string.Empty;
+
+                public string Description { get; init; } = string.Empty;
+
+                public int ExecuteTimeInMinutes { get; init; }
+
+                public int Count { get; init; }
+            }
         }
     }
 }
