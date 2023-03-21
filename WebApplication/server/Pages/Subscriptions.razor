@@ -12,17 +12,17 @@
     </RadzenHeading>
     <div class="row">
       <div class="col-md-12">
-        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add" Click="@Button0Click">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
         </RadzenButton>
         <RadzenTextBox Placeholder="Поиск по наименованию..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
         </RadzenTextBox>
         <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" AllowSorting="false" Data="@GetSubscriptionsResult" TItem="GetSubscriptionListItemResponseDto" RowSelect="@Grid0RowSelect" LoadData="@LoadDataAsync">
           <Columns>
-            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Property="Name" Title="Name">
+            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Property="Name" Title="Наименование">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Property="LifeTimeInDays" Title="Life Time In Days">
+            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Property="LifeTimeInDays" Title="Активность">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Property="Price" Title="Price">
+            <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Property="Price" Title="Стоимость">
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="GetSubscriptionListItemResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
               <Template Context="webApplicationModelsLocalDbSubscription">
