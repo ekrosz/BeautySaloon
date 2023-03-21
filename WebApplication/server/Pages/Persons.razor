@@ -29,6 +29,8 @@
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="GetPersonListItemResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
               <Template Context="webApplicationModelsLocalDbPerson">
+                <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="face" Size="ButtonSize.Small" Click="@((args) =>GridDetailsButtonClick(args, webApplicationModelsLocalDbPerson))" @onclick:stopPropagation="true">
+                </RadzenButton>
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbPerson))" @onclick:stopPropagation="true">
                 </RadzenButton>
               </Template>

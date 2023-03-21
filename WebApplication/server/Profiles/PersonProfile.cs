@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BeautySaloon.Api.Dto.Requests.Person;
+using BeautySaloon.Api.Dto.Responses.Common;
 using BeautySaloon.Api.Dto.Responses.Person;
 using WebApplication.Pages;
 
@@ -16,5 +17,9 @@ public class PersonProfile : Profile
 
         CreateMap<EditPersonComponent.PersonRequest, UpdatePersonRequestDto>()
             .ForMember(dest => dest.BirthDate, cfg => cfg.MapFrom(src => DateTime.SpecifyKind(src.BirthDate, DateTimeKind.Utc)));
+
+        CreateMap<GetPersonResponseDto, DetailsPersonComponent.PersonRequest>();
+
+        CreateMap<SubscriptionResponseDto, DetailsPersonComponent.PersonRequest.SubscriptionRequest>();
     }
 }

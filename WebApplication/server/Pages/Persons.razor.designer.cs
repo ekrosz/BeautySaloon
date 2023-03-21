@@ -15,6 +15,7 @@ using BeautySaloon.Api.Dto.Responses.Person;
 using BeautySaloon.Api.Dto.Requests.Person;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using WebApplication.Handlers;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace WebApplication.Pages
 {
@@ -240,6 +241,13 @@ namespace WebApplication.Pages
                     NavigationManager.NavigateTo("/login");
                 }
             }
+        }
+
+        protected Task GridDetailsButtonClick(MouseEventArgs args, dynamic data)
+        {
+            NavigationManager.NavigateTo($"/details-person/{Guid.Parse($"{data.Id}")}");
+
+            return Task.CompletedTask;
         }
     }
 }

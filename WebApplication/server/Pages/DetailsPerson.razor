@@ -1,0 +1,110 @@
+﻿@page "/details-person/{Id}"
+@layout MainLayout
+@inherits WebApplication.Pages.DetailsPersonComponent
+
+@using BeautySaloon.Api.Dto.Responses.Common
+@using Radzen
+@using Radzen.Blazor
+
+<PageTitle>Карточка клиента</PageTitle>
+<RadzenContent Container="main">
+    <ChildContent>
+        <div class="row">
+            <div class="col-md-11">
+                <RadzenHeading Size="H1" Text="Карточка клиента">
+                </RadzenHeading>
+            </div>
+            <div class="col-md-1">
+                <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Назад" Click="@Button2Click" style="position: absolute; right: 1rem">
+                </RadzenButton>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <RadzenTemplateForm TItem="PersonRequest" Data="@Person" Visible="@(Person != null)">
+                    <ChildContent>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Имя" Component="FirstName" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenTextBox ReadOnly="true" @bind-Value="@(Person.Name.FirstName)" style="display: block; width: 100%">
+                                </RadzenTextBox>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Фамилия" Component="LastName" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenTextBox ReadOnly="true" @bind-Value="@(Person.Name.LastName)" style="width: 100%">
+                                </RadzenTextBox>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Отчество" Component="MiddleName" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenTextBox ReadOnly="true" @bind-Value="@(Person.Name.MiddleName)" style="width: 100%">
+                                </RadzenTextBox>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Дата рождения" Component="BirthDate" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenDatePicker DateFormat="dd.MM.yyyy" ReadOnly="true" @bind-Value="@Person.BirthDate" style="width: 100%">
+                                </RadzenDatePicker>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Телефон" Component="PhoneNumber" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenTextBox ReadOnly="true" @bind-Value="@Person.PhoneNumber" style="width: 100%">
+                                </RadzenTextBox>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Почта" Component="Email" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenTextBox ReadOnly="true" @bind-Value="@(Person.Email)" style="width: 100%">
+                                </RadzenTextBox>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <RadzenHeading Size="H2" Text="Абонементы" style="margin-top: 1rem; margin-left: 1rem">
+                                </RadzenHeading>
+                                <RadzenDataGrid AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@Person.Subscriptions" TItem="PersonRequest.SubscriptionRequest">
+                                    <Columns>
+                                        <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="Name" Title="Абонемент">
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="LifeTimeInDays" Title="Активность">
+                                            <Template Context="subscription">
+                                                <span>@($"{subscription.LifeTimeInDays} д.")</span>
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="Price" Title="Стоимость">
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+                                </RadzenDataGrid>
+                            </div>
+                        </div>
+                    </ChildContent>
+                </RadzenTemplateForm>
+            </div>
+        </div>
+    </ChildContent>
+</RadzenContent>
