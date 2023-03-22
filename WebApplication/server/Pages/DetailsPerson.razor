@@ -91,7 +91,7 @@
                                     <Columns>
                                         <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="Name" Title="Абонемент">
                                         </RadzenDataGridColumn>
-                                        <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="LifeTimeInDays" Title="Активность">
+                                        <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="LifeTimeInDays" Title="Срок действия">
                                             <Template Context="subscription">
                                                 <span>@($"{subscription.LifeTimeInDays} д.")</span>
                                             </Template>

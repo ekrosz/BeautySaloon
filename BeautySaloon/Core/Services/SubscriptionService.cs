@@ -120,7 +120,7 @@ public class SubscriptionService : ISubscriptionService
         }
 
         var cosmeticServices = await _cosmeticServiceQueryRepository.FindAsync(
-            x => request.Data.CosmeticServices.Any(y => y.Id == x.Id),
+            x => request.Data.CosmeticServices.Select(y => y.Id).Contains(x.Id),
             cancellationToken);
 
         var notExistCosmeticServices = request.Data.CosmeticServices

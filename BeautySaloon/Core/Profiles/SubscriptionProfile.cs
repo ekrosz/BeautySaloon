@@ -19,9 +19,9 @@ public class SubscriptionProfile : Profile
 
         CreateMap<SubscriptionCosmeticService, CosmeticServiceResponseDto>()
             .ForMember(dest => dest.Id, cfg => cfg.MapFrom(src => src.CosmeticService.Id))
-            .ForMember(dest => dest.Name, cfg => cfg.MapFrom(src => src.CosmeticService.Id))
-            .ForMember(dest => dest.ExecuteTimeInMinutes, cfg => cfg.MapFrom(src => src.CosmeticService.Id))
-            .ForMember(dest => dest.Description, cfg => cfg.MapFrom(src => src.CosmeticService.Id))
+            .ForMember(dest => dest.Name, cfg => cfg.MapFrom(src => src.CosmeticService.Name))
+            .ForMember(dest => dest.ExecuteTimeInMinutes, cfg => cfg.MapFrom(src => src.CosmeticService.ExecuteTimeInMinutes))
+            .ForMember(dest => dest.Description, cfg => cfg.MapFrom(src => src.CosmeticService.Description))
             .ForMember(dest => dest.Count, cfg => cfg.MapFrom(src => src.Count));
     }
 }

@@ -5,13 +5,25 @@
 @using Radzen
 @using Radzen.Blazor
 
-<PageTitle>Edit Subscription</PageTitle>
+<PageTitle>Редактирование абонемента</PageTitle>
 <RadzenContent Container="main">
   <ChildContent>
     <div class="row">
       <div class="col-md-12">
         <RadzenTemplateForm TItem="SubscriptionRequest" Data="@Subscription" Visible="@(Subscription != null)" Submit="@Form0Submit">
           <ChildContent>
+            <div class="row">
+                <div class="col-md-6">
+                    <RadzenHeading Size="H1" Text="Редактирование абонемента">
+                    </RadzenHeading>
+                </div>
+                <div class="col-md-6">
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Отмена" Click="@Button2Click" style="position: absolute; right: 1rem">
+                    </RadzenButton>
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Сохранить" ButtonStyle="ButtonStyle.Primary" style="position: absolute; right: 7rem">
+                    </RadzenButton>
+                </div>
+            </div>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
                 <RadzenLabel Text="Наименование" Component="Name" style="width: 100%">
@@ -26,7 +38,7 @@
             </div>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
-                <RadzenLabel Text="Активность" Component="LifeTimeInDays" style="width: 100%">
+                <RadzenLabel Text="Срок действия (дни)" Component="LifeTimeInDays" style="width: 100%">
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
@@ -47,22 +59,22 @@
               </div>
             </div>
             <div class="row">
-              <div class="col offset-sm-3">
-                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" ButtonStyle="ButtonStyle.Primary">
-                </RadzenButton>
-                <RadzenButton ButtonStyle="ButtonStyle.Light" style="margin-left: 1rem" Text="Cancel" Click="@Button2Click">
-                </RadzenButton>
-              </div>
-            </div>
-            <div class="row">
                 <div class="col-md-12">
-                    <RadzenHeading Size="H2" Text="Услуги" style="margin-top: 1rem; margin-left: 1rem">
+                    <RadzenHeading Size="H2" Text="Услуги" style="margin-top: 1rem">
                     </RadzenHeading>
-                    <RadzenDataGrid AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@Subscription.CosmeticServices" TItem="SubscriptionRequest.CosmeticServiceRequest">
+                    <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+                    </RadzenButton>
+                    <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@Subscription.CosmeticServices" TItem="SubscriptionRequest.CosmeticServiceRequest"  RowSelect="@Grid0RowSelect">
                         <Columns>
                             <RadzenDataGridColumn TItem="SubscriptionRequest.CosmeticServiceRequest" Property="Name" Title="Услуга">
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="SubscriptionRequest.CosmeticServiceRequest" Property="Count" Title="Количество">
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="SubscriptionRequest.CosmeticServiceRequest" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                              <Template Context="webApplicationModelsLocalDbSubscription">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbSubscription))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                              </Template>
                             </RadzenDataGridColumn>
                         </Columns>
                     </RadzenDataGrid>

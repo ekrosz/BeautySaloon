@@ -6,6 +6,8 @@ using BeautySaloon.Api.Services;
 using BeautySaloon.Api.Dto.Requests.Subscription;
 using AutoMapper;
 using WebApplication.Handlers;
+using BeautySaloon.Api.Dto.Responses.Person;
+using Radzen.Blazor;
 
 namespace WebApplication.Pages
 {
@@ -52,6 +54,11 @@ namespace WebApplication.Pages
         {
             get
             {
+                if (_subscription != null)
+                {
+                    _subscription.CosmeticServices = _subscription.CosmeticServices.OrderBy(x => x.Name).ToList();
+                }
+
                 return _subscription;
             }
             set
@@ -63,6 +70,8 @@ namespace WebApplication.Pages
                 }
             }
         }
+
+        protected RadzenDataGrid<SubscriptionRequest.CosmeticServiceRequest> grid0;
 
         protected override async Task OnInitializedAsync()
         {
@@ -98,9 +107,15 @@ namespace WebApplication.Pages
             {
                 var request = Mapper.Map<UpdateSubscriptionRequestDto>(Subscription);
 
-                await SubscriptionHttpClient.UpdateAsync(Id, request, CancellationToken.None);
+                await SubscriptionHttpClient.UpdateAsync(Guid.Parse(Id), request, CancellationToken.None);
 
-                DialogService.Close(true);
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно сохранена"
+                });
+
+                NavigationManager.NavigateTo("/subscriptions");
             }
             catch (CustomApiException ex)
             {
@@ -118,9 +133,70 @@ namespace WebApplication.Pages
             }
         }
 
-        protected async Task Button2Click(MouseEventArgs args)
+        protected async Task Button0Click(MouseEventArgs args)
         {
-            DialogService.Close(false);
+            var dialogResult = await DialogService.OpenAsync<AddSubscriptionCosmeticService>("Добавление услуги в абонемент", null);
+
+            if (dialogResult == null)
+            {
+                return;
+            }
+
+            var cosmeticService = Mapper.Map<SubscriptionRequest.CosmeticServiceRequest>((AddSubscriptionCosmeticServiceComponent.SubscriptionCosmeticServiceRequest)dialogResult);
+
+            var existingCosmeticService = Subscription.CosmeticServices.FirstOrDefault(x => x.Id == cosmeticService.Id);
+
+            if (existingCosmeticService != null)
+            {
+                existingCosmeticService.Count += cosmeticService.Count;
+            }
+            else
+            {
+                Subscription.CosmeticServices.Add(cosmeticService);
+            }
+
+            await grid0.Reload();
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+
+        protected async Task Grid0RowSelect(SubscriptionRequest.CosmeticServiceRequest args)
+        {
+            var parameter = Mapper.Map<AddSubscriptionCosmeticServiceComponent.SubscriptionCosmeticServiceRequest>(args);
+
+            var dialogResult = await DialogService.OpenAsync<AddSubscriptionCosmeticService>("Редактирование услуги абонемента", new Dictionary<string, object>() { { "SubscriptionCosmeticService", parameter } });
+
+            if (dialogResult == null)
+            {
+                return;
+            }
+
+            var cosmeticService = (AddSubscriptionCosmeticServiceComponent.SubscriptionCosmeticServiceRequest)dialogResult;
+
+            var existingCosmeticService = Subscription.CosmeticServices.First(x => x.Id == cosmeticService.Id);
+
+            Mapper.Map(cosmeticService, existingCosmeticService);
+
+            await grid0.Reload();
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+
+        protected Task Button2Click(MouseEventArgs args)
+        {
+            NavigationManager.NavigateTo("/subscriptions");
+
+            return Task.CompletedTask;
+        }
+
+        protected async Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
+        {
+            if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
+            {
+                var cosmeticService = Subscription.CosmeticServices.First(x => x.Id == data.Id);
+
+                Subscription.CosmeticServices.Remove(cosmeticService);
+
+                await grid0.Reload();
+            }
         }
 
         public record SubscriptionRequest
@@ -131,19 +207,15 @@ namespace WebApplication.Pages
 
             public decimal Price { get; set; }
 
-            public IReadOnlyCollection<CosmeticServiceRequest> CosmeticServices { get; set; } = Array.Empty<CosmeticServiceRequest>();
+            public List<CosmeticServiceRequest> CosmeticServices { get; set; } = new List<CosmeticServiceRequest>();
 
             public record CosmeticServiceRequest
             {
-                public Guid Id { get; init; }
+                public Guid Id { get; set; }
 
-                public string Name { get; init; } = string.Empty;
+                public string Name { get; set; } = string.Empty;
 
-                public string Description { get; init; } = string.Empty;
-
-                public int ExecuteTimeInMinutes { get; init; }
-
-                public int Count { get; init; }
+                public int Count { get; set; }
             }
         }
     }

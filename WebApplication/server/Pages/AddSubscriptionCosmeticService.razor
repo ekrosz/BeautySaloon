@@ -1,0 +1,53 @@
+﻿@page "/add-subscription-cosmetic-service"
+@layout MainLayout
+@inherits WebApplication.Pages.AddSubscriptionCosmeticServiceComponent
+
+@using Radzen
+@using Radzen.Blazor
+@using WebApplication.Models.LocalDb
+
+<PageTitle>Добавление услуги</PageTitle>
+<RadzenContent Container="main">
+    <ChildContent>
+        <div class="row">
+            <div class="col-md-12">
+                <RadzenTemplateForm Data="@SubscriptionCosmeticService" Visible="@(SubscriptionCosmeticService != null)" TItem="SubscriptionCosmeticServiceRequest" Submit="@Form0Submit">
+                    <ChildContent>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Услуга" Component="CosmeticService" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenDropDown Disabled="@IsDropDownDisabled" style="display: block; width: 100%" @bind-Value="@(SubscriptionCosmeticService.Id)" Data="@CosmeticServices" ValueProperty="Id" TextProperty="Name" Name="CosmeticService">
+                                </RadzenDropDown>
+                                <RadzenRequiredValidator Component="CosmeticService" Text="Обязательное поле" style="position: absolute">
+                                </RadzenRequiredValidator>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Количетсво" Component="Count" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenNumeric style="display: block; width: 100%" @bind-Value="@(SubscriptionCosmeticService.Count)" Name="Count">
+                                </RadzenNumeric>
+                                <RadzenRequiredValidator Component="Count" Text="Обязательное поле" style="position: absolute">
+                                </RadzenRequiredValidator>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col offset-sm-3">
+                                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Сохранить" ButtonStyle="ButtonStyle.Primary">
+                                </RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" style="margin-left: 1rem" Text="Отмена" Click="@Button2Click">
+                                </RadzenButton>
+                            </div>
+                        </div>
+                    </ChildContent>
+                </RadzenTemplateForm>
+            </div>
+        </div>
+    </ChildContent>
+</RadzenContent>

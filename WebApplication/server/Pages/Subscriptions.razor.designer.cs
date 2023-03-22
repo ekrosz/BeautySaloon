@@ -180,7 +180,7 @@ namespace WebApplication.Pages
 
         protected async Task Grid0RowSelect(GetSubscriptionListItemResponseDto args)
         {
-            NavigationManager.NavigateTo($"/edit-subscrioption/{args.Id}");
+            NavigationManager.NavigateTo($"/edit-subscription/{args.Id}");
         }
 
         protected async Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
@@ -193,6 +193,12 @@ namespace WebApplication.Pages
 
                     await grid0.Reload();
                     await Load();
+
+                    NotificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Запись успешно удалена"
+                    });
                 }
             }
             catch (CustomApiException ex)
