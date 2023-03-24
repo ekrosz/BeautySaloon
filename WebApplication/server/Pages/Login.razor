@@ -1,4 +1,5 @@
-﻿@page "/login"
+﻿@page "/"
+@page "/login"
 
 @using BeautySaloon.Api.Services;
 @using Radzen
@@ -7,6 +8,7 @@
 @inject IAuthHttpClient AuthClient;
 @inject NotificationService NotificationService;
 @inject NavigationManager NavigationManager;
+@inject IJSRuntime JsRuntime;
 @layout LoginLayout;
 
 <div class="login-main-section d-flex p-2">
@@ -43,6 +45,9 @@
         try
         {
             var response = await AuthClient.AuthorizeAsync(new BeautySaloon.Api.Dto.Requests.Auth.AuthorizeByCredentialsRequestDto { Login = UserName, Password = Password });
+
+            await JsRuntime.InvokeVoidAsync("localStorage.setItem", Constants.AccessTokenKey, $"{Constants.TokenType} {response.AccessToken}");
+            await JsRuntime.InvokeVoidAsync("localStorage.setItem", Constants.RefreshTokenKey, response.RefreshToken);
 
             NavigationManager.NavigateTo("/persons");
         }

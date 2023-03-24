@@ -135,14 +135,14 @@ namespace WebApplication.Pages
 
         protected async Task Button0Click(MouseEventArgs args)
         {
-            var dialogResult = await DialogService.OpenAsync<AddSubscriptionCosmeticService>("Добавление услуги в абонемент", null);
+            var dialogResult = await DialogService.OpenAsync<AddOrEditSubscriptionCosmeticService>("Добавление услуги в абонемент", null);
 
             if (dialogResult == null)
             {
                 return;
             }
 
-            var cosmeticService = Mapper.Map<SubscriptionRequest.CosmeticServiceRequest>((AddSubscriptionCosmeticServiceComponent.SubscriptionCosmeticServiceRequest)dialogResult);
+            var cosmeticService = Mapper.Map<SubscriptionRequest.CosmeticServiceRequest>((AddOrEditSubscriptionCosmeticServiceComponent.SubscriptionCosmeticServiceRequest)dialogResult);
 
             var existingCosmeticService = Subscription.CosmeticServices.FirstOrDefault(x => x.Id == cosmeticService.Id);
 
@@ -161,16 +161,16 @@ namespace WebApplication.Pages
 
         protected async Task Grid0RowSelect(SubscriptionRequest.CosmeticServiceRequest args)
         {
-            var parameter = Mapper.Map<AddSubscriptionCosmeticServiceComponent.SubscriptionCosmeticServiceRequest>(args);
+            var parameter = Mapper.Map<AddOrEditSubscriptionCosmeticServiceComponent.SubscriptionCosmeticServiceRequest>(args);
 
-            var dialogResult = await DialogService.OpenAsync<AddSubscriptionCosmeticService>("Редактирование услуги абонемента", new Dictionary<string, object>() { { "SubscriptionCosmeticService", parameter } });
+            var dialogResult = await DialogService.OpenAsync<AddOrEditSubscriptionCosmeticService>("Редактирование услуги абонемента", new Dictionary<string, object>() { { "SubscriptionCosmeticService", parameter } });
 
             if (dialogResult == null)
             {
                 return;
             }
 
-            var cosmeticService = (AddSubscriptionCosmeticServiceComponent.SubscriptionCosmeticServiceRequest)dialogResult;
+            var cosmeticService = (AddOrEditSubscriptionCosmeticServiceComponent.SubscriptionCosmeticServiceRequest)dialogResult;
 
             var existingCosmeticService = Subscription.CosmeticServices.First(x => x.Id == cosmeticService.Id);
 

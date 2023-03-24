@@ -10,20 +10,20 @@ namespace BeautySaloon.Api.Services;
 public interface IUserHttpClient
 {
     [Post("/api/users")]
-    Task CreateAsync([Body] CreateUserRequestDto request, CancellationToken cancellationToken = default);
+    Task CreateAsync([Header("Authorization")] string accessToken, [Body] CreateUserRequestDto request, CancellationToken cancellationToken = default);
 
     [Put("/api/users/{id}")]
-    Task UpdateAsync(Guid id, [Body] UpdateUserRequestDto request, CancellationToken cancellationToken = default);
+    Task UpdateAsync([Header("Authorization")] string accessToken, Guid id, [Body] UpdateUserRequestDto request, CancellationToken cancellationToken = default);
 
     [Delete("/api/users/{id}")]
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 
     [Get("/api/users/{id}")]
-    Task<GetUserResponseDto> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<GetUserResponseDto> GetAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 
     [Get("/api/users/me")]
-    Task<GetUserResponseDto> GetAsync(CancellationToken cancellationToken = default);
+    Task<GetUserResponseDto> GetAsync([Header("Authorization")] string accessToken, CancellationToken cancellationToken = default);
 
     [Get("/api/users")]
-    Task<ItemListResponseDto<GetUserResponseDto>> GetListAsync([Query] GetUserListRequestDto request, CancellationToken cancellationToken = default);
+    Task<ItemListResponseDto<GetUserResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetUserListRequestDto request, CancellationToken cancellationToken = default);
 }

@@ -16,6 +16,7 @@ using BeautySaloon.Api.Dto.Requests.Person;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using WebApplication.Handlers;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages
 {
@@ -49,6 +50,9 @@ namespace WebApplication.Pages
 
         [Inject]
         protected IPersonHttpClient PersonHttpClient { get; set; }
+
+        [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
 
         protected RadzenDataGrid<GetPersonListItemResponseDto> grid0;
 
@@ -126,9 +130,14 @@ namespace WebApplication.Pages
 
         protected int TotalCount { get; set; }
 
-        protected override async Task OnInitializedAsync()
+        protected async override Task OnAfterRenderAsync(bool firstRender)
         {
-            await Load();
+            await base.OnAfterRenderAsync(firstRender);
+
+            if (firstRender)
+            {
+                await Load();
+            }
         }
 
         protected async Task LoadDataAsync(LoadDataArgs args)
@@ -148,27 +157,16 @@ namespace WebApplication.Pages
                 search = string.Empty;
             }
 
-            try
-            {
-                var persons = await PersonHttpClient.GetListAsync(new GetPersonListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = search }, CancellationToken.None);
+            var persons = await HttpClientWrapper.SendAsync((accessToken)
+                => PersonHttpClient.GetListAsync(accessToken, new GetPersonListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = search }, CancellationToken.None));
 
-                GetPeopleResult = persons.Items;
-                TotalCount = persons.TotalCount;
-            }
-            catch (CustomApiException ex)
+            if (persons == null)
             {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
+                return;
             }
+
+            GetPeopleResult = persons.Items;
+            TotalCount = persons.TotalCount;
         }
 
         protected async Task Button0Click(MouseEventArgs args)

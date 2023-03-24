@@ -9,17 +9,17 @@ namespace BeautySaloon.Api.Services;
 public interface ICosmeticServiceHttpClient
 {
     [Get("/api/cosmetic-services")]
-    Task<PageResponseDto<GetCosmeticServiceResponseDto>> GetListAsync([Query] GetCosmeticServiceListRequestDto request, CancellationToken cancellationToken = default);
+    Task<PageResponseDto<GetCosmeticServiceResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetCosmeticServiceListRequestDto request, CancellationToken cancellationToken = default);
 
     [Get("/api/cosmetic-services/{id}")]
-    Task<GetCosmeticServiceResponseDto> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<GetCosmeticServiceResponseDto> GetAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 
     [Post("/api/cosmetic-services")]
-    Task CreateAsync([Body] CreateCosmeticServiceRequestDto request, CancellationToken cancellationToken = default);
+    Task CreateAsync([Header("Authorization")] string accessToken, [Body] CreateCosmeticServiceRequestDto request, CancellationToken cancellationToken = default);
 
     [Put("/api/cosmetic-services/{id}")]
-    Task UpdateAsync(Guid id, [Body] UpdateCosmeticServiceRequestDto request, CancellationToken cancellationToken = default);
+    Task UpdateAsync([Header("Authorization")] string accessToken, Guid id, [Body] UpdateCosmeticServiceRequestDto request, CancellationToken cancellationToken = default);
 
     [Delete("/api/cosmetic-services/{id}")]
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 }

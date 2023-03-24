@@ -9,20 +9,20 @@ namespace BeautySaloon.Api.Services;
 public interface IAppointmentHttpClient
 {
     [Post("/api/appointments")]
-    Task CreateAsync([Body] CreateAppointmentRequestDto request, CancellationToken cancellationToken = default);
+    Task CreateAsync([Header("Authorization")] string accessToken, [Body] CreateAppointmentRequestDto request, CancellationToken cancellationToken = default);
 
     [Put("/api/appointments/{id}")]
-    Task UpdateAsync(Guid id, [Body] UpdateAppointmentRequestDto request, CancellationToken cancellationToken = default);
+    Task UpdateAsync([Header("Authorization")] string accessToken, Guid id, [Body] UpdateAppointmentRequestDto request, CancellationToken cancellationToken = default);
 
     [Patch("/api/appointments/{id}")]
-    Task CompleteAsync(Guid id, [Body] CompleteOrCancelAppointmentRequestDto request, CancellationToken cancellationToken = default);
+    Task CompleteAsync([Header("Authorization")] string accessToken, Guid id, [Body] CompleteOrCancelAppointmentRequestDto request, CancellationToken cancellationToken = default);
 
     [Patch("/api/appointments/{id}")]
-    Task CancelAsync(Guid id, [Body] CompleteOrCancelAppointmentRequestDto request, CancellationToken cancellationToken = default);
+    Task CancelAsync([Header("Authorization")] string accessToken, Guid id, [Body] CompleteOrCancelAppointmentRequestDto request, CancellationToken cancellationToken = default);
 
     [Get("/api/appointments")]
-    Task<PageResponseDto<GetAppointmentListItemResponseDto>> GetListAsync([Query] GetAppointmentListRequestDto request, CancellationToken cancellationToken = default);
+    Task<PageResponseDto<GetAppointmentListItemResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetAppointmentListRequestDto request, CancellationToken cancellationToken = default);
 
     [Get("/api/appointments/{id}")]
-    Task<GetAppointmentResponseDto> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<GetAppointmentResponseDto> GetAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 }

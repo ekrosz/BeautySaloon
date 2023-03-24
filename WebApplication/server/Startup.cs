@@ -25,6 +25,7 @@ using BeautySaloon.Api.Services;
 using WebApplication.Handlers;
 using Refit;
 using WebApplication.Profiles;
+using WebApplication.Wrappers;
 
 namespace WebApplication
 {
@@ -82,10 +83,11 @@ namespace WebApplication
 
             services.AddSingleton<ITokenStorage, TokenStorage>();
 
+            services.AddScoped<IHttpClientWrapper, HttpClientWrapper>();
+
             services.AddRefitClient<IAuthHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
-                .AddHttpMessageHandler<CustomRefitErrorHandler>()
-                .AddHttpMessageHandler<TokenStorageHandler>();
+                .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
             services.AddRefitClient<IUserHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
@@ -94,8 +96,7 @@ namespace WebApplication
 
             services.AddRefitClient<IPersonHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
-                .AddHttpMessageHandler<CustomRefitErrorHandler>()
-                .AddHttpMessageHandler<HeaderPropagationHandler>();
+                .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
             services.AddRefitClient<ICosmeticServiceHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))

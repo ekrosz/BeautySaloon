@@ -9,7 +9,7 @@ using Radzen;
 
 namespace WebApplication.Pages;
 
-public partial class AddSubscriptionCosmeticServiceComponent : ComponentBase
+public partial class AddOrEditSubscriptionCosmeticServiceComponent : ComponentBase
 {
     [Parameter(CaptureUnmatchedValues = true)]
     public IReadOnlyDictionary<string, dynamic> Attributes { get; set; }

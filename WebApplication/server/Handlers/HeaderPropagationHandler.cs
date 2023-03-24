@@ -1,6 +1,7 @@
 ﻿using BeautySaloon.Api.Dto.Requests.Auth;
 using BeautySaloon.Api.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,20 +12,20 @@ public class HeaderPropagationHandler : DelegatingHandler
 {
     private const string TokenType = "Bearer";
 
-    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IServiceProvider _serviceScopeFactory;
 
-    public HeaderPropagationHandler(IServiceScopeFactory serviceScopeFactory)
+    public HeaderPropagationHandler(IServiceProvider serviceScopeFactory)
     {
         _serviceScopeFactory = serviceScopeFactory;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var scope = _serviceScopeFactory.CreateScope();
+        //var scope = _serviceScopeFactory.CreateScope();
 
-        var tokenStorage = scope.ServiceProvider.GetRequiredService<ITokenStorage>();
+        var jsRuntime = _serviceScopeFactory.GetRequiredService<IJSRuntime>();
 
-        var accessToken = tokenStorage.GetAccessToken();
+        var accessToken = await jsRuntime.InvokeAsync<string>("localStorage.getItem", Constants.AccessTokenKey);
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(TokenType, accessToken);
 
@@ -35,9 +36,9 @@ public class HeaderPropagationHandler : DelegatingHandler
             return response;
         }
 
-        var authHttpClient = scope.ServiceProvider.GetRequiredService<IAuthHttpClient>();
+        var authHttpClient = _serviceScopeFactory.GetRequiredService<IAuthHttpClient>();
 
-        var refreshToken = tokenStorage.GetRefreshToken();
+        var refreshToken = await jsRuntime.InvokeAsync<string>("localStorage.getItem", Constants.RefreshTokenKey);
 
         try
         {
@@ -51,8 +52,6 @@ public class HeaderPropagationHandler : DelegatingHandler
         }
         catch
         {
-            tokenStorage.Clear();
-
             return response;
         }
     }

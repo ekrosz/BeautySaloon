@@ -9,17 +9,17 @@ namespace BeautySaloon.Api.Services;
 public interface ISubscriptionHttpClient
 {
     [Post("/api/subscriptions")]
-    Task CreateAsync([Body] CreateSubscriptionRequestDto request, CancellationToken cancellationToken = default);
+    Task CreateAsync([Header("Authorization")] string accessToken, [Body] CreateSubscriptionRequestDto request, CancellationToken cancellationToken = default);
 
     [Put("/api/subscriptions/{id}")]
-    Task UpdateAsync(Guid id, [Body] UpdateSubscriptionRequestDto request, CancellationToken cancellationToken = default);
+    Task UpdateAsync([Header("Authorization")] string accessToken, Guid id, [Body] UpdateSubscriptionRequestDto request, CancellationToken cancellationToken = default);
 
     [Delete("/api/subscriptions/{id}")]
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 
     [Get("/api/subscriptions/{id}")]
-    Task<GetSubscriptionResponseDto> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<GetSubscriptionResponseDto> GetAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 
     [Get("/api/subscriptions")]
-    Task<PageResponseDto<GetSubscriptionListItemResponseDto>> GetListAsync([Query] GetSubscriptionListRequestDto request, CancellationToken cancellationToken = default);
+    Task<PageResponseDto<GetSubscriptionListItemResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetSubscriptionListRequestDto request, CancellationToken cancellationToken = default);
 }

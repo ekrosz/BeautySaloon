@@ -1,5 +1,6 @@
 ﻿using BeautySaloon.Api.Dto.Responses.Auth;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
@@ -26,16 +27,17 @@ public class TokenStorageHandler : DelegatingHandler
             return response;
         }
 
-        var scope = _serviceScopeFactory.CreateScope();
-
-        var tokenStorage = scope.ServiceProvider.GetRequiredService<ITokenStorage>();
-
         var authRawResponse = await response.Content.ReadAsStringAsync(cancellationToken);
 
         var authResponse = JsonConvert.DeserializeObject<AuthorizeResponseDto>(authRawResponse)
             ?? throw new InvalidOperationException();
 
-        tokenStorage.Save(authResponse.AccessToken, authResponse.RefreshToken);
+        //var scope = _serviceScopeFactory.CreateScope();
+
+        //var jsRuntime = scope.ServiceProvider.GetRequiredService<IJSRuntime>();
+
+        //await jsRuntime.InvokeVoidAsync("localStorage.setItem", Constants.AccessTokenKey, authResponse.AccessToken);
+        //await jsRuntime.InvokeVoidAsync("localStorage.setItem", Constants.RefreshTokenKey, authResponse.RefreshToken);
 
         return response;
     }

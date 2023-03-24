@@ -9,20 +9,20 @@ namespace BeautySaloon.Api.Services;
 public interface IOrderHttpClient
 {
     [Post("/api/orders")]
-    Task CreateAsync([Body] CreateOrderRequestDto request, CancellationToken cancellationToken = default);
+    Task CreateAsync([Header("Authorization")] string accessToken, [Body] CreateOrderRequestDto request, CancellationToken cancellationToken = default);
 
     [Put("/api/orders/{id}")]
-    Task UpdateAsync(Guid id, [Body] UpdateOrderRequestDto request, CancellationToken cancellationToken = default);
+    Task UpdateAsync([Header("Authorization")] string accessToken, Guid id, [Body] UpdateOrderRequestDto request, CancellationToken cancellationToken = default);
 
     [Patch("/api/orders/{id}/pay")]
-    Task PayAsync(Guid id, [Body] PayOrderRequestDto request, CancellationToken cancellationToken = default);
+    Task PayAsync([Header("Authorization")] string accessToken, Guid id, [Body] PayOrderRequestDto request, CancellationToken cancellationToken = default);
 
     [Patch("/api/orders/{id}/cancel")]
-    Task CancelAsync(Guid id, [Body] CancelOrderRequestDto request, CancellationToken cancellationToken = default);
+    Task CancelAsync([Header("Authorization")] string accessToken, Guid id, [Body] CancelOrderRequestDto request, CancellationToken cancellationToken = default);
 
     [Get("/api/orders")]
-    Task<PageResponseDto<GetOrderResponseDto>> GetListAsync([Query] GetOrderListRequestDto request, CancellationToken cancellationToken = default);
+    Task<PageResponseDto<GetOrderResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetOrderListRequestDto request, CancellationToken cancellationToken = default);
 
     [Get("/api/orders/{id}")]
-    Task<GetOrderResponseDto> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<GetOrderResponseDto> GetAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 }

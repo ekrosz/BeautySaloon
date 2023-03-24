@@ -168,14 +168,7 @@ namespace WebApplication.Pages
 
         protected async Task Button0Click(MouseEventArgs args)
         {
-            var dialogResult = await DialogService.OpenAsync<AddSubscription>("Создание абонемента", null);
-
-            if ((dialogResult as bool?).GetValueOrDefault())
-            {
-                await grid0.Reload();
-                await InvokeAsync(() => { StateHasChanged(); });
-                await Load();
-            }
+            NavigationManager.NavigateTo($"/add-subscription");
         }
 
         protected async Task Grid0RowSelect(GetSubscriptionListItemResponseDto args)
@@ -189,7 +182,7 @@ namespace WebApplication.Pages
             {
                 if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
                 {
-                    var localDbDeleteSubscriptionResult = await SubscriptionHttpClient.DeleteAsync(data.Id, CancellationToken.None);
+                    await SubscriptionHttpClient.DeleteAsync(data.Id, CancellationToken.None);
 
                     await grid0.Reload();
                     await Load();

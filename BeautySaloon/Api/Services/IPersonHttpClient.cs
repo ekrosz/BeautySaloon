@@ -9,17 +9,17 @@ namespace BeautySaloon.Api.Services;
 public interface IPersonHttpClient
 {
     [Post("/api/persons")]
-    Task CreateAsync([Body] CreatePersonRequestDto request, CancellationToken cancellationToken = default);
+    Task CreateAsync([Header("Authorization")] string accessToken, [Body] CreatePersonRequestDto request, CancellationToken cancellationToken = default);
 
     [Put("/api/persons/{id}")]
-    Task UpdateAsync(Guid id, [Body] UpdatePersonRequestDto request, CancellationToken cancellationToken = default);
+    Task UpdateAsync([Header("Authorization")] string accessToken, Guid id, [Body] UpdatePersonRequestDto request, CancellationToken cancellationToken = default);
 
     [Delete("/api/persons/{id}")]
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 
     [Get("/api/persons/{id}")]
-    Task<GetPersonResponseDto> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<GetPersonResponseDto> GetAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 
     [Get("/api/persons")]
-    Task<PageResponseDto<GetPersonListItemResponseDto>> GetListAsync([Query] GetPersonListRequestDto request, CancellationToken cancellationToken = default);
+    Task<PageResponseDto<GetPersonListItemResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetPersonListRequestDto request, CancellationToken cancellationToken = default);
 }
