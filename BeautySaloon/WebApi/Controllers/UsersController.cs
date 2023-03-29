@@ -14,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.Admin)]
 [Route("api/users")]
 [ApiController]
-public class UsersController : ControllerBase, IUserHttpClient
+public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
 

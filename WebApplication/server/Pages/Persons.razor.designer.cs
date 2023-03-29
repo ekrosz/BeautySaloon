@@ -17,6 +17,7 @@ using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using WebApplication.Handlers;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using WebApplication.Wrappers;
+using Azure.Core;
 
 namespace WebApplication.Pages
 {
@@ -132,12 +133,12 @@ namespace WebApplication.Pages
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
-            await base.OnAfterRenderAsync(firstRender);
-
             if (firstRender)
             {
                 await Load();
             }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
 
         protected async Task LoadDataAsync(LoadDataArgs args)
@@ -160,7 +161,7 @@ namespace WebApplication.Pages
             var persons = await HttpClientWrapper.SendAsync((accessToken)
                 => PersonHttpClient.GetListAsync(accessToken, new GetPersonListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = search }, CancellationToken.None));
 
-            if (persons == null)
+            if (persons == default)
             {
                 return;
             }
@@ -206,35 +207,18 @@ namespace WebApplication.Pages
 
         protected async Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
         {
-            try
+            if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
             {
-                if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
-                {
-                    await PersonHttpClient.DeleteAsync(data.Id, CancellationToken.None);
+                await HttpClientWrapper.SendAsync((accessToken) => PersonHttpClient.DeleteAsync(accessToken, data.Id, CancellationToken.None));
 
-                    await Load();
-                    await grid0.Reload();
+                await Load();
+                await grid0.Reload();
 
-                    NotificationService.Notify(new NotificationMessage()
-                    {
-                        Severity = NotificationSeverity.Success,
-                        Summary = "Запись успешно удалена"
-                    });
-                }
-            }
-            catch (CustomApiException ex)
-            {
                 NotificationService.Notify(new NotificationMessage()
                 {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно удалена"
                 });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
             }
         }
 

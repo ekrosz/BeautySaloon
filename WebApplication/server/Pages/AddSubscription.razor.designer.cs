@@ -6,7 +6,7 @@ using Radzen.Blazor;
 using AutoMapper;
 using BeautySaloon.Api.Dto.Requests.Subscription;
 using BeautySaloon.Api.Services;
-using WebApplication.Handlers;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages
 {
@@ -42,6 +42,9 @@ namespace WebApplication.Pages
         protected ISubscriptionHttpClient SubscriptionHttpClient { get; set; }
 
         [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        [Inject]
         protected IMapper Mapper { get; set; }
 
         [Parameter]
@@ -72,10 +75,16 @@ namespace WebApplication.Pages
 
         protected RadzenDataGrid<SubscriptionRequest.CosmeticServiceRequest> grid0;
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await Load();
+            if (firstRender)
+            {
+                await Load();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
+
         protected async Task Load()
         {
             Subscription = new SubscriptionRequest();
@@ -83,34 +92,17 @@ namespace WebApplication.Pages
 
         protected async Task Form0Submit(SubscriptionRequest args)
         {
-            try
+            var request = Mapper.Map<CreateSubscriptionRequestDto>(Subscription);
+
+            await HttpClientWrapper.SendAsync((accessToken) => SubscriptionHttpClient.CreateAsync(accessToken, request, CancellationToken.None));
+
+            NotificationService.Notify(new NotificationMessage()
             {
-                var request = Mapper.Map<CreateSubscriptionRequestDto>(Subscription);
+                Severity = NotificationSeverity.Success,
+                Summary = "Запись успешно сохранена"
+            });
 
-                await SubscriptionHttpClient.CreateAsync(request, CancellationToken.None);
-
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = "Запись успешно сохранена"
-                });
-
-                NavigationManager.NavigateTo("/subscriptions");
-            }
-            catch (CustomApiException ex)
-            {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
-            }
+            NavigationManager.NavigateTo("/subscriptions");
         }
 
         protected async Task Button0Click(MouseEventArgs args)

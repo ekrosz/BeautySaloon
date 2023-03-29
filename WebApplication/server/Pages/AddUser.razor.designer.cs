@@ -8,6 +8,7 @@ using BeautySaloon.Api.Services;
 using AutoMapper;
 using BeautySaloon.Api.Dto.Requests.User;
 using WebApplication.Handlers;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages
 {
@@ -43,6 +44,9 @@ namespace WebApplication.Pages
         protected IUserHttpClient UserHttpClient { get; set; }
 
         [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        [Inject]
         protected IMapper Mapper { get; set; }
 
         private UserRequest _user;
@@ -71,10 +75,16 @@ namespace WebApplication.Pages
                 _ => string.Empty
             });
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await Load();
+            if (firstRender)
+            {
+                await Load();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
+
         protected async Task Load()
         {
             User = new UserRequest();
@@ -82,28 +92,11 @@ namespace WebApplication.Pages
 
         protected async Task Form0Submit(UserRequest args)
         {
-            try
-            {
-                var request = Mapper.Map<CreateUserRequestDto>(User);
+            var request = Mapper.Map<CreateUserRequestDto>(User);
 
-                await UserHttpClient.CreateAsync(request, CancellationToken.None);
+            await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.CreateAsync(accessToken, request, CancellationToken.None));
 
-                DialogService.Close(true);
-            }
-            catch (CustomApiException ex)
-            {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
-            }
+            DialogService.Close(true);
         }
 
         protected async Task Button2Click(MouseEventArgs args)

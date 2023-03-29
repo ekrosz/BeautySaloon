@@ -14,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/appointments")]
 [ApiController]
-public class AppointmentsController : ControllerBase, IAppointmentHttpClient
+public class AppointmentsController : ControllerBase
 {
     private readonly IAppointmentService _orderService;
 

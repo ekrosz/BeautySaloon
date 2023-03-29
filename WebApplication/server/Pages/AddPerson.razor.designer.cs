@@ -7,6 +7,7 @@ using AutoMapper;
 using BeautySaloon.DAL.Entities.ValueObjects;
 using BeautySaloon.Api.Dto.Requests.Person;
 using WebApplication.Handlers;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages
 {
@@ -42,6 +43,9 @@ namespace WebApplication.Pages
         protected IPersonHttpClient PersonHttpClient { get; set; }
 
         [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        [Inject]
         protected IMapper Mapper { get; set; }
 
         private PersonRequest _person;
@@ -62,10 +66,16 @@ namespace WebApplication.Pages
             }
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await Load();
+            if (firstRender)
+            {
+                await Load();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
+
         protected async Task Load()
         {
             Person = new PersonRequest();
@@ -73,28 +83,11 @@ namespace WebApplication.Pages
 
         protected async Task Form0Submit(PersonRequest args)
         {
-            try
-            {
-                var request = Mapper.Map<CreatePersonRequestDto>(Person);
+            var request = Mapper.Map<CreatePersonRequestDto>(Person);
 
-                await PersonHttpClient.CreateAsync(request, CancellationToken.None);
+            await HttpClientWrapper.SendAsync((accessToken) => PersonHttpClient.CreateAsync(accessToken, request, CancellationToken.None));
 
-                DialogService.Close(true);
-            }
-            catch (CustomApiException ex)
-            {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
-            }
+            DialogService.Close(true);
         }
 
         protected async Task Button2Click(MouseEventArgs args)

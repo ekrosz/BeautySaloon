@@ -5,7 +5,7 @@ using Radzen;
 using BeautySaloon.Api.Services;
 using AutoMapper;
 using BeautySaloon.Api.Dto.Requests.CosmeticService;
-using WebApplication.Handlers;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages
 {
@@ -41,6 +41,9 @@ namespace WebApplication.Pages
         protected ICosmeticServiceHttpClient CosmeticServiceHttpClient { get; set; }
 
         [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        [Inject]
         protected IMapper Mapper { get; set; }
 
         [Parameter]
@@ -64,58 +67,35 @@ namespace WebApplication.Pages
             }
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await Load();
+            if (firstRender)
+            {
+                await Load();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
+
         protected async Task Load()
         {
-            try
-            {
-                var cosmeticService = await CosmeticServiceHttpClient.GetAsync(Id, CancellationToken.None);
+            var cosmeticService = await HttpClientWrapper.SendAsync((accessToken) => CosmeticServiceHttpClient.GetAsync(accessToken, Id, CancellationToken.None));
 
-                CosmeticService = Mapper.Map<CosmeticServiceRequest>(cosmeticService);
-            }
-            catch (CustomApiException ex)
+            if (cosmeticService == default)
             {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
+                return;
             }
+
+            CosmeticService = Mapper.Map<CosmeticServiceRequest>(cosmeticService);
         }
 
         protected async Task Form0Submit(CosmeticServiceRequest args)
         {
-            try
-            {
-                var request = Mapper.Map<UpdateCosmeticServiceRequestDto>(CosmeticService);
+            var request = Mapper.Map<UpdateCosmeticServiceRequestDto>(CosmeticService);
 
-                await CosmeticServiceHttpClient.UpdateAsync(Id, request, CancellationToken.None);
+            await HttpClientWrapper.SendAsync((accessToken) => CosmeticServiceHttpClient.UpdateAsync(accessToken, Id, request, CancellationToken.None));
 
-                DialogService.Close(true);
-            }
-            catch (CustomApiException ex)
-            {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
-            }
+            DialogService.Close(true);
         }
 
         protected async Task Button2Click(MouseEventArgs args)

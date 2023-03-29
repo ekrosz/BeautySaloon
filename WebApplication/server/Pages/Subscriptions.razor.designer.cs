@@ -8,6 +8,8 @@ using BeautySaloon.Api.Services;
 using BeautySaloon.Api.Dto.Requests.Subscription;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using WebApplication.Handlers;
+using Azure.Core;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages
 {
@@ -23,9 +25,6 @@ namespace WebApplication.Pages
 
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
-
-        [Inject]
-        protected NavigationManager UriHelper { get; set; }
 
         [Inject]
         protected DialogService DialogService { get; set; }
@@ -44,6 +43,9 @@ namespace WebApplication.Pages
 
         [Inject]
         protected ISubscriptionHttpClient SubscriptionHttpClient { get; set; }
+
+        [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
 
         protected RadzenDataGrid<GetSubscriptionListItemResponseDto> grid0;
 
@@ -121,9 +123,14 @@ namespace WebApplication.Pages
 
         protected int TotalCount { get; set; }
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await Load();
+            if (firstRender)
+            {
+                await Load();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
 
         protected async Task LoadDataAsync(LoadDataArgs args)
@@ -143,27 +150,17 @@ namespace WebApplication.Pages
                 Search = string.Empty;
             }
 
-            try
-            {
-                var subscriptions = await SubscriptionHttpClient.GetListAsync(new GetSubscriptionListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = Search }, CancellationToken.None);
+            var subscriptions = await HttpClientWrapper.SendAsync((accessToken)
+                => SubscriptionHttpClient.GetListAsync(accessToken, new GetSubscriptionListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = Search }, CancellationToken.None));
 
-                GetSubscriptionsResult = subscriptions.Items;
-                TotalCount = subscriptions.TotalCount;
-            }
-            catch (CustomApiException ex)
+            if (subscriptions == default)
             {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
+                return;
             }
+
+            GetSubscriptionsResult = subscriptions.Items;
+            TotalCount = subscriptions.TotalCount;
+            
         }
 
         protected async Task Button0Click(MouseEventArgs args)
@@ -178,35 +175,18 @@ namespace WebApplication.Pages
 
         protected async Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
         {
-            try
+            if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
             {
-                if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
-                {
-                    await SubscriptionHttpClient.DeleteAsync(data.Id, CancellationToken.None);
+                await HttpClientWrapper.SendAsync((accessToken) => SubscriptionHttpClient.DeleteAsync(accessToken, data.Id, CancellationToken.None));
 
-                    await grid0.Reload();
-                    await Load();
+                await grid0.Reload();
+                await Load();
 
-                    NotificationService.Notify(new NotificationMessage()
-                    {
-                        Severity = NotificationSeverity.Success,
-                        Summary = "Запись успешно удалена"
-                    });
-                }
-            }
-            catch (CustomApiException ex)
-            {
                 NotificationService.Notify(new NotificationMessage()
                 {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно удалена"
                 });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
             }
         }
     }

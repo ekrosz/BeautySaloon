@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Radzen;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages;
 
@@ -39,6 +40,9 @@ public partial class AddOrEditSubscriptionCosmeticServiceComponent : ComponentBa
 
     [Inject]
     protected ICosmeticServiceHttpClient CosmeticServiceHttpClient { get; set; }
+
+    [Inject]
+    protected IHttpClientWrapper HttpClientWrapper { get; set; }
 
     private SubscriptionCosmeticServiceRequest _subscriptionCosmeticService;
 
@@ -79,15 +83,22 @@ public partial class AddOrEditSubscriptionCosmeticServiceComponent : ComponentBa
 
     protected bool IsDropDownDisabled { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Load();
+        if (firstRender)
+        {
+            await Load();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
+
     protected async Task Load()
     {
         if (SubscriptionCosmeticService == null)
         {
             SubscriptionCosmeticService = new SubscriptionCosmeticServiceRequest();
+            IsDropDownDisabled = false;
         }
         else
         {
@@ -111,25 +122,31 @@ public partial class AddOrEditSubscriptionCosmeticServiceComponent : ComponentBa
 
     private async Task<IReadOnlyCollection<GetCosmeticServiceResponseDto>> GetCosmeticServicesAsync()
     {
-        var pageNumber = 1;
         var pageSize = 100;
-        var totalCount = 100;
+        var pageNumber = 1;
+        var totalCount = 1;
+
+        async Task<PageResponseDto<GetCosmeticServiceResponseDto>?> GetListAsync(int number, int size)
+        {
+            var cosmeticServices = await HttpClientWrapper.SendAsync((accessToken)
+                => CosmeticServiceHttpClient.GetListAsync(accessToken, new GetCosmeticServiceListRequestDto { Page = new PageRequestDto(number, size) }, CancellationToken.None));
+
+            totalCount = cosmeticServices.TotalCount - pageSize;
+            pageNumber++;
+
+            return cosmeticServices;
+        }
 
         var result = new List<GetCosmeticServiceResponseDto>();
 
-        var cosmeticServices = await CosmeticServiceHttpClient.GetListAsync(new GetCosmeticServiceListRequestDto { Page = new PageRequestDto(pageNumber, pageSize) }, CancellationToken.None);
-
-        result.AddRange(cosmeticServices.Items);
-        totalCount = cosmeticServices.TotalCount - pageSize;
-        pageNumber++;
-
         while (totalCount > 0)
         {
-            cosmeticServices = await CosmeticServiceHttpClient.GetListAsync(new GetCosmeticServiceListRequestDto { Page = new PageRequestDto(pageNumber, pageSize) }, CancellationToken.None);
+            var cosmeticServices = await GetListAsync(pageNumber, pageSize);
 
-            result.AddRange(cosmeticServices.Items);
-            totalCount = cosmeticServices.TotalCount - totalCount;
-            pageNumber++;
+            if (cosmeticServices != default)
+            {
+                result.AddRange(cosmeticServices.Items);
+            }
         }
 
         return result.ToArray();

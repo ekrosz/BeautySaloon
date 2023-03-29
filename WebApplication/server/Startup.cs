@@ -78,10 +78,6 @@ namespace WebApplication
             services.AddScoped<ContextMenuService>();
 
             services.AddTransient<CustomRefitErrorHandler>();
-            services.AddTransient<TokenStorageHandler>();
-            services.AddTransient<HeaderPropagationHandler>();
-
-            services.AddSingleton<ITokenStorage, TokenStorage>();
 
             services.AddScoped<IHttpClientWrapper, HttpClientWrapper>();
 
@@ -91,8 +87,7 @@ namespace WebApplication
 
             services.AddRefitClient<IUserHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
-                .AddHttpMessageHandler<CustomRefitErrorHandler>()
-                .AddHttpMessageHandler<HeaderPropagationHandler>();
+                .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
             services.AddRefitClient<IPersonHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
@@ -100,23 +95,19 @@ namespace WebApplication
 
             services.AddRefitClient<ICosmeticServiceHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
-                .AddHttpMessageHandler<CustomRefitErrorHandler>()
-                .AddHttpMessageHandler<HeaderPropagationHandler>();
+                .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
             services.AddRefitClient<ISubscriptionHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
-                .AddHttpMessageHandler<CustomRefitErrorHandler>()
-                .AddHttpMessageHandler<HeaderPropagationHandler>();
+                .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
             services.AddRefitClient<IOrderHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
-                .AddHttpMessageHandler<CustomRefitErrorHandler>()
-                .AddHttpMessageHandler<HeaderPropagationHandler>();
+                .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
             services.AddRefitClient<IAppointmentHttpClient>()
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
-                .AddHttpMessageHandler<CustomRefitErrorHandler>()
-                .AddHttpMessageHandler<HeaderPropagationHandler>();
+                .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
             services.AddAutoMapper(typeof(UserProfile).Assembly);
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Radzen;
 using WebApplication.Handlers;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages;
 
@@ -43,6 +44,9 @@ public partial class DetailsPersonComponent : ComponentBase
     protected IPersonHttpClient PersonHttpClient { get; set; }
 
     [Inject]
+    protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+    [Inject]
     protected IMapper Mapper { get; set; }
 
     [Parameter]
@@ -66,32 +70,26 @@ public partial class DetailsPersonComponent : ComponentBase
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Load();
+        if (firstRender)
+        {
+            await Load();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
+
     protected async Task Load()
     {
-        try
-        {
-            var person = await PersonHttpClient.GetAsync(Guid.Parse(Id), CancellationToken.None);
+        var person = await HttpClientWrapper.SendAsync<GetPersonResponseDto>((accessToken) => PersonHttpClient.GetAsync(accessToken, Guid.Parse(Id), CancellationToken.None));
 
-            Person = Mapper.Map<PersonRequest>(person);
-        }
-        catch (CustomApiException ex)
+        if (person == default)
         {
-            NotificationService.Notify(new NotificationMessage()
-            {
-                Severity = NotificationSeverity.Error,
-                Summary = ex.Message,
-                Detail = ex.Details.ErrorMessage
-            });
-
-            if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-            {
-                NavigationManager.NavigateTo("/login");
-            }
+            return;
         }
+
+        Person = Mapper.Map<PersonRequest>(person);
     }
 
     protected async Task Button2Click(MouseEventArgs args)

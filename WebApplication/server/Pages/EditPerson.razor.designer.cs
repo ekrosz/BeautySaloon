@@ -6,7 +6,7 @@ using BeautySaloon.DAL.Entities.ValueObjects;
 using BeautySaloon.Api.Services;
 using AutoMapper;
 using BeautySaloon.Api.Dto.Requests.Person;
-using WebApplication.Handlers;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages
 {
@@ -42,6 +42,9 @@ namespace WebApplication.Pages
         protected IPersonHttpClient PersonHttpClient { get; set; }
 
         [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        [Inject]
         protected IMapper Mapper { get; set; }
 
         [Parameter]
@@ -65,58 +68,34 @@ namespace WebApplication.Pages
             }
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await Load();
+            if (firstRender)
+            {
+                await Load();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
         protected async Task Load()
         {
-            try
-            {
-                var person = await PersonHttpClient.GetAsync(Id, CancellationToken.None);
+            var person = await HttpClientWrapper.SendAsync((accessToken) => PersonHttpClient.GetAsync(accessToken, Id, CancellationToken.None));
 
-                Person = Mapper.Map<PersonRequest>(person);
-            }
-            catch (CustomApiException ex)
+            if (person == default)
             {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
+                return;
             }
+
+            Person = Mapper.Map<PersonRequest>(person);
         }
 
         protected async Task Form0Submit(PersonRequest args)
         {
-            try
-            {
-                var request = Mapper.Map<UpdatePersonRequestDto>(Person);
+            var request = Mapper.Map<UpdatePersonRequestDto>(Person);
 
-                await PersonHttpClient.UpdateAsync(Id, request, CancellationToken.None);
+            await HttpClientWrapper.SendAsync((accessToken) => PersonHttpClient.UpdateAsync(accessToken, Id, request, CancellationToken.None));
 
-                DialogService.Close(true);
-            }
-            catch (CustomApiException ex)
-            {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
-            }
+            DialogService.Close(true);
         }
 
         protected async Task Button2Click(MouseEventArgs args)

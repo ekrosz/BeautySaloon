@@ -7,6 +7,7 @@ using BeautySaloon.Api.Dto.Responses.User;
 using BeautySaloon.Api.Services;
 using BeautySaloon.Api.Dto.Requests.User;
 using WebApplication.Handlers;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages
 {
@@ -43,6 +44,9 @@ namespace WebApplication.Pages
 
         [Inject]
         protected IUserHttpClient UserHttpClient { get; set; }
+
+        [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
 
         protected RadzenDataGrid<GetUserResponseDto> grid0;
 
@@ -82,10 +86,16 @@ namespace WebApplication.Pages
             }
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await Load();
+            if (firstRender)
+            {
+                await Load();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
+
         protected async Task Load()
         {
             if (string.IsNullOrEmpty(Search))
@@ -93,26 +103,14 @@ namespace WebApplication.Pages
                 Search = string.Empty;
             }
 
-            try
-            {
-                var users = await UserHttpClient.GetListAsync(new GetUserListRequestDto(Search), CancellationToken.None);
+            var users = await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.GetListAsync(accessToken, new GetUserListRequestDto(Search), CancellationToken.None));
 
-                GetUsersResult = users.Items;
-            }
-            catch (CustomApiException ex)
+            if (users == default)
             {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
+                return;
             }
+
+            GetUsersResult = users.Items;
         }
 
         protected async Task Button0Click(MouseEventArgs args)
@@ -152,35 +150,18 @@ namespace WebApplication.Pages
 
         protected async Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
         {
-            try
+            if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
             {
-                if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
-                {
-                    await UserHttpClient.DeleteAsync(data.Id, CancellationToken.None);
+                await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.DeleteAsync(accessToken, data.Id, CancellationToken.None));
 
-                    await Load();
-                    await grid0.Reload();
+                await Load();
+                await grid0.Reload();
 
-                    NotificationService.Notify(new NotificationMessage()
-                    {
-                        Severity = NotificationSeverity.Success,
-                        Summary = "Запись успешно удалена"
-                    });
-                }
-            }
-            catch (CustomApiException ex)
-            {
                 NotificationService.Notify(new NotificationMessage()
                 {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно удалена"
                 });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
             }
         }
     }

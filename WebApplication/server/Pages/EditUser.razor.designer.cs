@@ -9,6 +9,7 @@ using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects;
 using BeautySaloon.Api.Dto.Requests.User;
 using WebApplication.Handlers;
+using WebApplication.Wrappers;
 
 namespace WebApplication.Pages
 {
@@ -20,10 +21,6 @@ namespace WebApplication.Pages
         public void Reload()
         {
             InvokeAsync(StateHasChanged);
-        }
-
-        public void OnPropertyChanged(PropertyChangedEventArgs args)
-        {
         }
 
         [Inject]
@@ -48,6 +45,9 @@ namespace WebApplication.Pages
         protected IUserHttpClient UserHttpClient { get; set; }
 
         [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        [Inject]
         protected IMapper Mapper { get; set; }
 
         [Parameter]
@@ -65,9 +65,7 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_user, value))
                 {
-                    var args = new PropertyChangedEventArgs() { Name = "User", NewValue = value, OldValue = _user };
                     _user = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
@@ -81,58 +79,34 @@ namespace WebApplication.Pages
                 _ => string.Empty
             });
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await Load();
+            if (firstRender)
+            {
+                await Load();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
         protected async Task Load()
         {
-            try
-            {
-                var user = await UserHttpClient.GetAsync(Id, CancellationToken.None);
+            var user = await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.GetAsync(accessToken, Id, CancellationToken.None));
 
-                User = Mapper.Map<UserRequest>(user);
-            }
-            catch (CustomApiException ex)
+            if (user == default)
             {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
+                return;
             }
+
+            User = Mapper.Map<UserRequest>(user);
         }
 
         protected async Task Form0Submit(UserRequest args)
         {
-            try
-            {
-                var request = Mapper.Map<UpdateUserRequestDto>(User);
+            var request = Mapper.Map<UpdateUserRequestDto>(User);
 
-                await UserHttpClient.UpdateAsync(Id, request, CancellationToken.None);
+            await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.UpdateAsync(accessToken, Id, request, CancellationToken.None));
 
-                DialogService.Close(true);
-            }
-            catch (CustomApiException ex)
-            {
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = ex.Message,
-                    Detail = ex.Details.ErrorMessage
-                });
-
-                if (ex.Details.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Details.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    NavigationManager.NavigateTo("/login");
-                }
-            }
+            DialogService.Close(true);
         }
 
         protected async Task Button2Click(MouseEventArgs args)
