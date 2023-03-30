@@ -28,13 +28,15 @@ public class HttpClientWrapper : IHttpClientWrapper
         _navigationManager = navigationManager;
     }
 
-    public async Task SendAsync(Func<string, Task> call)
+    public async Task<bool> SendAsync(Func<string, Task> call)
     {
         var accessToken = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", Constants.AccessTokenKey) ?? string.Empty;
 
         try
         {
             await call(accessToken);
+
+            return true;
         }
         catch (CustomApiException ex)
         {
@@ -49,6 +51,8 @@ public class HttpClientWrapper : IHttpClientWrapper
             {
                 _navigationManager.NavigateTo("/login");
             }
+
+            return false;
         }
     }
 

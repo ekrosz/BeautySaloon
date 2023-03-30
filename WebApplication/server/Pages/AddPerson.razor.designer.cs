@@ -85,9 +85,9 @@ namespace WebApplication.Pages
         {
             var request = Mapper.Map<CreatePersonRequestDto>(Person);
 
-            await HttpClientWrapper.SendAsync((accessToken) => PersonHttpClient.CreateAsync(accessToken, request, CancellationToken.None));
+            var isSuccess = await HttpClientWrapper.SendAsync((accessToken) => PersonHttpClient.CreateAsync(accessToken, request, CancellationToken.None));
 
-            DialogService.Close(true);
+            DialogService.Close(isSuccess);
         }
 
         protected async Task Button2Click(MouseEventArgs args)

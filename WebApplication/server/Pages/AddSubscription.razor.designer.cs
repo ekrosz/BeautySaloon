@@ -94,7 +94,12 @@ namespace WebApplication.Pages
         {
             var request = Mapper.Map<CreateSubscriptionRequestDto>(Subscription);
 
-            await HttpClientWrapper.SendAsync((accessToken) => SubscriptionHttpClient.CreateAsync(accessToken, request, CancellationToken.None));
+            var isSuccess = await HttpClientWrapper.SendAsync((accessToken) => SubscriptionHttpClient.CreateAsync(accessToken, request, CancellationToken.None));
+
+            if (!isSuccess)
+            {
+                return;
+            }
 
             NotificationService.Notify(new NotificationMessage()
             {

@@ -104,9 +104,9 @@ namespace WebApplication.Pages
         {
             var request = Mapper.Map<UpdateUserRequestDto>(User);
 
-            await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.UpdateAsync(accessToken, Id, request, CancellationToken.None));
+            var isSuccess = await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.UpdateAsync(accessToken, Id, request, CancellationToken.None));
 
-            DialogService.Close(true);
+            DialogService.Close(isSuccess);
         }
 
         protected async Task Button2Click(MouseEventArgs args)

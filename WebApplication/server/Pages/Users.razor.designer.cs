@@ -152,7 +152,12 @@ namespace WebApplication.Pages
         {
             if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
             {
-                await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.DeleteAsync(accessToken, data.Id, CancellationToken.None));
+                var isSuccess = await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.DeleteAsync(accessToken, data.Id, CancellationToken.None));
+
+                if (!isSuccess)
+                {
+                    return;
+                }
 
                 await Load();
                 await grid0.Reload();
