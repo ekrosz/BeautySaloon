@@ -137,7 +137,7 @@ public class OrderService : IOrderService
     {
         var orders = await _orderQueryRepository.GetPageAsync(
             request: request.Page,
-            predicate: x => x.Person.Id == request.PersonId
+            predicate: x => (!request.PersonId.HasValue || request.PersonId.Value == x.Person.Id)
                     && (string.IsNullOrWhiteSpace(request.SearchString)
                         || string.Join(' ', x.Person.Name.LastName, x.Person.Name.FirstName, x.Person.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
                         || x.Person.PhoneNumber.ToLower().Contains(request.SearchString))

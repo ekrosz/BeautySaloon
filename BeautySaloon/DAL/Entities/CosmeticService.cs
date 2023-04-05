@@ -11,8 +11,8 @@ public class CosmeticService : IEntity, IAuditable
 
     public CosmeticService(
         string name,
-        string description,
-        int executeTimeInMinutes)
+        int? executeTimeInMinutes,
+        string? description)
     {
         Name = name;
         Description = description;
@@ -23,9 +23,9 @@ public class CosmeticService : IEntity, IAuditable
 
     public string Name { get; set; } = string.Empty;
 
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
-    public int ExecuteTimeInMinutes { get; set; }
+    public int? ExecuteTimeInMinutes { get; set; }
 
     public DateTime CreatedOn { get; set; }
 
@@ -35,8 +35,8 @@ public class CosmeticService : IEntity, IAuditable
 
     public void Update(
         string name,
-        string description,
-        int executeTimeInMinutes)
+        int? executeTimeInMinutes,
+        string? description)
     {
         Name = name;
         Description = description;

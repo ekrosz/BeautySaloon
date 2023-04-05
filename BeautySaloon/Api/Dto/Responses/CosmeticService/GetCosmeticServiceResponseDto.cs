@@ -6,7 +6,7 @@ public record GetCosmeticServiceResponseDto
 
     public string Name { get; init; } = string.Empty;
 
-    public string Description { get; init; } = string.Empty;
+    public string? Description { get; init; }
 
-    public int ExecuteTimeInMinutes { get; init; }
+    public int? ExecuteTimeInMinutes { get; init; }
 }

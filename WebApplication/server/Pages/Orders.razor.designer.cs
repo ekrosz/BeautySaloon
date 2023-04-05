@@ -1,15 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
 using WebApplication.Models.LocalDb;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Services;
+using BeautySaloon.Api.Services;
+using WebApplication.Wrappers;
+using BeautySaloon.Api.Dto.Responses.Order;
+using BeautySaloon.Api.Dto.Requests.Order;
+using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 
 namespace WebApplication.Pages
 {
@@ -21,10 +20,6 @@ namespace WebApplication.Pages
         public void Reload()
         {
             InvokeAsync(StateHasChanged);
-        }
-
-        public void OnPropertyChanged(PropertyChangedEventArgs args)
-        {
         }
 
         [Inject]
@@ -43,11 +38,19 @@ namespace WebApplication.Pages
         protected NotificationService NotificationService { get; set; }
 
         [Inject]
-        protected LocalDbService LocalDb { get; set; }
-        protected RadzenDataGrid<WebApplication.Models.LocalDb.Order> grid0;
+        protected NavigationManager NavigationManager { get; set; }
 
-        string _search;
-        protected string search
+        [Inject]
+        protected IOrderHttpClient OrderHttpClient { get; set; }
+
+        [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        protected RadzenDataGrid<GetOrderResponseDto> grid0;
+
+        private string _search;
+
+        protected string Search
         {
             get
             {
@@ -57,16 +60,15 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_search, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "search", NewValue = value, OldValue = _search };
                     _search = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
-        IEnumerable<WebApplication.Models.LocalDb.Order> _getOrdersResult;
-        protected IEnumerable<WebApplication.Models.LocalDb.Order> getOrdersResult
+        private IReadOnlyCollection<GetOrderResponseDto> _getOrdersResult;
+
+        protected IReadOnlyCollection<GetOrderResponseDto> GetOrdersResult
         {
             get
             {
@@ -76,59 +78,181 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_getOrdersResult, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "getOrdersResult", NewValue = value, OldValue = _getOrdersResult };
                     _getOrdersResult = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
-        protected override async System.Threading.Tasks.Task OnInitializedAsync()
-        {
-            await Load();
-        }
-        protected async System.Threading.Tasks.Task Load()
-        {
-            if (string.IsNullOrEmpty(search)) {
-                search = "";
-            }
+        private int _pageSize = 10;
 
-            var localDbGetOrdersResult = await LocalDb.GetOrders(new Query() { Filter = $@"i => i.Comment.Contains(@0)", FilterParameters = new object[] { search }, Expand = "Person,User" });
-            getOrdersResult = localDbGetOrdersResult;
-        }
-
-        protected async System.Threading.Tasks.Task Button0Click(MouseEventArgs args)
+        protected int PageSize
         {
-            var dialogResult = await DialogService.OpenAsync<AddOrder>("Add Order", null);
-            await grid0.Reload();
-
-            await InvokeAsync(() => { StateHasChanged(); });
-        }
-
-        protected async System.Threading.Tasks.Task Grid0RowSelect(WebApplication.Models.LocalDb.Order args)
-        {
-            var dialogResult = await DialogService.OpenAsync<EditOrder>("Edit Order", new Dictionary<string, object>() { {"Id", args.Id} });
-            await InvokeAsync(() => { StateHasChanged(); });
-        }
-
-        protected async System.Threading.Tasks.Task GridDeleteButtonClick(MouseEventArgs args, dynamic data)
-        {
-            try
+            get
             {
-                if (await DialogService.Confirm("Are you sure you want to delete this record?") == true)
+                return _pageSize;
+            }
+            set
+            {
+                if (!object.Equals(_pageSize, value))
                 {
-                    var localDbDeleteOrderResult = await LocalDb.DeleteOrder(data.Id);
-                    if (localDbDeleteOrderResult != null)
-                    {
-                        await grid0.Reload();
-                    }
+                    _pageSize = value;
+                    Reload();
                 }
             }
-            catch (System.Exception localDbDeleteOrderException)
+        }
+
+        private int _pageNumber = 1;
+
+        protected int PageNumber
+        {
+            get
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error,Summary = $"Error",Detail = $"Unable to delete Order" });
+                return _pageNumber;
+            }
+            set
+            {
+                if (!object.Equals(_pageNumber, value))
+                {
+                    _pageNumber = value;
+                    Reload();
+                }
             }
         }
+
+        private DateTime _endCreatedOn = DateTime.Now;
+
+        protected DateTime EndCreatedOn
+        {
+            get
+            {
+                return _endCreatedOn;
+            }
+            set
+            {
+                if (!object.Equals(_endCreatedOn, value))
+                {
+                    _endCreatedOn = value;
+                    Reload();
+                }
+            }
+        }
+
+        private DateTime _startCreatedOn = DateTime.Now.AddDays(-7);
+
+        protected DateTime StartCreatedOn
+        {
+            get
+            {
+                return _endCreatedOn;
+            }
+            set
+            {
+                if (!object.Equals(_startCreatedOn, value))
+                {
+                    _startCreatedOn = value;
+                    Reload();
+                }
+            }
+        }
+
+        protected int TotalCount { get; set; }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await Load();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
+        }
+
+        protected async Task LoadDataAsync(LoadDataArgs args)
+        {
+            PageSize = args.Top ?? PageSize;
+            PageNumber = args.Skip.HasValue
+            ? (args.Skip.Value / PageSize) + 1
+            : PageNumber;
+
+            await Load();
+        }
+
+        protected async Task Load()
+        {
+            if (string.IsNullOrEmpty(Search))
+            {
+                Search = string.Empty;
+            }
+
+            var orders = await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.GetListAsync(accessToken, new GetOrderListRequestDto
+            {
+                SearchString = Search,
+                Page = new PageRequestDto(PageNumber, PageSize)
+            }));
+
+            if (orders == default)
+            {
+                return;
+            }
+
+            GetOrdersResult = orders.Items;
+            TotalCount = orders.TotalCount;
+        }
+
+        protected async Task Button0Click(MouseEventArgs args)
+        {
+            var dialogResult = await DialogService.OpenAsync<AddOrder>("Add Order", null);
+
+            await Load();
+            await grid0.Reload();
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+
+        protected async Task Grid0RowSelect(GetOrderResponseDto args)
+        {
+            var dialogResult = await DialogService.OpenAsync<EditOrder>("Edit Order", new Dictionary<string, object>() { {"Id", args.Id} });
+
+            await Load();
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+
+        protected async Task GridPayButtonClick(MouseEventArgs args, dynamic data)
+        {
+            var dialogResult = await DialogService.OpenAsync<PayOrCancelOrder>("Оплата заказа", new Dictionary<string, object> { { "Id", data.Id }, { "IsPayOperation", true } });
+
+            if ((dialogResult as bool?).GetValueOrDefault())
+            {
+                await Load();
+                await grid0.Reload();
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Заказ успешно оплачен"
+                });
+            }
+        }
+
+        protected async Task GridCancelButtonClick(MouseEventArgs args, dynamic data)
+        {
+            var dialogResult = await DialogService.OpenAsync<PayOrCancelOrder>("Оплата заказа", new Dictionary<string, object> { { "Id", data.Id }, { "IsPayOperation", false } });
+
+            if ((dialogResult as bool?).GetValueOrDefault())
+            {
+                await Load();
+                await grid0.Reload();
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Заказ успешно отменен"
+                });
+            }
+        }
+
+        protected void ShowPayButtonTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, "Оплатить", options);
+
+        protected void ShowCancelButtonTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, "Отменить", options);
     }
 }

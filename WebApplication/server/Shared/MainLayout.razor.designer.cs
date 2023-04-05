@@ -9,14 +9,14 @@ using Radzen.Blazor;
 using WebApplication.Models.LocalDb;
 using WebApplication.Pages;
 using WebApplication.Services;
+using BeautySaloon.Api.Services;
+using WebApplication.Wrappers;
+using BeautySaloon.Api.Dto.Responses.User;
 
 namespace WebApplication.Layouts
 {
     public partial class MainLayoutComponent : LayoutComponentBase
     {
-        [Inject]
-        protected NavigationManager UriHelper { get; set; }
-
         [Inject]
         protected DialogService DialogService { get; set; }
 
@@ -28,14 +28,54 @@ namespace WebApplication.Layouts
 
         [Inject]
         protected NotificationService NotificationService { get; set; }
+
         [Inject]
-        protected LocalDbService LocalDb { get; set; }
+        protected NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        protected IUserHttpClient UserHttpClient { get; set; }
+
+        [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        protected GetUserResponseDto? User { get; set; }
 
         protected RadzenBody body0;
+
         protected RadzenSidebar sidebar0;
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                try
+                {
+                    var user = await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.GetAsync(accessToken, CancellationToken.None));
 
-        protected async System.Threading.Tasks.Task SidebarToggle0Click(dynamic args)
+                    if (user == default)
+                    {
+                        return;
+                    }
+
+                    User = user;
+                }
+                finally
+                {
+                    StateHasChanged();
+                }
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
+        }
+
+        protected Task OnLogout(dynamic args)
+        {
+            NavigationManager.NavigateTo("logout");
+
+            return Task.CompletedTask;
+        }
+
+        protected async Task SidebarToggle0Click(dynamic args)
         {
             await InvokeAsync(() => { sidebar0.Toggle(); });
 

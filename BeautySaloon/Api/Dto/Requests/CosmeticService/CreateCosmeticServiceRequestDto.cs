@@ -6,9 +6,9 @@ public record CreateCosmeticServiceRequestDto
 {
     public string Name { get; init; } = string.Empty;
 
-    public string Description { get; init; } = string.Empty;
+    public string? Description { get; init; } = string.Empty;
 
-    public int ExecuteTimeInMinutes { get; init; }
+    public int? ExecuteTimeInMinutes { get; init; }
 }
 
 public class CreateCosmeticServiceRequestValidator : AbstractValidator<CreateCosmeticServiceRequestDto>
@@ -21,14 +21,13 @@ public class CreateCosmeticServiceRequestValidator : AbstractValidator<CreateCos
             .MaximumLength(100);
 
         RuleFor(_ => _.Description)
-            .NotNull()
             .NotEmpty()
-            .MaximumLength(500);
+            .MaximumLength(500)
+            .When(_ => _.Description is not null);
 
         RuleFor(_ => _.ExecuteTimeInMinutes)
-            .NotNull()
-            .NotEmpty()
             .GreaterThanOrEqualTo(1)
-            .LessThanOrEqualTo(1440);
+            .LessThanOrEqualTo(1440)
+            .When(x => x.ExecuteTimeInMinutes.HasValue);
     }
 }

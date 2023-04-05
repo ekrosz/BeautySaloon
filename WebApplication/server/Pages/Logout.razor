@@ -1,0 +1,25 @@
+﻿@page "/logout"
+
+@using BeautySaloon.Api.Services;
+@using Radzen
+@using WebApplication.Handlers
+
+@layout LoginLayout;
+
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("localStorage.removeItem", Constants.AccessTokenKey);
+            await JsRuntime.InvokeVoidAsync("localStorage.removeItem", Constants.RefreshTokenKey);
+
+            NavigationManager.NavigateTo("/login");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

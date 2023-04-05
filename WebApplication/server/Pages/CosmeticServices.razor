@@ -16,7 +16,7 @@
         </RadzenButton>
         <RadzenTextBox Placeholder="Search ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
         </RadzenTextBox>
-        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" LoadData="@LoadDataAsync" AllowSorting="false" Data="@GetCosmeticServicesResult" TItem="GetCosmeticServiceResponseDto" RowSelect="@Grid0RowSelect">
+        <RadzenDataGrid @ref="grid0" GridLines="DataGridGridLines.Horizontal" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" LoadData="@LoadDataAsync" AllowSorting="false" Data="@GetCosmeticServicesResult" TItem="GetCosmeticServiceResponseDto" RowSelect="@Grid0RowSelect">
           <Columns>
             <RadzenDataGridColumn TItem="GetCosmeticServiceResponseDto" Property="Name" Title="Наименование">
             </RadzenDataGridColumn>
@@ -25,7 +25,11 @@
                     @{
                        const int MinutesInHour = 60;
 
-                       if (cosmeticService.ExecuteTimeInMinutes >= MinutesInHour)
+                       if (!cosmeticService.ExecuteTimeInMinutes.HasValue)
+                       {
+                           <span>-</span>
+                       }
+                       else if (cosmeticService.ExecuteTimeInMinutes >= MinutesInHour)
                        {
                            if (cosmeticService.ExecuteTimeInMinutes % MinutesInHour == 0)
                            {

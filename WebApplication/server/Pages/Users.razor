@@ -16,7 +16,7 @@
         </RadzenButton>
         <RadzenTextBox Placeholder="Поиск по ФИО или телефону..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
         </RadzenTextBox>
-        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@GetUsersResult" TItem="GetUserResponseDto" RowSelect="@Grid0RowSelect">
+        <RadzenDataGrid @ref="grid0" GridLines="DataGridGridLines.Horizontal" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@GetUsersResult" TItem="GetUserResponseDto" RowSelect="@Grid0RowSelect">
           <Columns>
             <RadzenDataGridColumn TItem="GetUserResponseDto" Property="Name.ConcatedName" Title="ФИО">
             </RadzenDataGridColumn>

@@ -87,13 +87,20 @@
                             <div class="col-md-12">
                                 <RadzenHeading Size="H2" Text="Абонементы" style="margin-top: 1rem; margin-left: 1rem">
                                 </RadzenHeading>
-                                <RadzenDataGrid AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@Person.Subscriptions" TItem="PersonRequest.SubscriptionRequest">
+                                <RadzenDataGrid GridLines="DataGridGridLines.Horizontal" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@Person.Subscriptions" TItem="PersonRequest.SubscriptionRequest">
                                     <Columns>
                                         <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="Name" Title="Абонемент">
                                         </RadzenDataGridColumn>
                                         <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="LifeTimeInDays" Title="Срок действия">
-                                            <Template Context="subscription">
-                                                <span>@($"{subscription.LifeTimeInDays} д.")</span>
+                                            <Template Context="data">
+                                                @if (data.LifeTimeInDays.HasValue)
+                                                {
+                                                    <span>@($"{data.LifeTimeInDays} д.")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>Бессрочно</span>
+                                                }
                                             </Template>
                                         </RadzenDataGridColumn>
                                         <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="Price" Title="Стоимость">

@@ -1,11 +1,6 @@
 ﻿using BeautySaloon.DAL.Configurations.Abstract;
 using BeautySaloon.DAL.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeautySaloon.DAL.Configurations;
 
@@ -21,11 +16,11 @@ public class CosmeticServiceConfiguration : EntityConfiguration<CosmeticService>
             .IsUnique();
 
         builder.Property(x => x.ExecuteTimeInMinutes)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.Description)
             .HasMaxLength(500)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.HasMany<SubscriptionCosmeticService>()
             .WithOne(x => x.CosmeticService)

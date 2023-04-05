@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeautySaloon.WebApi.Controllers;
 
-[Authorize(Roles = Constants.Roles.Admin)]
 [Route("api/users")]
 [ApiController]
 public class UsersController : ControllerBase
@@ -39,6 +38,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task CreateAsync([FromBody] CreateUserRequestDto request, CancellationToken cancellationToken = default)
     {
         await _createUserValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -47,6 +47,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task UpdateAsync([FromRoute] Guid id, [FromBody] UpdateUserRequestDto request, CancellationToken cancellationToken = default)
     {
         await _updateUserByIdValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -57,6 +58,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var requestById = new ByIdRequestDto(id);
@@ -67,6 +69,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task<GetUserResponseDto> GetAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var requestById = new ByIdRequestDto(id);
@@ -77,6 +80,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("me")]
+    [Authorize]
     public async Task<GetUserResponseDto> GetAsync(CancellationToken cancellationToken = default)
     {
         var currentUserId = _currentUserProvider.GetUserId();
@@ -87,6 +91,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public Task<ItemListResponseDto<GetUserResponseDto>> GetListAsync([FromQuery] GetUserListRequestDto request, CancellationToken cancellationToken = default)
         => _userService.GetUserListAsync(request, cancellationToken);
 }

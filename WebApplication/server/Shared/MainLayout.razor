@@ -21,6 +21,8 @@
             </RadzenLabel>
           </div>
           <div class="col-6 text-right">
+            <RadzenButton Click="OnLogout" Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Light" Icon="exit_to_app" Size="ButtonSize.Medium" Style="margin-right: 1rem">
+            </RadzenButton>
           </div>
         </div>
       </ChildContent>
@@ -36,18 +38,24 @@
       <ChildContent>
         <RadzenPanelMenu style="height: 100%">
           <ChildContent>
-            <RadzenPanelMenuItem Text="Пользователи" Path="users">
-            </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Услуги" Path="cosmetic-services">
-            </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Абонементы" Path="subscriptions">
-            </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Клиенты" Path="persons">
-            </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Заказы" Path="orders">
-            </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Записи" Path="appointments">
-            </RadzenPanelMenuItem>
+            @if (User != null)
+            {
+                @if (User.Role == Role.Admin)
+                {
+                    <RadzenPanelMenuItem Text="Пользователи" Path="users">
+                    </RadzenPanelMenuItem>
+                    <RadzenPanelMenuItem Text="Услуги" Path="cosmetic-services">
+                    </RadzenPanelMenuItem>
+                    <RadzenPanelMenuItem Text="Абонементы" Path="subscriptions">
+                    </RadzenPanelMenuItem>
+                }
+                <RadzenPanelMenuItem Text="Клиенты" Path="persons">
+                </RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Заказы" Path="orders">
+                </RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Записи" Path="appointments">
+                </RadzenPanelMenuItem>
+            }
           </ChildContent>
         </RadzenPanelMenu>
       </ChildContent>

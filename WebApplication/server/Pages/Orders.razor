@@ -4,45 +4,77 @@
 
 @using Radzen
 @using Radzen.Blazor
-@using WebApplication.Models.LocalDb
-<PageTitle>Orders</PageTitle>
+
+<PageTitle>Заказы</PageTitle>
 <RadzenContent Container="main">
   <ChildContent>
-    <RadzenHeading Size="H1" Text="Orders">
+    <RadzenHeading Size="H1" Text="Заказы">
     </RadzenHeading>
     <div class="row">
       <div class="col-md-12">
-        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add" Click="@Button0Click">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
         </RadzenButton>
-        <RadzenTextBox Placeholder="Search ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        <RadzenTextBox Placeholder="Search ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
         </RadzenTextBox>
-        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" AllowSorting="false" Data="@getOrdersResult" TItem="WebApplication.Models.LocalDb.Order" RowSelect="@Grid0RowSelect">
+        <RadzenDataGrid @ref="grid0" AllowFiltering="false" GridLines="DataGridGridLines.Horizontal" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="PageSize" Count="TotalCount" LoadData="@LoadDataAsync" AllowSorting="false" Data="@GetOrdersResult" TItem="GetOrderResponseDto" RowSelect="@Grid0RowSelect">
           <Columns>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Order" Property="UpdatedOn" FormatString="{0:dd.MM.yyyy}" Title="Updated On">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Order" Property="PersonId" SortProperty="Person.Name_FirstName" GroupProperty="Person.Name_FirstName" FilterProperty="Person.Name_FirstName" Title="Person">
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="Person" Title="Клиент">
               <Template Context="data">
-              @(data.Person?.Name_FirstName)
+                  <div class="row" style="margin-left: 5px">
+                      @data.Person.Name.ConcatedName
+                  </div>
+                  <div class="row" style="margin-left: 5px">
+                     @data.Person.PhoneNumber
+                  </div>
               </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Order" Property="UserModifierId" SortProperty="User.PhoneNumber" GroupProperty="User.PhoneNumber" FilterProperty="User.PhoneNumber" Title="User">
-              <Template Context="data">
-              @(data.User?.PhoneNumber)
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="Modifier.Name.ConcatedName" Title="Сотрудник">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="Cost" Title="Стоимость">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="PaymentStatus" Title="Статус">
+                <Template Context="data">
+                @switch (data.PaymentStatus)
+                {
+                    case PaymentStatus.NotPaid:
+                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Light" Text="Не оплачено" />
+                        break;
+                    case PaymentStatus.Paid:
+                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Success" Text="Оплачено" />
+                        break;
+                    case PaymentStatus.Cancelled:
+                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Warning" Text="Отменено" />
+                        break;
+                }
               </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Order" Property="PaymentMethod" Title="Payment Method">
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="PaymentMethod" Title="Способ оплаты">
+              <Template Context="data">
+                @switch (data.PaymentMethod)
+                {
+                    case PaymentMethod.None:
+                        <span>Нет</span>
+                        break;
+                    case PaymentMethod.Cash:
+                        <span>Наличные</span>
+                        break;
+                    case PaymentMethod.Card:
+                        <span>Банковская карта</span>
+                        break;
+                }
+              </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Order" Property="Id" Title="Id">
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="Comment" Title="Комментарий">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Order" Property="Comment" Title="Comment">
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="CreatedOn" FormatString="{0:dd.MM.yyyy}" Title="Дата создания">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Order" Property="Cost" Title="Cost">
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="UpdatedOn" FormatString="{0:dd.MM.yyyy}" Title="Дата обновления">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Order" Property="CreatedOn" FormatString="{0:dd.MM.yyyy}" Title="Created On">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Order" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Filterable="false" Sortable="false" Width="130px" TextAlign="TextAlign.Center" Title="Действие">
               <Template Context="webApplicationModelsLocalDbOrder">
-                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
+                <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="done" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.NotPaid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowPayButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridPayButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.NotPaid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowCancelButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridCancelButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
                 </RadzenButton>
               </Template>
             </RadzenDataGridColumn>
