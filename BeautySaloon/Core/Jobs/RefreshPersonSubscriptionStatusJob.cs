@@ -33,7 +33,7 @@ public class RefreshPersonSubscriptionStatusJob : BackgroundService
             try
             {
                 var personSubscriptions = await personSubscriptionWriteRepository.FindAsync(
-                    x => x.Status == PersonSubscriptionStatus.Paid
+                    x => x.Status == PersonSubscriptionCosmeticServiceStatus.Paid
                         && x.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.LifeTimeInDays.HasValue
                         && x.Order.UpdatedOn.AddDays(x.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.LifeTimeInDays.Value) < DateTime.UtcNow,
                     stoppingToken);

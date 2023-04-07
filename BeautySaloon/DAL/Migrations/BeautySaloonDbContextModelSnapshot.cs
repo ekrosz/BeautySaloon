@@ -177,31 +177,17 @@ namespace BeautySaloon.DAL.Migrations
                     b.Property<Guid?>("AppointmentId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("SubscriptionCosmeticServiceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserModifierId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AppointmentId");
 
                     b.HasIndex("OrderId");
-
-                    b.HasIndex("SubscriptionCosmeticServiceId");
 
                     b.ToTable("PersonSubscription");
                 });
@@ -400,12 +386,6 @@ namespace BeautySaloon.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeautySaloon.DAL.Entities.SubscriptionCosmeticService", null)
-                        .WithMany()
-                        .HasForeignKey("SubscriptionCosmeticServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.OwnsOne("BeautySaloon.DAL.Entities.ValueObjects.SubscriptionCosmeticServiceSnapshot", "SubscriptionCosmeticServiceSnapshot", b1 =>
                         {
                             b1.Property<Guid>("PersonSubscriptionId")
@@ -427,11 +407,10 @@ namespace BeautySaloon.DAL.Migrations
                                         .HasColumnType("uuid");
 
                                     b2.Property<string>("Description")
-                                        .IsRequired()
                                         .HasMaxLength(500)
                                         .HasColumnType("character varying(500)");
 
-                                    b2.Property<int>("ExecuteTimeInMinutes")
+                                    b2.Property<int?>("ExecuteTimeInMinutes")
                                         .HasColumnType("integer");
 
                                     b2.Property<Guid>("Id")

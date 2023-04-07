@@ -10,17 +10,8 @@
     <ChildContent>
         <div class="row">
             <div class="col-md-12">
-                <RadzenTemplateForm Data="@Comment" TItem="string" Submit="@Form0Submit">
+                <RadzenTemplateForm Data="@PayOrCancelOperation" Visible="@(PayOrCancelOperation != null)" TItem="PayOrCancelRequest" Submit="@Form0Submit">
                     <ChildContent>
-                        <div style="margin-bottom: 1rem" class="row">
-                            <div class="col-md-3">
-                                <RadzenLabel Text="Комментарий" Component="Comment" style="width: 100%">
-                                </RadzenLabel>
-                            </div>
-                            <div class="col-md-9">
-                                <RadzenTextArea Placeholder="Введите комментарий..." @bind-Value="@(Comment)" style="width: 100%" />
-                            </div>
-                        </div>
                         @if (IsPayOperation)
                         {
                             <div style="margin-bottom: 1rem" class="row">
@@ -29,13 +20,22 @@
                                     </RadzenLabel>
                                 </div>
                                 <div class="col-md-9">
-                                    <RadzenDropDown Data="PaymentMethods" ValueProperty="Key" TextProperty="Value" style="display: block; width: 100%" @bind-Value="@(PaymentMethod)" Name="PaymentMethod">
+                                    <RadzenDropDown Data="PaymentMethods" ValueProperty="Key" TextProperty="Value" style="display: block; width: 100%" @bind-Value="@(PayOrCancelOperation.PaymentMethod)" Name="PaymentMethod">
                                     </RadzenDropDown>
                                     <RadzenRequiredValidator Component="PaymentMethod" Text="Обязательное поле" style="position: absolute">
                                     </RadzenRequiredValidator>
                                 </div>
                             </div>
                         }
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Комментарий" Component="Comment" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenTextArea Placeholder="Введите комментарий..." @bind-Value="@(PayOrCancelOperation.Comment)" style="width: 100%" />
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col offset-sm-3">
                                 <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Сохранить" ButtonStyle="ButtonStyle.Primary">

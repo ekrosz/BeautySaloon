@@ -1,4 +1,5 @@
 ﻿using BeautySaloon.Api.Dto.Requests.Auth;
+using BeautySaloon.Core.Jobs;
 using BeautySaloon.Core.Profiles;
 using BeautySaloon.Core.Services;
 using BeautySaloon.Core.Services.Contracts;
@@ -12,6 +13,7 @@ using BeautySaloon.WebApi.Providers;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -42,7 +44,7 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddBusinessLayer(this IServiceCollection services)
+    public static IServiceCollection AddBusinessLayer(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
@@ -51,6 +53,9 @@ public static class ServiceCollectionExtension
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
+
+        services.Configure<BLayerSettings>(configuration.GetSection(nameof(BLayerSettings)));
+        services.AddHostedService<RefreshPersonSubscriptionStatusJob>();
 
         services.AddValidatorsFromAssembly(typeof(AuthorizeByCredentialsRequestValidator).Assembly);
         services.AddAutoMapper(typeof(UserProfile).Assembly);

@@ -20,5 +20,5 @@ public record GetAppointmentResponseDto
 
     public ModifierResponseDto Modifier { get; set; } = new();
 
-    public IReadOnlyCollection<PersonSubscriptionResponseDto> Subscriptions { get; init; } = Array.Empty<PersonSubscriptionResponseDto>();
+    public IReadOnlyCollection<PersonSubscriptionCosmeticServiceResponseDto> Subscriptions { get; init; } = Array.Empty<PersonSubscriptionCosmeticServiceResponseDto>();
 }

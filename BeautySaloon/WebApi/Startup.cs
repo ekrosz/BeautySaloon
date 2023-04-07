@@ -22,7 +22,7 @@ public class Startup
 
         services.AddAuthorization(Configuration);
         services.AddDatabaseLayer(Configuration);
-        services.AddBusinessLayer();
+        services.AddBusinessLayer(Configuration);
         services.AddProviders();
     }
 

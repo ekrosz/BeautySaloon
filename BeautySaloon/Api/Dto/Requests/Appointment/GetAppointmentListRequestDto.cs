@@ -1,6 +1,7 @@
 ﻿using BeautySaloon.Api.Dto.Common;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using FluentValidation;
+using Newtonsoft.Json;
 
 namespace BeautySaloon.Api.Dto.Requests.Appointment;
 

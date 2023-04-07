@@ -93,13 +93,13 @@ public class PersonService : IPersonService
         return _mapper.Map<PageResponseDto<GetPersonListItemResponseDto>>(page);
     }
 
-    public async Task<ItemListResponseDto<PersonSubscriptionResponseDto>> GetPersonSubscriptionListAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
+    public async Task<ItemListResponseDto<PersonSubscriptionCosmeticServiceResponseDto>> GetPersonSubscriptionListAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var list = await _personSubscriptionQueryRepository.FindAsync(
-            x => x.Order.Person.Id == request.Id && x.Status == PersonSubscriptionStatus.Paid,
+            x => x.Order.Person.Id == request.Id && x.Status == PersonSubscriptionCosmeticServiceStatus.Paid,
             cancellationToken);
 
-        return new ItemListResponseDto<PersonSubscriptionResponseDto>(_mapper.Map<IReadOnlyCollection<PersonSubscriptionResponseDto>>(list));
+        return new ItemListResponseDto<PersonSubscriptionCosmeticServiceResponseDto>(_mapper.Map<IReadOnlyCollection<PersonSubscriptionCosmeticServiceResponseDto>>(list));
     }
 
     public async Task UpdatePersonAsync(ByIdWithDataRequestDto<UpdatePersonRequestDto> request, CancellationToken cancellationToken = default)

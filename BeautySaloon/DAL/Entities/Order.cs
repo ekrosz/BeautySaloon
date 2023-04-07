@@ -66,7 +66,7 @@ public class Order : IEntity, IAuditable
 
         PaymentMethod = paymentMethod;
         Comment = comment;
-        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Paid);
+        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.Paid);
     }
 
     public void Cancel(string? comment)
@@ -74,17 +74,17 @@ public class Order : IEntity, IAuditable
         ThrowIfFinalStatus();
 
         Comment = comment;
-        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Cancelled);
+        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.Cancelled);
     }
 
     private PaymentStatus CalcStatus()
     {
-        if (!PersonSubscriptions.Any() || PersonSubscriptions.All(x => x.Status == PersonSubscriptionStatus.NotPaid))
+        if (!PersonSubscriptions.Any() || PersonSubscriptions.All(x => x.Status == PersonSubscriptionCosmeticServiceStatus.NotPaid))
         {
             return PaymentStatus.NotPaid;
         }
 
-        if (PersonSubscriptions.All(x => x.Status == PersonSubscriptionStatus.Cancelled))
+        if (PersonSubscriptions.All(x => x.Status == PersonSubscriptionCosmeticServiceStatus.Cancelled))
         {
             return PaymentStatus.Cancelled;
         }

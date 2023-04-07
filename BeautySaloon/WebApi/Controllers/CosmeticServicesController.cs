@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeautySaloon.WebApi.Controllers;
 
-[Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/cosmetic-services")]
 [ApiController]
 public class CosmeticServicesController : ControllerBase
@@ -38,6 +37,7 @@ public class CosmeticServicesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<PageResponseDto<GetCosmeticServiceResponseDto>> GetListAsync([FromQuery] GetCosmeticServiceListRequestDto request, CancellationToken cancellationToken = default)
     {
         await _getCosmeticServiceListRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -46,6 +46,7 @@ public class CosmeticServicesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<GetCosmeticServiceResponseDto> GetAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var requestById = new ByIdRequestDto(id);
@@ -56,6 +57,7 @@ public class CosmeticServicesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task CreateAsync([FromBody] CreateCosmeticServiceRequestDto request, CancellationToken cancellationToken = default)
     {
         await _createCosmeticServiceRequestValidator.ValidateAndThrowAsync(request);
@@ -64,6 +66,7 @@ public class CosmeticServicesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task UpdateAsync([FromRoute] Guid id, [FromBody] UpdateCosmeticServiceRequestDto request, CancellationToken cancellationToken = default)
     {
         await _updateCosmeticServiceRequestValidator.ValidateAndThrowAsync(request);
@@ -74,6 +77,7 @@ public class CosmeticServicesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var requestById = new ByIdRequestDto(id);

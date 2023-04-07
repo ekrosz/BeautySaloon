@@ -11,10 +11,6 @@ public class PersonSubscriptionConfiguration : EntityConfiguration<PersonSubscri
         builder.Property(x => x.Status)
             .IsRequired();
 
-        builder.HasOne<SubscriptionCosmeticService>()
-            .WithMany()
-            .HasForeignKey(x => x.SubscriptionCosmeticServiceId);
-
         builder.OwnsOne(x => x.SubscriptionCosmeticServiceSnapshot, s =>
         {
             s.WithOwner();
@@ -46,11 +42,11 @@ public class PersonSubscriptionConfiguration : EntityConfiguration<PersonSubscri
                     .IsRequired();
 
                 service.Property(x => x.ExecuteTimeInMinutes)
-                    .IsRequired();
+                    .IsRequired(false);
 
                 service.Property(x => x.Description)
                     .HasMaxLength(500)
-                    .IsRequired();
+                    .IsRequired(false);
             });
         });
 

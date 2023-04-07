@@ -1,6 +1,6 @@
 ﻿namespace BeautySaloon.Api.Dto.Responses.Common;
 
-public record PersonSubscriptionResponseDto
+public record PersonSubscriptionCosmeticServiceResponseDto
 {
     public Guid Id { get; init; }
 

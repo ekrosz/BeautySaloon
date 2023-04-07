@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeautySaloon.WebApi.Controllers;
 
-[Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/subscriptions")]
 [ApiController]
 public class SubscriptionsController : ControllerBase
@@ -38,6 +37,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task CreateAsync([FromBody] CreateSubscriptionRequestDto request, CancellationToken cancellationToken = default)
     {
         await _createSubscriptionRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -46,6 +46,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task UpdateAsync([FromRoute] Guid id, [FromBody] UpdateSubscriptionRequestDto request, CancellationToken cancellationToken = default)
     {
         await _updateSubscriptionRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -56,6 +57,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Constants.Roles.Admin)]
     public async Task DeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var requestById = new ByIdRequestDto(id);
@@ -66,6 +68,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<GetSubscriptionResponseDto> GetAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var requestById = new ByIdRequestDto(id);
@@ -76,6 +79,7 @@ public class SubscriptionsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<PageResponseDto<GetSubscriptionListItemResponseDto>> GetListAsync([FromQuery] GetSubscriptionListRequestDto request, CancellationToken cancellationToken = default)
     {
         await _getSubscriptionListRequestValidator.ValidateAndThrowAsync(request, cancellationToken);

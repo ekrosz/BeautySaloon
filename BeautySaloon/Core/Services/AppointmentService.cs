@@ -61,7 +61,7 @@ public class AppointmentService : IAppointmentService
 
         ValidateStatus(personSubscriptions);
 
-        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.ExecuteTimeInMinutes);
+        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.ExecuteTimeInMinutes ?? 0);
 
         await ValidateDate(
             personSubscriptions,
@@ -98,7 +98,7 @@ public class AppointmentService : IAppointmentService
 
         ValidateStatus(personSubscriptions);
 
-        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.ExecuteTimeInMinutes);
+        var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.ExecuteTimeInMinutes ?? 0);
 
         await ValidateDate(
             personSubscriptions,

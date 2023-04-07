@@ -85,9 +85,11 @@ namespace WebApplication.Pages
             await base.OnAfterRenderAsync(firstRender);
         }
 
-        protected async Task Load()
+        protected Task Load()
         {
             User = new UserRequest();
+
+            return Task.CompletedTask;
         }
 
         protected async Task Form0Submit(UserRequest args)

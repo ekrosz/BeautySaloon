@@ -15,8 +15,8 @@ namespace BeautySaloon.DAL.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    ExecuteTimeInMinutes = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    ExecuteTimeInMinutes = table.Column<int>(type: "integer", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserModifierId = table.Column<Guid>(type: "uuid", nullable: false)
@@ -179,7 +179,6 @@ namespace BeautySaloon.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    SubscriptionCosmeticServiceId = table.Column<Guid>(type: "uuid", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     SubscriptionCosmeticServiceSnapshot_SubscriptionSnapshot_Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SubscriptionCosmeticServiceSnapshot_SubscriptionSnapshot_Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
@@ -187,12 +186,9 @@ namespace BeautySaloon.DAL.Migrations
                     SubscriptionCosmeticServiceSnapshot_SubscriptionSnapshot_LifeT = table.Column<int>(name: "SubscriptionCosmeticServiceSnapshot_SubscriptionSnapshot_LifeT~", type: "integer", nullable: true),
                     SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Na = table.Column<string>(name: "SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Na~", type: "character varying(100)", maxLength: 100, nullable: false),
-                    SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_De = table.Column<string>(name: "SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_De~", type: "character varying(500)", maxLength: 500, nullable: false),
-                    SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Ex = table.Column<int>(name: "SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Ex~", type: "integer", nullable: false),
+                    SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_De = table.Column<string>(name: "SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_De~", type: "character varying(500)", maxLength: 500, nullable: true),
+                    SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Ex = table.Column<int>(name: "SubscriptionCosmeticServiceSnapshot_CosmeticServiceSnapshot_Ex~", type: "integer", nullable: true),
                     SubscriptionCosmeticServiceSnapshot_Count = table.Column<int>(type: "integer", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserModifierId = table.Column<Guid>(type: "uuid", nullable: false),
                     OrderId = table.Column<Guid>(type: "uuid", nullable: false),
                     AppointmentId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -208,12 +204,6 @@ namespace BeautySaloon.DAL.Migrations
                         name: "FK_PersonSubscription_Order_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Order",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PersonSubscription_SubscriptionCosmeticService_Subscription~",
-                        column: x => x.SubscriptionCosmeticServiceId,
-                        principalTable: "SubscriptionCosmeticService",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -255,11 +245,6 @@ namespace BeautySaloon.DAL.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PersonSubscription_SubscriptionCosmeticServiceId",
-                table: "PersonSubscription",
-                column: "SubscriptionCosmeticServiceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Subscription_Name",
                 table: "Subscription",
                 column: "Name",
@@ -288,25 +273,25 @@ namespace BeautySaloon.DAL.Migrations
                 name: "PersonSubscription");
 
             migrationBuilder.DropTable(
+                name: "SubscriptionCosmeticService");
+
+            migrationBuilder.DropTable(
                 name: "Appointment");
 
             migrationBuilder.DropTable(
                 name: "Order");
 
             migrationBuilder.DropTable(
-                name: "SubscriptionCosmeticService");
+                name: "CosmeticService");
+
+            migrationBuilder.DropTable(
+                name: "Subscription");
 
             migrationBuilder.DropTable(
                 name: "Person");
 
             migrationBuilder.DropTable(
                 name: "User");
-
-            migrationBuilder.DropTable(
-                name: "CosmeticService");
-
-            migrationBuilder.DropTable(
-                name: "Subscription");
         }
     }
 }

@@ -80,7 +80,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("me")]
-    [Authorize]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<GetUserResponseDto> GetAsync(CancellationToken cancellationToken = default)
     {
         var currentUserId = _currentUserProvider.GetUserId();

@@ -1,24 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 
-using WebApplication.Data;
 using Radzen;
 using WebApplication.Services;
 using BeautySaloon.Api.Services;
@@ -26,6 +8,10 @@ using WebApplication.Handlers;
 using Refit;
 using WebApplication.Profiles;
 using WebApplication.Wrappers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Converters;
+using BeautySaloon.Api.Dto.Common;
 
 namespace WebApplication
 {
@@ -81,31 +67,41 @@ namespace WebApplication
 
             services.AddScoped<IHttpClientWrapper, HttpClientWrapper>();
 
-            services.AddRefitClient<IAuthHttpClient>()
+            var refitSettings = new RefitSettings
+            {
+                UrlParameterFormatter = new CustomUrlParameterFormatter(),
+                ContentSerializer = new NewtonsoftJsonContentSerializer(new JsonSerializerSettings
+                {
+                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                    DateFormatString = DateTimeFormats.DateTimeWithTimeZoneFormat
+                })
+            };
+
+            services.AddRefitClient<IAuthHttpClient>(refitSettings)
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
-            services.AddRefitClient<IUserHttpClient>()
+            services.AddRefitClient<IUserHttpClient>(refitSettings)
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
-            services.AddRefitClient<IPersonHttpClient>()
+            services.AddRefitClient<IPersonHttpClient>(refitSettings)
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
-            services.AddRefitClient<ICosmeticServiceHttpClient>()
+            services.AddRefitClient<ICosmeticServiceHttpClient>(refitSettings)
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
-            services.AddRefitClient<ISubscriptionHttpClient>()
+            services.AddRefitClient<ISubscriptionHttpClient>(refitSettings)
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
-            services.AddRefitClient<IOrderHttpClient>()
+            services.AddRefitClient<IOrderHttpClient>(refitSettings)
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
-            services.AddRefitClient<IAppointmentHttpClient>()
+            services.AddRefitClient<IAppointmentHttpClient>(refitSettings)
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>();
 

@@ -1,5 +1,4 @@
-﻿using BeautySaloon.Api.Dto.Responses.Common;
-using BeautySaloon.DAL.Entities.ValueObjects;
+﻿using BeautySaloon.DAL.Entities.ValueObjects;
 
 namespace BeautySaloon.Api.Dto.Responses.Person;
 
@@ -15,5 +14,5 @@ public record GetPersonResponseDto
 
     public string PhoneNumber { get; init; } = string.Empty;
 
-    public IReadOnlyCollection<SubscriptionResponseDto> Subscriptions { get; init; } = Array.Empty<SubscriptionResponseDto>();
+    public IReadOnlyCollection<PersonSubscriptionResponseDto> Subscriptions { get; init; } = Array.Empty<PersonSubscriptionResponseDto>();
 }

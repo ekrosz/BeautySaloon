@@ -63,7 +63,6 @@ public class OrderService : IOrderService
 
         var personSubscriptions = subscriptions.SelectMany(x => x.SubscriptionCosmeticServices)
             .SelectMany(x => Enumerable.Range(0, x.Count).Select(_ => new PersonSubscription(
-                x.Id,
                 new SubscriptionCosmeticServiceSnapshot
                 {
                     SubscriptionSnapshot = _mapper.Map<SubscriptionSnapshot>(x.Subscription),
@@ -98,7 +97,6 @@ public class OrderService : IOrderService
 
         var personSubscriptions = subscriptions.SelectMany(x => x.SubscriptionCosmeticServices)
             .Select(x => new PersonSubscription(
-                x.Id,
                 new SubscriptionCosmeticServiceSnapshot
                 {
                     SubscriptionSnapshot = _mapper.Map<SubscriptionSnapshot>(x.Subscription),
@@ -137,8 +135,7 @@ public class OrderService : IOrderService
     {
         var orders = await _orderQueryRepository.GetPageAsync(
             request: request.Page,
-            predicate: x => (!request.PersonId.HasValue || request.PersonId.Value == x.Person.Id)
-                    && (string.IsNullOrWhiteSpace(request.SearchString)
+            predicate: x => (string.IsNullOrWhiteSpace(request.SearchString)
                         || string.Join(' ', x.Person.Name.LastName, x.Person.Name.FirstName, x.Person.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
                         || x.Person.PhoneNumber.ToLower().Contains(request.SearchString))
                     && ((!request.StartCreatedOn.HasValue || x.CreatedOn.Date >= request.StartCreatedOn.Value.Date)

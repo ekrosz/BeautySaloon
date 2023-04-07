@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using BeautySaloon.Api.Dto.Common;
+using FluentValidation;
+using Newtonsoft.Json;
 
 namespace BeautySaloon.Api.Dto.Requests.Appointment;
 

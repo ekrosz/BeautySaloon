@@ -10,6 +10,16 @@ using Radzen.Blazor;
 using WebApplication.Models.LocalDb;
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Services;
+using AutoMapper;
+using BeautySaloon.Api.Dto.Requests.Order;
+using BeautySaloon.Api.Dto.Responses.Person;
+using BeautySaloon.Api.Dto.Responses.Subscription;
+using BeautySaloon.Api.Services;
+using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
+using WebApplication.Wrappers;
+using BeautySaloon.Api.Dto.Requests.Subscription;
+using BeautySaloon.Api.Dto.Requests.Person;
+using BeautySaloon.DAL.Entities.Enums;
 
 namespace WebApplication.Pages
 {
@@ -21,10 +31,6 @@ namespace WebApplication.Pages
         public void Reload()
         {
             InvokeAsync(StateHasChanged);
-        }
-
-        public void OnPropertyChanged(PropertyChangedEventArgs args)
-        {
         }
 
         [Inject]
@@ -43,13 +49,62 @@ namespace WebApplication.Pages
         protected NotificationService NotificationService { get; set; }
 
         [Inject]
-        protected LocalDbService LocalDb { get; set; }
+        protected IPersonHttpClient PersonHttpClient { get; set; }
+
+        [Inject]
+        protected ISubscriptionHttpClient SubscriptionHttpClient { get; set; }
+
+        [Inject]
+        protected IOrderHttpClient OrderHttpClient { get; set; }
+
+        [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        [Inject]
+        protected IMapper Mapper { get; set; }
 
         [Parameter]
-        public dynamic Id { get; set; }
+        public Guid Id { get; set; }
 
-        WebApplication.Models.LocalDb.Order _order;
-        protected WebApplication.Models.LocalDb.Order order
+        private IReadOnlyCollection<GetPersonListItemResponseDto> _getPersonsResult;
+
+        protected IReadOnlyCollection<GetPersonListItemResponseDto> GetPersonsResult
+        {
+            get
+            {
+                return _getPersonsResult;
+            }
+            set
+            {
+                if (!object.Equals(_getPersonsResult, value))
+                {
+                    _getPersonsResult = value;
+                    Reload();
+                }
+            }
+        }
+
+        private IReadOnlyCollection<GetSubscriptionListItemResponseDto> _getSubscriptionsResult;
+
+        protected IReadOnlyCollection<GetSubscriptionListItemResponseDto> GetSubscriptionsResult
+        {
+            get
+            {
+                return _getSubscriptionsResult;
+            }
+            set
+            {
+                if (!object.Equals(_getSubscriptionsResult, value))
+                {
+                    _getSubscriptionsResult = value;
+                    Reload();
+                }
+            }
+        }
+
+        private OrderRequest _order;
+
+        protected OrderRequest Order
         {
             get
             {
@@ -59,84 +114,155 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_order, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "order", NewValue = value, OldValue = _order };
                     _order = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
-        IEnumerable<WebApplication.Models.LocalDb.Person> _getPeopleResult;
-        protected IEnumerable<WebApplication.Models.LocalDb.Person> getPeopleResult
+        private bool _isFinalStatus;
+
+        protected bool IsFinalStatus
         {
             get
             {
-                return _getPeopleResult;
+                return _isFinalStatus;
             }
             set
             {
-                if (!object.Equals(_getPeopleResult, value))
+                if (!object.Equals(_isFinalStatus, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "getPeopleResult", NewValue = value, OldValue = _getPeopleResult };
-                    _getPeopleResult = value;
-                    OnPropertyChanged(args);
+                    _isFinalStatus = value;
                     Reload();
                 }
             }
         }
 
-        IEnumerable<WebApplication.Models.LocalDb.User> _getUsersResult;
-        protected IEnumerable<WebApplication.Models.LocalDb.User> getUsersResult
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            get
+            if (firstRender)
             {
-                return _getUsersResult;
+                await Load();
             }
-            set
+
+            await base.OnAfterRenderAsync(firstRender);
+        }
+        protected async Task Load()
+        {
+            var personsTask = GetPersonsAsync();
+            var subscriptionsTask = GetSubscriptionsAsync();
+            var orderTask = HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.GetAsync(accessToken, Id, CancellationToken.None));
+
+            await Task.WhenAll(personsTask, subscriptionsTask, orderTask);
+
+            if (personsTask.Result == default || subscriptionsTask.Result == default || orderTask.Result == default)
             {
-                if (!object.Equals(_getUsersResult, value))
+                return;
+            }
+
+            GetPersonsResult = personsTask.Result;
+            GetSubscriptionsResult = subscriptionsTask.Result;
+
+            Order = Mapper.Map<OrderRequest>(orderTask.Result);
+
+            IsFinalStatus = orderTask.Result.PaymentStatus != PaymentStatus.NotPaid;
+        }
+
+        protected async Task Form0Submit(OrderRequest args)
+        {
+            var request = Mapper.Map<UpdateOrderRequestDto>(Order);
+
+            var isSuccess = await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.UpdateAsync(accessToken, Id, request, CancellationToken.None));
+
+            DialogService.Close(isSuccess);
+        }
+
+        protected async Task Button2Click(MouseEventArgs args)
+        {
+            DialogService.Close(false);
+        }
+
+        private async Task<IReadOnlyCollection<GetPersonListItemResponseDto>> GetPersonsAsync()
+        {
+            var pageSize = 100;
+            var pageNumber = 1;
+            var totalCount = 1;
+
+            async Task<PageResponseDto<GetPersonListItemResponseDto>?> GetListAsync(int number, int size)
+            {
+                var persons = await HttpClientWrapper.SendAsync((accessToken)
+                    => PersonHttpClient.GetListAsync(accessToken, new GetPersonListRequestDto { Page = new PageRequestDto(number, size) }, CancellationToken.None));
+
+                if (persons == default)
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "getUsersResult", NewValue = value, OldValue = _getUsersResult };
-                    _getUsersResult = value;
-                    OnPropertyChanged(args);
-                    Reload();
+                    return null;
+                }
+
+                totalCount = persons.TotalCount - pageSize;
+                pageNumber++;
+
+                return persons;
+            }
+
+            var result = new List<GetPersonListItemResponseDto>();
+
+            while (totalCount > 0)
+            {
+                var persons = await GetListAsync(pageNumber, pageSize);
+
+                if (persons != null)
+                {
+                    result.AddRange(persons.Items);
                 }
             }
+
+            return result.ToArray();
         }
 
-        protected override async System.Threading.Tasks.Task OnInitializedAsync()
+        private async Task<IReadOnlyCollection<GetSubscriptionListItemResponseDto>> GetSubscriptionsAsync()
         {
-            await Load();
-        }
-        protected async System.Threading.Tasks.Task Load()
-        {
-            var localDbGetOrderByIdResult = await LocalDb.GetOrderById(Id);
-            order = localDbGetOrderByIdResult;
+            var pageSize = 100;
+            var pageNumber = 1;
+            var totalCount = 1;
 
-            var localDbGetPeopleResult = await LocalDb.GetPeople();
-            getPeopleResult = localDbGetPeopleResult;
-
-            var localDbGetUsersResult = await LocalDb.GetUsers();
-            getUsersResult = localDbGetUsersResult;
-        }
-
-        protected async System.Threading.Tasks.Task Form0Submit(WebApplication.Models.LocalDb.Order args)
-        {
-            try
+            async Task<PageResponseDto<GetSubscriptionListItemResponseDto>?> GetListAsync(int number, int size)
             {
-                var localDbUpdateOrderResult = await LocalDb.UpdateOrder(Id, order);
-                DialogService.Close(order);
+                var subscriptions = await HttpClientWrapper.SendAsync((accessToken)
+                    => SubscriptionHttpClient.GetListAsync(accessToken, new GetSubscriptionListRequestDto { Page = new PageRequestDto(number, size) }, CancellationToken.None));
+
+                if (subscriptions == default)
+                {
+                    return null;
+                }
+
+                totalCount = subscriptions.TotalCount - pageSize;
+                pageNumber++;
+
+                return subscriptions;
             }
-            catch (System.Exception localDbUpdateOrderException)
+
+            var result = new List<GetSubscriptionListItemResponseDto>();
+
+            while (totalCount > 0)
             {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error,Summary = $"Error",Detail = $"Unable to update Order" });
+                var subscriptions = await GetListAsync(pageNumber, pageSize);
+
+                if (subscriptions != null)
+                {
+                    result.AddRange(subscriptions.Items);
+                }
             }
+
+            return result.ToArray();
         }
 
-        protected async System.Threading.Tasks.Task Button2Click(MouseEventArgs args)
+        public record OrderRequest
         {
-            DialogService.Close(null);
+            public Guid PersonId { get; set; }
+
+            public string? Comment { get; set; }
+
+            public List<Guid> SubscriptionIds { get; set; }
         }
     }
 }

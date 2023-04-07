@@ -20,6 +20,6 @@ public class PersonProfile : Profile
 
         CreateMap<GetPersonResponseDto, DetailsPersonComponent.PersonRequest>();
 
-        CreateMap<SubscriptionResponseDto, DetailsPersonComponent.PersonRequest.SubscriptionRequest>();
+        CreateMap<PersonSubscriptionResponseDto, DetailsPersonComponent.PersonRequest.SubscriptionRequest>();
     }
 }

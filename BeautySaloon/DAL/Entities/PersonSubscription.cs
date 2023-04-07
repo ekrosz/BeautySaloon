@@ -5,67 +5,58 @@ using BeautySaloon.DAL.Entities.ValueObjects;
 
 namespace BeautySaloon.DAL.Entities;
 
-public class PersonSubscription : IEntity, IAuditable
+public class PersonSubscription : IEntity
 {
     [Obsolete("For EF")]
     private PersonSubscription()
     {
     }
 
-    public PersonSubscription(Guid subscriptionCosmeticServiceId, SubscriptionCosmeticServiceSnapshot subscriptionCosmeticServiceSnapshot)
+    public PersonSubscription(SubscriptionCosmeticServiceSnapshot subscriptionCosmeticServiceSnapshot)
     {
-        SubscriptionCosmeticServiceId = subscriptionCosmeticServiceId;
         SubscriptionCosmeticServiceSnapshot = subscriptionCosmeticServiceSnapshot;
-        Status = PersonSubscriptionStatus.NotPaid;
+        Status = PersonSubscriptionCosmeticServiceStatus.NotPaid;
     }
 
     public Guid Id { get; set; }
 
-    public Guid SubscriptionCosmeticServiceId { get; set; }
-
-    public PersonSubscriptionStatus Status { get; set; }
+    public PersonSubscriptionCosmeticServiceStatus Status { get; set; }
 
     public SubscriptionCosmeticServiceSnapshot SubscriptionCosmeticServiceSnapshot { get; set; } = default!;
-
-    public DateTime CreatedOn { get; set; }
-
-    public DateTime UpdatedOn { get; set; }
-
-    public Guid UserModifierId { get; set; }
 
     public Order Order { get; set; } = default!;
 
     public void ValidateStatusOrThrow()
     {
-        if (Status == PersonSubscriptionStatus.NotPaid)
+        if (Status == PersonSubscriptionCosmeticServiceStatus.NotPaid)
         {
             throw new PersonSubscriptionNotPaidException(
                 SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name,
                 SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.Name);
         }
 
-        if (Status == PersonSubscriptionStatus.Cancelled)
+        if (Status == PersonSubscriptionCosmeticServiceStatus.Cancelled)
         {
             throw new PersonSubscriptionWasCancelledException(
                 SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name,
                 SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.Name);
         }
 
-        if (Status == PersonSubscriptionStatus.InProgress)
+        if (Status == PersonSubscriptionCosmeticServiceStatus.InProgress)
         {
             throw new PersonSubscriptionAlreadyInProgressException(
                 SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name,
                 SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.Name);
         }
 
-        if (Status == PersonSubscriptionStatus.Completed)
+        if (Status == PersonSubscriptionCosmeticServiceStatus.Completed)
         {
             throw new PersonSubscriptionAlreadyCompletedException(
                 SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name,
                 SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.Name);
         }
 
-        if (Status == PersonSubscriptionStatus.Overdue)
+        if (Status == PersonSubscriptionCosmeticServiceStatus.Overdue)
         {
             throw new PersonSubscriptionOverdueException(
                 SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name,
@@ -77,6 +68,6 @@ public class PersonSubscription : IEntity, IAuditable
     {
         ValidateStatusOrThrow();
 
-        Status = PersonSubscriptionStatus.Overdue;
+        Status = PersonSubscriptionCosmeticServiceStatus.Overdue;
     }
 }

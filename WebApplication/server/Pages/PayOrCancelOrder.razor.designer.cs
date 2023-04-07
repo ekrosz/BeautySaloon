@@ -53,37 +53,19 @@ public partial class PayOrCancelOrderComponent : ComponentBase
         ? "Оплата заказа"
         : "Отмена заказа";
 
-    private string? _comment;
+    private PayOrCancelRequest _payOrCancelOperation;
 
-    protected string? Comment
+    protected PayOrCancelRequest PayOrCancelOperation
     {
         get
         {
-            return _comment;
+            return _payOrCancelOperation;
         }
         set
         {
-            if (!object.Equals(_comment, value))
+            if (!object.Equals(_payOrCancelOperation, value))
             {
-                _comment = value;
-                Reload();
-            }
-        }
-    }
-
-    private PaymentMethod _paymentMethod;
-
-    protected PaymentMethod PaymentMethod
-    {
-        get
-        {
-            return _paymentMethod;
-        }
-        set
-        {
-            if (!object.Equals(_paymentMethod, value))
-            {
-                _paymentMethod = value;
+                _payOrCancelOperation = value;
                 Reload();
             }
         }
@@ -98,11 +80,28 @@ public partial class PayOrCancelOrderComponent : ComponentBase
                 _ => string.Empty
             });
 
-    protected async Task Form0Submit(string args)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Load();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected Task Load()
+    {
+        PayOrCancelOperation = new PayOrCancelRequest();
+
+        return Task.CompletedTask;
+    }
+
+    protected async Task Form0Submit()
     {
         var isSuccess = IsPayOperation
-            ? await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.PayAsync(accessToken, Id, new PayOrderRequestDto { Comment = Comment, PaymentMethod = PaymentMethod }, CancellationToken.None))
-            : await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.CancelAsync(accessToken, Id, new CancelOrderRequestDto { Comment = Comment }, CancellationToken.None));
+            ? await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.PayAsync(accessToken, Id, new PayOrderRequestDto { Comment = PayOrCancelOperation.Comment, PaymentMethod = PayOrCancelOperation.PaymentMethod }, CancellationToken.None))
+            : await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.CancelAsync(accessToken, Id, new CancelOrderRequestDto { Comment = PayOrCancelOperation.Comment }, CancellationToken.None));
 
         DialogService.Close(isSuccess);
     }
@@ -110,5 +109,12 @@ public partial class PayOrCancelOrderComponent : ComponentBase
     protected async Task Button2Click(MouseEventArgs args)
     {
         DialogService.Close(false);
+    }
+
+    public record PayOrCancelRequest
+    {
+        public string? Comment { get; set; }
+
+        public PaymentMethod PaymentMethod { get; set; }
     }
 }

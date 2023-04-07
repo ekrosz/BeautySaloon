@@ -85,25 +85,52 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <RadzenHeading Size="H2" Text="Абонементы" style="margin-top: 1rem; margin-left: 1rem">
+                                <RadzenHeading Size="H2" Text="Абонементы" style="margin-top: 1rem">
                                 </RadzenHeading>
                                 <RadzenDataGrid GridLines="DataGridGridLines.Horizontal" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@Person.Subscriptions" TItem="PersonRequest.SubscriptionRequest">
                                     <Columns>
                                         <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="Name" Title="Абонемент">
                                         </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="Status" Title="Статус">
+                                            <Template Context="data">
+                                                @switch (data.Status)
+                                                {
+                                                    case PersonSubscriptionStatus.Active:
+                                                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Secondary" Text="Активен" />
+                                                        break;
+                                                    case PersonSubscriptionStatus.Completed:
+                                                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Success" Text="Завершен" />
+                                                        break;
+                                                    case PersonSubscriptionStatus.Overdue:
+                                                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Danger" Text="Просрочен" />
+                                                        break;
+                                                    default:
+                                                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Light" Text="Не активен" />
+                                                        break;
+                                                }
+                                            </Template>
+                                        </RadzenDataGridColumn>
                                         <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="LifeTimeInDays" Title="Срок действия">
                                             <Template Context="data">
                                                 @if (data.LifeTimeInDays.HasValue)
                                                 {
-                                                    <span>@($"{data.LifeTimeInDays} д.")</span>
+                                                    if (data.Status == PersonSubscriptionStatus.Active || data.Status == PersonSubscriptionStatus.Overdue)
+                                                    {
+                                                        <span>@($"{data.LifeTimeInDays} д.")</span>
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    <span>Бессрочно</span>
+                                                    if (data.Status == PersonSubscriptionStatus.Active)
+                                                    {
+                                                        <span>Бессрочно</span>
+                                                    }
                                                 }
                                             </Template>
                                         </RadzenDataGridColumn>
                                         <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="Price" Title="Стоимость">
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="PersonRequest.SubscriptionRequest" Property="PaidOn" FormatString="{0:dd.MM.yyyy}" Title="Дата приобретения">
                                         </RadzenDataGridColumn>
                                     </Columns>
                                 </RadzenDataGrid>

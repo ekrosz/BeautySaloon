@@ -120,9 +120,9 @@ namespace WebApplication.Pages
             }
         }
 
-        private DateTime _endCreatedOn = DateTime.Now;
+        private DateTime? _endCreatedOn = DateTime.Now;
 
-        protected DateTime EndCreatedOn
+        protected DateTime? EndCreatedOn
         {
             get
             {
@@ -138,13 +138,13 @@ namespace WebApplication.Pages
             }
         }
 
-        private DateTime _startCreatedOn = DateTime.Now.AddDays(-7);
+        private DateTime? _startCreatedOn = DateTime.Now.AddDays(-7);
 
-        protected DateTime StartCreatedOn
+        protected DateTime? StartCreatedOn
         {
             get
             {
-                return _endCreatedOn;
+                return _startCreatedOn;
             }
             set
             {
@@ -188,6 +188,8 @@ namespace WebApplication.Pages
             var orders = await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.GetListAsync(accessToken, new GetOrderListRequestDto
             {
                 SearchString = Search,
+                StartCreatedOn = StartCreatedOn?.ToUniversalTime(),
+                EndCreatedOn = EndCreatedOn?.ToUniversalTime(),
                 Page = new PageRequestDto(PageNumber, PageSize)
             }));
 
@@ -202,19 +204,37 @@ namespace WebApplication.Pages
 
         protected async Task Button0Click(MouseEventArgs args)
         {
-            var dialogResult = await DialogService.OpenAsync<AddOrder>("Add Order", null);
+            var dialogResult = await DialogService.OpenAsync<AddOrder>("Создание заказа", null);
 
-            await Load();
-            await grid0.Reload();
-            await InvokeAsync(() => { StateHasChanged(); });
+            if ((dialogResult as bool?).GetValueOrDefault())
+            {
+                await Load();
+                await grid0.Reload();
+                await InvokeAsync(() => { StateHasChanged(); });
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно сохранена"
+                });
+            }
         }
 
         protected async Task Grid0RowSelect(GetOrderResponseDto args)
         {
-            var dialogResult = await DialogService.OpenAsync<EditOrder>("Edit Order", new Dictionary<string, object>() { {"Id", args.Id} });
+            var dialogResult = await DialogService.OpenAsync<EditOrder>("Редактирование заказа", new Dictionary<string, object>() { {"Id", args.Id} });
 
-            await Load();
-            await InvokeAsync(() => { StateHasChanged(); });
+            if ((dialogResult as bool?).GetValueOrDefault())
+            {
+                await Load();
+                await InvokeAsync(() => { StateHasChanged(); });
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно сохранена"
+                });
+            }
         }
 
         protected async Task GridPayButtonClick(MouseEventArgs args, dynamic data)

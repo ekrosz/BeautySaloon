@@ -56,11 +56,11 @@ public class Appointment : IEntity, IAuditable
 
     public void AddPersonSubscription(IEnumerable<PersonSubscription> entities)
     {
-        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Paid);
+        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.Paid);
         PersonSubscriptions.Clear();
 
         PersonSubscriptions.AddRange(entities);
-        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.InProgress);
+        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.InProgress);
     }
 
     public void Complete(string? comment)
@@ -68,7 +68,7 @@ public class Appointment : IEntity, IAuditable
         ThrowIfFinalStatus();
 
         Comment = comment;
-        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Completed);
+        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.Completed);
     }
 
     public void Cancel(string? comment)
@@ -76,7 +76,7 @@ public class Appointment : IEntity, IAuditable
         ThrowIfFinalStatus();
 
         Comment = comment;
-        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionStatus.Paid);
+        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.Paid);
         PersonSubscriptions.Clear();
     }
 
@@ -87,12 +87,12 @@ public class Appointment : IEntity, IAuditable
             return AppointmentStatus.Cancelled;
         }
 
-        if (PersonSubscriptions.All(x => x.Status == PersonSubscriptionStatus.Paid))
+        if (PersonSubscriptions.All(x => x.Status == PersonSubscriptionCosmeticServiceStatus.Paid))
         {
             return AppointmentStatus.NotImplemented;
         }
 
-        if (PersonSubscriptions.Any(x => x.Status == PersonSubscriptionStatus.InProgress))
+        if (PersonSubscriptions.Any(x => x.Status == PersonSubscriptionCosmeticServiceStatus.InProgress))
         {
             return AppointmentStatus.InProgress;
         }

@@ -6,8 +6,6 @@ namespace BeautySaloon.Api.Dto.Requests.Order;
 
 public class GetOrderListRequestDto
 {
-    public Guid? PersonId { get; init; }
-
     public string? SearchString { get; init; }
 
     public DateTime? StartCreatedOn { get; init; }
@@ -21,10 +19,6 @@ public class GetOrderListRequestValidator : AbstractValidator<GetOrderListReques
 {
     public GetOrderListRequestValidator()
     {
-        RuleFor(_ => _.PersonId)
-            .NotEmpty()
-            .When(_ => _.PersonId.HasValue);
-
         RuleFor(_ => _.StartCreatedOn)
             .LessThanOrEqualTo(_ => _.EndCreatedOn)
             .When(_ => _.StartCreatedOn.HasValue && _.EndCreatedOn.HasValue);

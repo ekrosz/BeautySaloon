@@ -18,5 +18,5 @@ public interface IPersonService
 
     Task<PageResponseDto<GetPersonListItemResponseDto>> GetPersonListAsync(GetPersonListRequestDto request, CancellationToken cancellationToken = default);
 
-    Task<ItemListResponseDto<PersonSubscriptionResponseDto>> GetPersonSubscriptionListAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
+    Task<ItemListResponseDto<PersonSubscriptionCosmeticServiceResponseDto>> GetPersonSubscriptionListAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
 }

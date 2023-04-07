@@ -1,6 +1,6 @@
 ﻿namespace BeautySaloon.DAL.Entities.Enums;
 
-public enum PersonSubscriptionStatus
+public enum PersonSubscriptionCosmeticServiceStatus
 {
     NotPaid = 1,
 
