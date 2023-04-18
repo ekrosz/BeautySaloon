@@ -110,11 +110,21 @@ namespace BeautySaloon.DAL.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Number")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Number"));
+
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
 
                     b.Property<Guid>("PersonId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("SpInvoiceId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("timestamp with time zone");

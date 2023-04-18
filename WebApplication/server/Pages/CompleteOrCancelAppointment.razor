@@ -1,0 +1,37 @@
+﻿@page "/complete-or-cancel-appointment"
+@layout MainLayout
+@inherits WebApplication.Pages.CompleteOrCancelAppointmentComponent
+
+@using Radzen
+@using Radzen.Blazor
+
+<PageTitle>@(PageTitle)</PageTitle>
+    <RadzenContent Container="main">
+        <ChildContent>
+            <div class="row">
+                <div class="col-md-12">
+                    <RadzenTemplateForm Data="@CompleteOrCancelOperation" Visible="@(CompleteOrCancelOperation != null)" TItem="CompleteOrCancelRequest" Submit="@Form0Submit">
+                        <ChildContent>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Комментарий" Component="Comment" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenTextArea Placeholder="Введите комментарий..." @bind-Value="@(CompleteOrCancelOperation.Comment)" style="width: 100%" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col offset-sm-3">
+                                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Сохранить" ButtonStyle="ButtonStyle.Primary">
+                                </RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" style="margin-left: 1rem" Text="Отмена" Click="@Button2Click">
+                                </RadzenButton>
+                            </div>
+                        </div>
+                    </ChildContent>
+                </RadzenTemplateForm>
+            </div>
+        </div>
+    </ChildContent>
+</RadzenContent>

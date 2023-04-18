@@ -4,111 +4,68 @@
 
 @using Radzen
 @using Radzen.Blazor
-@using WebApplication.Models.LocalDb
-<PageTitle>Add Appointment</PageTitle>
+
+<PageTitle>Создание записи</PageTitle>
 <RadzenContent Container="main">
   <ChildContent>
     <div class="row">
       <div class="col-md-12">
-        <RadzenTemplateForm Data="@appointment" Visible="@(appointment != null)" TItem="WebApplication.Models.LocalDb.Appointment" Submit="@Form0Submit">
+        <RadzenTemplateForm Data="@Appointment" Visible="@(Appointment != null)" TItem="AppointmentRequest" Submit="@Form0Submit">
           <ChildContent>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Клиент" Component="PersonId" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenDropDown Data="@GetPersonsResult" TextProperty="Name.ConcatedName" ValueProperty="Id" Placeholder="Выберите клиента" style="display: block; width: 100%" Change="@OnPersonSelectedEvent" @bind-Value="@(Appointment.PersonId)" Name="PersonId">
+                </RadzenDropDown>
+                <RadzenRequiredValidator Component="PersonId" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Услуги" Component="PersonSubscriptionIds" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenDropDown @bind-Value=@(Appointment.PersonSubscriptionIds) Chips="true" Disabled="Appointment.PersonId == default" Multiple="true" Data=@GetPersonSubscriptionsResult DisabledProperty="IsGroup" ValueProperty="Id" TextProperty="CosmeticServiceName" style="display: block; width: 100%" Name="PersonSubscriptionIds">
+                    <Template Context="data">
+                        @(data.SubscriptionName ?? $"{data.CosmeticServiceName} - осталось: {data.CosmeticServiceCount} шт.")
+                    </Template>
+                </RadzenDropDown>
+                <RadzenRequiredValidator Component="PersonSubscriptionIds" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Дата и время записи" Component="AppointmentDate" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenDatePicker ShowTime="true" HourFormat="24" DateFormat="dd.MM.yyyy H:mm" Min="DateTime.Now" style="display: block; width: 100%" @bind-Value="@(Appointment.AppointmentDate)" Name="AppointmentDate">
+                </RadzenDatePicker>
+                <RadzenRequiredValidator Component="AppointmentDate" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
                 <RadzenLabel Text="Comment" Component="Comment" style="width: 100%">
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
-                <RadzenTextBox MaxLength="500" style="width: 100%" @bind-Value="@(appointment.Comment)" Name="Comment">
+                <RadzenTextBox MaxLength="500" style="width: 100%" @bind-Value="@(Appointment.Comment)" Name="Comment">
                 </RadzenTextBox>
-              </div>
-            </div>
-            <div style="margin-bottom: 1rem" class="row">
-              <div class="col-md-3">
-                <RadzenLabel Text="Id" Component="Id" style="width: 100%">
-                </RadzenLabel>
-              </div>
-              <div class="col-md-9">
-                <RadzenLabel Text="@($"{(appointment.Id)}")" style="width: 100%">
-                </RadzenLabel>
-              </div>
-            </div>
-            <div style="margin-bottom: 1rem" class="row">
-              <div class="col-md-3">
-                <RadzenLabel Text="Duration In Minutes" Component="DurationInMinutes" style="width: 100%">
-                </RadzenLabel>
-              </div>
-              <div class="col-md-9">
-                <RadzenNumeric style="display: block; width: 100%" @bind-Value="@(appointment.DurationInMinutes)" Name="DurationInMinutes">
-                </RadzenNumeric>
-                <RadzenRequiredValidator Component="DurationInMinutes" Text="DurationInMinutes is required" style="position: absolute">
-                </RadzenRequiredValidator>
-              </div>
-            </div>
-            <div style="margin-bottom: 1rem" class="row">
-              <div class="col-md-3">
-                <RadzenLabel Text="User" Component="UserModifierId" style="width: 100%">
-                </RadzenLabel>
-              </div>
-              <div class="col-md-9">
-                <RadzenDropDown Data="@getUsersResult" TextProperty="PhoneNumber" ValueProperty="Id" Placeholder="Choose User" style="display: block; width: 100%" @bind-Value="@(appointment.UserModifierId)" Name="UserModifierId">
-                </RadzenDropDown>
-                <RadzenRequiredValidator Component="UserModifierId" Text="UserModifierId is required" style="position: absolute">
-                </RadzenRequiredValidator>
-              </div>
-            </div>
-            <div style="margin-bottom: 1rem" class="row">
-              <div class="col-md-3">
-                <RadzenLabel Text="Person" Component="PersonId" style="width: 100%">
-                </RadzenLabel>
-              </div>
-              <div class="col-md-9">
-                <RadzenDropDown Data="@getPeopleResult" TextProperty="Name_FirstName" ValueProperty="Id" Placeholder="Choose Person" style="display: block; width: 100%" @bind-Value="@(appointment.PersonId)" Name="PersonId">
-                </RadzenDropDown>
-                <RadzenRequiredValidator Component="PersonId" Text="PersonId is required" style="position: absolute">
-                </RadzenRequiredValidator>
-              </div>
-            </div>
-            <div style="margin-bottom: 1rem" class="row">
-              <div class="col-md-3">
-                <RadzenLabel Text="Updated On" Component="UpdatedOn" style="width: 100%">
-                </RadzenLabel>
-              </div>
-              <div class="col-md-9">
-                <RadzenDatePicker DateFormat="dd.MM.yyyy" style="display: block; width: 100%" @bind-Value="@(appointment.UpdatedOn)" Name="UpdatedOn">
-                </RadzenDatePicker>
-                <RadzenRequiredValidator Component="UpdatedOn" Text="UpdatedOn is required" style="position: absolute">
-                </RadzenRequiredValidator>
-              </div>
-            </div>
-            <div style="margin-bottom: 1rem" class="row">
-              <div class="col-md-3">
-                <RadzenLabel Text="Created On" Component="CreatedOn" style="width: 100%">
-                </RadzenLabel>
-              </div>
-              <div class="col-md-9">
-                <RadzenDatePicker DateFormat="dd.MM.yyyy" style="display: block; width: 100%" @bind-Value="@(appointment.CreatedOn)" Name="CreatedOn">
-                </RadzenDatePicker>
-                <RadzenRequiredValidator Component="CreatedOn" Text="CreatedOn is required" style="position: absolute">
-                </RadzenRequiredValidator>
-              </div>
-            </div>
-            <div style="margin-bottom: 1rem" class="row">
-              <div class="col-md-3">
-                <RadzenLabel Text="Appointment Date" Component="AppointmentDate" style="width: 100%">
-                </RadzenLabel>
-              </div>
-              <div class="col-md-9">
-                <RadzenDatePicker DateFormat="dd.MM.yyyy" style="display: block; width: 100%" @bind-Value="@(appointment.AppointmentDate)" Name="AppointmentDate">
-                </RadzenDatePicker>
-                <RadzenRequiredValidator Component="AppointmentDate" Text="AppointmentDate is required" style="position: absolute">
-                </RadzenRequiredValidator>
               </div>
             </div>
             <div class="row">
               <div class="col offset-sm-3">
-                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" ButtonStyle="ButtonStyle.Primary">
+                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Сохранить" ButtonStyle="ButtonStyle.Primary">
                 </RadzenButton>
-                <RadzenButton ButtonStyle="ButtonStyle.Light" style="margin-left: 1rem" Text="Cancel" Click="@Button2Click">
+                <RadzenButton ButtonStyle="ButtonStyle.Light" style="margin-left: 1rem" Text="Отменить" Click="@Button2Click">
                 </RadzenButton>
               </div>
             </div>

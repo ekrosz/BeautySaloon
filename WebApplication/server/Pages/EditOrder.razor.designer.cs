@@ -262,7 +262,7 @@ namespace WebApplication.Pages
 
             public string? Comment { get; set; }
 
-            public List<Guid> SubscriptionIds { get; set; }
+            public List<Guid> SubscriptionIds { get; set; } = new List<Guid>();
         }
     }
 }

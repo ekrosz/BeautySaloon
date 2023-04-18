@@ -15,7 +15,7 @@ public interface IOrderHttpClient
     Task UpdateAsync([Header("Authorization")] string accessToken, Guid id, [Body] UpdateOrderRequestDto request, CancellationToken cancellationToken = default);
 
     [Patch("/api/orders/{id}/pay")]
-    Task PayAsync([Header("Authorization")] string accessToken, Guid id, [Body] PayOrderRequestDto request, CancellationToken cancellationToken = default);
+    Task<PayOrderResponseDto> PayAsync([Header("Authorization")] string accessToken, Guid id, [Body] PayOrderRequestDto request, CancellationToken cancellationToken = default);
 
     [Patch("/api/orders/{id}/cancel")]
     Task CancelAsync([Header("Authorization")] string accessToken, Guid id, [Body] CancelOrderRequestDto request, CancellationToken cancellationToken = default);
@@ -25,4 +25,7 @@ public interface IOrderHttpClient
 
     [Get("/api/orders/{id}")]
     Task<GetOrderResponseDto> GetAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
+
+    [Get("/api/orders/{id}/payment-status")]
+    Task<CheckAndUpdateOrderPaymentStatusResponseDto> CheckAndUpdatePaymentStatusAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 }

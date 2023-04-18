@@ -4,45 +4,77 @@
 
 @using Radzen
 @using Radzen.Blazor
-@using WebApplication.Models.LocalDb
-<PageTitle>Appointments</PageTitle>
+
+<PageTitle>Записи</PageTitle>
 <RadzenContent Container="main">
   <ChildContent>
-    <RadzenHeading Size="H1" Text="Appointments">
+    <RadzenHeading Size="H1" Text="Записи">
     </RadzenHeading>
     <div class="row">
       <div class="col-md-12">
-        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add" Click="@Button0Click">
+        <div class="row">
+        <div class="col-md-6">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
         </RadzenButton>
-        <RadzenTextBox Placeholder="Search ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        </div>
+        <div class="col-md-6 text-right">
+        <RadzenLabel Text="От" style="margin-right: 1rem">
+        </RadzenLabel>
+        <RadzenDatePicker DateFormat="dd.MM.yyyy" Max="@EndCreatedOn" @bind-Value="@StartCreatedOn" Name="StartCreatedOn" Change="Load" style="margin-right: 2rem">
+        </RadzenDatePicker>
+        <RadzenLabel Text="До" style="margin-right: 1rem">
+        </RadzenLabel>
+        <RadzenDatePicker DateFormat="dd.MM.yyyy" Min="@StartCreatedOn" @bind-Value="@EndCreatedOn" Name="EndCreatedOn" Change="Load">
+        </RadzenDatePicker>
+        </div>
+        </div>
+        <RadzenTextBox Placeholder="Поиск по ФИО или телефону ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
         </RadzenTextBox>
-        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" AllowSorting="false" Data="@getAppointmentsResult" TItem="WebApplication.Models.LocalDb.Appointment" RowSelect="@Grid0RowSelect">
+        <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" AllowSorting="false" Data="@GetAppointmentsResult" TItem="GetAppointmentListItemResponseDto" RowSelect="@Grid0RowSelect">
           <Columns>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="Comment" Title="Comment">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="Id" Title="Id">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="DurationInMinutes" Title="Duration In Minutes">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="UserModifierId" SortProperty="User.PhoneNumber" GroupProperty="User.PhoneNumber" FilterProperty="User.PhoneNumber" Title="User">
+            <RadzenDataGridColumn TItem="GetAppointmentListItemResponseDto" Property="Person" Title="Клиент">
               <Template Context="data">
-              @(data.User?.PhoneNumber)
+                  <div class="row" style="margin-left: 5px">
+                      @data.Person.Name.ConcatedName
+                  </div>
+                  <div class="row" style="margin-left: 5px">
+                     @data.Person.PhoneNumber
+                  </div>
               </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="PersonId" SortProperty="Person.Name_FirstName" GroupProperty="Person.Name_FirstName" FilterProperty="Person.Name_FirstName" Title="Person">
-              <Template Context="data">
-              @(data.Person?.Name_FirstName)
+            <RadzenDataGridColumn TItem="GetAppointmentListItemResponseDto" Property="Modifier.Name.ConcatedName" Title="Сотрудник">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetAppointmentListItemResponseDto" Property="AppointmentDate.ToLocalTime()" FormatString="{0:dd.MM.yyyy H:mm}" Title="Дата записи">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetAppointmentListItemResponseDto" Property="Status" Title="Статус">
+                <Template Context="data">
+                @switch (data.Status)
+                {
+                    case AppointmentStatus.NotImplemented:
+                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Light" Text="Новая" />
+                        break;
+                    case AppointmentStatus.Completed:
+                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Success" Text="Выполнено" />
+                        break;
+                    case AppointmentStatus.Cancelled:
+                        <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Warning" Text="Отменено" />
+                        break;
+                }
               </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="UpdatedOn" FormatString="{0:dd.MM.yyyy}" Title="Updated On">
+            <RadzenDataGridColumn TItem="GetAppointmentListItemResponseDto" Property="DurationInMinutes" Title="Длительность">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="CreatedOn" FormatString="{0:dd.MM.yyyy}" Title="Created On">
+            <RadzenDataGridColumn TItem="GetAppointmentListItemResponseDto" Property="Comment" Title="Комментарий">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Property="AppointmentDate" FormatString="{0:dd.MM.yyyy}" Title="Appointment Date">
+            <RadzenDataGridColumn TItem="GetAppointmentListItemResponseDto" Property="UpdatedOn.ToLocalTime()" FormatString="{0:dd.MM.yyyy}" Title="Дата обновления">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="WebApplication.Models.LocalDb.Appointment" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
-              <Template Context="webApplicationModelsLocalDbAppointment">
-                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbAppointment))" @onclick:stopPropagation="true">
+            <RadzenDataGridColumn TItem="GetAppointmentListItemResponseDto" Property="CreatedOn.ToLocalTime()" FormatString="{0:dd.MM.yyyy}" Title="Дата создания">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetAppointmentListItemResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+              <Template Context="data">
+                <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="done" Visible="@(data.Status == AppointmentStatus.NotImplemented)" Size="ButtonSize.Small" MouseEnter="@(args => ShowCompleteButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridCompleteButtonClick(args, data))" @onclick:stopPropagation="true">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Visible="@(data.Status == AppointmentStatus.NotImplemented)" Size="ButtonSize.Small" MouseEnter="@(args => ShowCancelButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridCancelButtonClick(args, data))" @onclick:stopPropagation="true">
                 </RadzenButton>
               </Template>
             </RadzenDataGridColumn>

@@ -99,9 +99,45 @@ public partial class PayOrCancelOrderComponent : ComponentBase
 
     protected async Task Form0Submit()
     {
-        var isSuccess = IsPayOperation
-            ? await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.PayAsync(accessToken, Id, new PayOrderRequestDto { Comment = PayOrCancelOperation.Comment, PaymentMethod = PayOrCancelOperation.PaymentMethod }, CancellationToken.None))
-            : await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.CancelAsync(accessToken, Id, new CancelOrderRequestDto { Comment = PayOrCancelOperation.Comment }, CancellationToken.None));
+        if (IsPayOperation)
+        {
+            var paymentResponse = await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.PayAsync(accessToken, Id, new PayOrderRequestDto { Comment = PayOrCancelOperation.Comment, PaymentMethod = PayOrCancelOperation.PaymentMethod }, CancellationToken.None));
+
+            if (paymentResponse == default)
+            {
+                DialogService.Close(false);
+                return;
+            }
+
+            if (paymentResponse.QrCode == null)
+            {
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Заказ успешно оплачен"
+                });
+
+                DialogService.Close(true);
+                return;
+            }
+
+            var dialogResult = await DialogService.OpenAsync<CheckOrderPaymentStatus>("Оплата заказа", new Dictionary<string, object>() { { "Id", Id }, { "QrCodeImage", paymentResponse.QrCode } });
+
+            DialogService.Close((dialogResult as bool?).GetValueOrDefault());
+
+            return;
+        }
+
+        var isSuccess = await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.CancelAsync(accessToken, Id, new CancelOrderRequestDto { Comment = PayOrCancelOperation.Comment }, CancellationToken.None));
+
+        if (isSuccess)
+        {
+            NotificationService.Notify(new NotificationMessage()
+            {
+                Severity = NotificationSeverity.Success,
+                Summary = "Заказ успешно отменен"
+            });
+        }
 
         DialogService.Close(isSuccess);
     }

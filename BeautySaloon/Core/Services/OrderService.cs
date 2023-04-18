@@ -9,6 +9,9 @@ using BeautySaloon.DAL.Entities.ValueObjects;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;
+using BeautySaloon.Core.IntegrationServices.SmartPay.Contracts;
+using BeautySaloon.Core.IntegrationServices.SmartPay.Dto;
+using BeautySaloon.DAL.Entities.Enums;
 
 namespace BeautySaloon.Core.Services;
 public class OrderService : IOrderService
@@ -21,6 +24,8 @@ public class OrderService : IOrderService
 
     private readonly IQueryRepository<Subscription> _subscriptionQueryRepository;
 
+    private readonly ISmartPayService _smartPayService;
+
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly IMapper _mapper;
@@ -30,6 +35,7 @@ public class OrderService : IOrderService
         IWriteRepository<Person> personWriteRepository,
         IQueryRepository<Order> orderQueryRepository,
         IQueryRepository<Subscription> subscriptionQueryRepository,
+        ISmartPayService smartPayService,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
@@ -37,6 +43,7 @@ public class OrderService : IOrderService
         _personWriteRepository = personWriteRepository;
         _orderQueryRepository = orderQueryRepository;
         _subscriptionQueryRepository = subscriptionQueryRepository;
+        _smartPayService = smartPayService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -111,14 +118,27 @@ public class OrderService : IOrderService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task PayOrderAsync(ByIdWithDataRequestDto<PayOrderRequestDto> request, CancellationToken cancellationToken = default)
+    public async Task<PayOrderResponseDto> PayOrderAsync(ByIdWithDataRequestDto<PayOrderRequestDto> request, CancellationToken cancellationToken = default)
     {
         var order = await _orderWriteRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new OrderNotFoundException(request.Id);
 
-        order.Pay(request.Data.PaymentMethod, request.Data.Comment);
+        string? invoiceId = null;
+        byte[]? qrCode = null;
+
+        if (request.Data.PaymentMethod == PaymentMethod.Card)
+        {
+            var smartPayResponse = await _smartPayService.CreatePaymentRequestAsync(request.Id, cancellationToken);
+
+            invoiceId = smartPayResponse.InvoiceId;
+            qrCode = smartPayResponse.QrCode;
+        }
+
+        order.Pay(request.Data.PaymentMethod, request.Data.Comment, invoiceId);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new PayOrderResponseDto { QrCode = qrCode };
     }
 
     public async Task CancelOrderAsync(ByIdWithDataRequestDto<CancelOrderRequestDto> request, CancellationToken cancellationToken = default)
@@ -153,5 +173,29 @@ public class OrderService : IOrderService
             ?? throw new OrderNotFoundException(request.Id);
 
         return _mapper.Map<GetOrderResponseDto>(order);
+    }
+
+    public async Task<CheckAndUpdateOrderPaymentStatusResponseDto> CheckAndUpdateOrderPaymentStatusAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var order = await _orderWriteRepository.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new OrderNotFoundException(request.Id);
+
+        var smartPayResponse = await _smartPayService.GetPaymentRequestStatusAsync(order.Id, cancellationToken);
+
+        switch (smartPayResponse.PaymentStatus)
+        {
+            case PaymentRequestStatus.Completed:
+                order.SetPaidStatus();
+                break;
+            case PaymentRequestStatus.InProgress:
+                break;
+            case PaymentRequestStatus.Failed:
+                order.Cancel("Произошла ошибка при оплате заказа.");
+                break;
+        }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new CheckAndUpdateOrderPaymentStatusResponseDto { PaymentStatus = order.PaymentStatus };
     }
 }

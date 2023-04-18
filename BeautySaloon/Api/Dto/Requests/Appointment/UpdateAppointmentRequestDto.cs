@@ -8,7 +8,7 @@ public record UpdateAppointmentRequestDto
 
     public string? Comment { get; init; }
 
-    public IReadOnlyCollection<Guid> PersonSubcriptionIds { get; init; } = Array.Empty<Guid>();
+    public IReadOnlyCollection<Guid> PersonSubscriptionIds { get; init; } = Array.Empty<Guid>();
 }
 
 public class UpdateAppointmentRequestValidator : AbstractValidator<UpdateAppointmentRequestDto>
@@ -24,7 +24,7 @@ public class UpdateAppointmentRequestValidator : AbstractValidator<UpdateAppoint
             .MaximumLength(500)
             .When(_ => _.Comment is not null);
 
-        RuleForEach(_ => _.PersonSubcriptionIds)
+        RuleForEach(_ => _.PersonSubscriptionIds)
             .NotNull()
             .NotEmpty();
     }

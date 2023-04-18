@@ -20,10 +20,11 @@ public class Startup
 
         services.AddSwaggerGen();
 
-        services.AddAuthorization(Configuration);
-        services.AddDatabaseLayer(Configuration);
-        services.AddBusinessLayer(Configuration);
-        services.AddProviders();
+        services.AddAuthorization(Configuration)
+            .AddDatabaseLayer(Configuration)
+            .AddBusinessLayer(Configuration)
+            .AddHttpClients(Configuration)
+            .AddProviders();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

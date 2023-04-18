@@ -8,11 +8,19 @@ public class OrderConfiguration : EntityConfiguration<Order>
 {
     public override void Configure(EntityTypeBuilder<Order> builder)
     {
+        builder.Property(x => x.Number)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+
         builder.Property(x => x.Cost)
             .IsRequired();
 
         builder.Property(x => x.PaymentMethod)
             .IsRequired();
+
+        builder.Property(x => x.SpInvoiceId)
+            .HasMaxLength(100)
+            .IsRequired(false);
 
         builder.Property(x => x.Comment)
             .HasMaxLength(500)

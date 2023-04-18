@@ -1,15 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
-using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
 using Microsoft.EntityFrameworkCore;
-using WebApplication.Services;
+using AutoMapper;
+using BeautySaloon.Api.Dto.Requests.Appointment;
+using BeautySaloon.Api.Dto.Responses.Person;
+using BeautySaloon.Api.Services;
+using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
+using WebApplication.Wrappers;
+using BeautySaloon.Api.Dto.Requests.Person;
+using BeautySaloon.DAL.Entities.Enums;
 
 namespace WebApplication.Pages
 {
@@ -21,10 +22,6 @@ namespace WebApplication.Pages
         public void Reload()
         {
             InvokeAsync(StateHasChanged);
-        }
-
-        public void OnPropertyChanged(PropertyChangedEventArgs args)
-        {
         }
 
         [Inject]
@@ -43,13 +40,59 @@ namespace WebApplication.Pages
         protected NotificationService NotificationService { get; set; }
 
         [Inject]
-        protected LocalDbService LocalDb { get; set; }
+        protected IPersonHttpClient PersonHttpClient { get; set; }
+
+        [Inject]
+        protected IAppointmentHttpClient AppointmentHttpClient { get; set; }
+
+        [Inject]
+        protected IHttpClientWrapper HttpClientWrapper { get; set; }
+
+        [Inject]
+        protected IMapper Mapper { get; set; }
 
         [Parameter]
-        public dynamic Id { get; set; }
+        public Guid Id { get; set; }
 
-        WebApplication.Models.LocalDb.Appointment _appointment;
-        protected WebApplication.Models.LocalDb.Appointment appointment
+        private IReadOnlyCollection<GetPersonListItemResponseDto> _getPersonsResult;
+
+        protected IReadOnlyCollection<GetPersonListItemResponseDto> GetPersonsResult
+        {
+            get
+            {
+                return _getPersonsResult;
+            }
+            set
+            {
+                if (!object.Equals(_getPersonsResult, value))
+                {
+                    _getPersonsResult = value;
+                    Reload();
+                }
+            }
+        }
+
+        private IReadOnlyCollection<PersonSubscriptionCosmeticServiceResponse> _getPersonSubscriptionsResult;
+
+        protected IReadOnlyCollection<PersonSubscriptionCosmeticServiceResponse> GetPersonSubscriptionsResult
+        {
+            get
+            {
+                return _getPersonSubscriptionsResult;
+            }
+            set
+            {
+                if (!object.Equals(_getPersonSubscriptionsResult, value))
+                {
+                    _getPersonSubscriptionsResult = value;
+                    Reload();
+                }
+            }
+        }
+
+        private AppointmentRequest _appointment;
+
+        protected AppointmentRequest Appointment
         {
             get
             {
@@ -59,84 +102,147 @@ namespace WebApplication.Pages
             {
                 if (!object.Equals(_appointment, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "appointment", NewValue = value, OldValue = _appointment };
                     _appointment = value;
-                    OnPropertyChanged(args);
                     Reload();
                 }
             }
         }
 
-        IEnumerable<WebApplication.Models.LocalDb.User> _getUsersResult;
-        protected IEnumerable<WebApplication.Models.LocalDb.User> getUsersResult
+        private bool _isComponentsDisabled;
+
+        protected bool IsComponentsDisabled
         {
             get
             {
-                return _getUsersResult;
+                return _isComponentsDisabled;
             }
             set
             {
-                if (!object.Equals(_getUsersResult, value))
+                if (!object.Equals(_isComponentsDisabled, value))
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "getUsersResult", NewValue = value, OldValue = _getUsersResult };
-                    _getUsersResult = value;
-                    OnPropertyChanged(args);
+                    _isComponentsDisabled = value;
                     Reload();
                 }
             }
         }
 
-        IEnumerable<WebApplication.Models.LocalDb.Person> _getPeopleResult;
-        protected IEnumerable<WebApplication.Models.LocalDb.Person> getPeopleResult
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            get
+            if (firstRender)
             {
-                return _getPeopleResult;
+                await Load();
             }
-            set
-            {
-                if (!object.Equals(_getPeopleResult, value))
+
+            await base.OnAfterRenderAsync(firstRender);
+        }
+
+        protected async Task Load()
+        {
+            var personsTask = GetPersonsAsync();
+
+            var appointmentTask = HttpClientWrapper.SendAsync((accessToken) => AppointmentHttpClient.GetAsync(accessToken, Id, CancellationToken.None));
+
+            await Task.WhenAll(personsTask, appointmentTask);
+
+            Appointment = Mapper.Map<AppointmentRequest>(appointmentTask.Result);
+            GetPersonsResult = personsTask.Result;
+
+            IsComponentsDisabled = appointmentTask.Result.Status != AppointmentStatus.NotImplemented;
+        }
+
+        protected async Task OnPersonSelectedEvent(object args)
+        {
+            var personSubscriptions = await HttpClientWrapper.SendAsync((accessToken) => PersonHttpClient.GetSubscriptionsAsync(accessToken, (Guid)args, CancellationToken.None));
+
+            GetPersonSubscriptionsResult = personSubscriptions.Items
+                .GroupBy(x => x.Subscription.Id)
+                .SelectMany(x => new[] { new PersonSubscriptionCosmeticServiceResponse
                 {
-                    var args = new PropertyChangedEventArgs(){ Name = "getPeopleResult", NewValue = value, OldValue = _getPeopleResult };
-                    _getPeopleResult = value;
-                    OnPropertyChanged(args);
-                    Reload();
+                    Id = x.First().Id,
+                    CosmeticServiceName = x.First().CosmeticService.Name,
+                    SubscriptionName = x.First().Subscription.Name
+                } }.Concat(x.GroupBy(y => y.CosmeticService.Id).Select(y => new PersonSubscriptionCosmeticServiceResponse
+                {
+                    Id = y.First().Id,
+                    CosmeticServiceName = y.First().CosmeticService.Name,
+                    CosmeticServiceCount = y.Count(),
+                    SubscriptionName = null!
+                }))).ToArray();
+        }
+
+        protected async Task Form0Submit(AppointmentRequest args)
+        {
+            var request = Mapper.Map<UpdateAppointmentRequestDto>(Appointment);
+
+            var isSuccess = await HttpClientWrapper.SendAsync((accessToken) => AppointmentHttpClient.UpdateAsync(accessToken, Id, request, CancellationToken.None));
+
+            DialogService.Close(isSuccess);
+        }
+
+        protected async Task Button2Click(MouseEventArgs args)
+        {
+            DialogService.Close(false);
+        }
+
+        private async Task<IReadOnlyCollection<GetPersonListItemResponseDto>> GetPersonsAsync()
+        {
+            var pageSize = 100;
+            var pageNumber = 1;
+            var totalCount = 1;
+
+            async Task<PageResponseDto<GetPersonListItemResponseDto>?> GetListAsync(int number, int size)
+            {
+                var persons = await HttpClientWrapper.SendAsync((accessToken)
+                    => PersonHttpClient.GetListAsync(accessToken, new GetPersonListRequestDto { Page = new PageRequestDto(number, size) }, CancellationToken.None));
+
+                if (persons == default)
+                {
+                    return null;
+                }
+
+                totalCount = persons.TotalCount - pageSize;
+                pageNumber++;
+
+                return persons;
+            }
+
+            var result = new List<GetPersonListItemResponseDto>();
+
+            while (totalCount > 0)
+            {
+                var persons = await GetListAsync(pageNumber, pageSize);
+
+                if (persons != null)
+                {
+                    result.AddRange(persons.Items);
                 }
             }
+
+            return result.ToArray();
         }
 
-        protected override async System.Threading.Tasks.Task OnInitializedAsync()
+        public record AppointmentRequest
         {
-            await Load();
-        }
-        protected async System.Threading.Tasks.Task Load()
-        {
-            var localDbGetAppointmentByIdResult = await LocalDb.GetAppointmentById(Id);
-            appointment = localDbGetAppointmentByIdResult;
+            public Guid PersonId { get; set; }
 
-            var localDbGetUsersResult = await LocalDb.GetUsers();
-            getUsersResult = localDbGetUsersResult;
+            public DateTime AppointmentDate { get; set; } = DateTime.Now.AddHours(1);
 
-            var localDbGetPeopleResult = await LocalDb.GetPeople();
-            getPeopleResult = localDbGetPeopleResult;
+            public string? Comment { get; set; }
+
+            public List<Guid> PersonSubscriptionIds { get; set; } = new List<Guid>();
         }
 
-        protected async System.Threading.Tasks.Task Form0Submit(WebApplication.Models.LocalDb.Appointment args)
+        public record PersonSubscriptionCosmeticServiceResponse
         {
-            try
-            {
-                var localDbUpdateAppointmentResult = await LocalDb.UpdateAppointment(Id, appointment);
-                DialogService.Close(appointment);
-            }
-            catch (System.Exception localDbUpdateAppointmentException)
-            {
-                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error,Summary = $"Error",Detail = $"Unable to update Appointment" });
-            }
-        }
+            public Guid Id { get; set; }
 
-        protected async System.Threading.Tasks.Task Button2Click(MouseEventArgs args)
-        {
-            DialogService.Close(null);
+            public string? SubscriptionName { get; set; }
+
+            public string CosmeticServiceName { get; set; }
+
+            public int CosmeticServiceCount { get; set; }
+
+            public bool IsGroup => SubscriptionName != null;
         }
     }
 }

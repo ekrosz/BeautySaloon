@@ -48,9 +48,9 @@ public class AppointmentService : IAppointmentService
 
         var personSubscriptions = person.Orders.SelectMany(
             x => x.PersonSubscriptions.Where(
-                ps => request.PersonSubcriptionIds.Contains(ps.Id)));
+                ps => request.PersonSubscriptionIds.Contains(ps.Id)));
 
-        var notExistPersonSubscription = request.PersonSubcriptionIds
+        var notExistPersonSubscription = request.PersonSubscriptionIds
             .Except(personSubscriptions.Select(x => x.Id))
             .ToArray();
 
@@ -84,10 +84,10 @@ public class AppointmentService : IAppointmentService
             ?? throw new AppointmentNotFoundException(request.Id);
 
         var personSubscriptions = await _personSubscriptionQueryRepositry.FindAsync(
-            x => request.Data.PersonSubcriptionIds.Contains(x.Id),
+            x => request.Data.PersonSubscriptionIds.Contains(x.Id),
             cancellationToken);
 
-        var notExistPersonSubscription = request.Data.PersonSubcriptionIds
+        var notExistPersonSubscription = request.Data.PersonSubscriptionIds
             .Except(personSubscriptions.Select(x => x.Id))
             .ToArray();
 
@@ -143,8 +143,7 @@ public class AppointmentService : IAppointmentService
                     && ((!request.StartAppointmentDate.HasValue || x.AppointmentDate.Date >= request.StartAppointmentDate.Value.Date)
                         && (!request.EndAppointmentDate.HasValue || x.AppointmentDate.Date <= request.EndAppointmentDate.Value.Date)),
             sortProperty: x => x.AppointmentDate,
-            asc: false,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         return _mapper.Map<PageResponseDto<GetAppointmentListItemResponseDto>>(appointments);
     }
@@ -176,6 +175,7 @@ public class AppointmentService : IAppointmentService
 
         var anyAppointmentInRange = await _appointmentQueryRepositry.ExistAsync(
             x => (!appointmentId.HasValue || appointmentId.Value != x.Id)
+            && x.PersonSubscriptions.Any()
             && (x.AppointmentDate < endDateTime && x.AppointmentDate > appointmentDate)
                 || (x.AppointmentDate.AddMinutes(x.DurationInMinutes) < endDateTime && x.AppointmentDate.AddMinutes(x.DurationInMinutes) > appointmentDate),
             cancellationToken);

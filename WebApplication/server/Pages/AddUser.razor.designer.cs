@@ -70,7 +70,7 @@ namespace WebApplication.Pages
         protected static IDictionary<Role, string> Roles = Enum.GetValues<Role>()
             .ToDictionary(k => k, v => v switch
             {
-                Role.Admin => "Админ",
+                Role.Admin => "Администратор",
                 Role.Employee => "Сотрудник",
                 _ => string.Empty
             });

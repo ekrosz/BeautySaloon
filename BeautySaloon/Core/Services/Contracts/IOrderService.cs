@@ -13,7 +13,9 @@ public interface IOrderService
 
     Task CancelOrderAsync(ByIdWithDataRequestDto<CancelOrderRequestDto> request, CancellationToken cancellationToken = default);
 
-    Task PayOrderAsync(ByIdWithDataRequestDto<PayOrderRequestDto> request, CancellationToken cancellationToken = default);
+    Task<PayOrderResponseDto> PayOrderAsync(ByIdWithDataRequestDto<PayOrderRequestDto> request, CancellationToken cancellationToken = default);
+
+    Task<CheckAndUpdateOrderPaymentStatusResponseDto> CheckAndUpdateOrderPaymentStatusAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
 
     Task<PageResponseDto<GetOrderResponseDto>> GetOrderListAsync(GetOrderListRequestDto request, CancellationToken cancellationToken = default);
 

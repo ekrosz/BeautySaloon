@@ -1,4 +1,6 @@
-﻿using BeautySaloon.Api.Dto.Requests.Person;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Person;
+using BeautySaloon.Api.Dto.Responses.Common;
 using BeautySaloon.Api.Dto.Responses.Person;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using Refit;
@@ -22,4 +24,7 @@ public interface IPersonHttpClient
 
     [Get("/api/persons")]
     Task<PageResponseDto<GetPersonListItemResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetPersonListRequestDto request, CancellationToken cancellationToken = default);
+
+    [Get("/api/persons/{id}/subscriptions")]
+    Task<ItemListResponseDto<PersonSubscriptionCosmeticServiceResponseDto>> GetSubscriptionsAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 }

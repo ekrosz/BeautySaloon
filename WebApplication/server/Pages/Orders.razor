@@ -12,22 +12,22 @@
     </RadzenHeading>
     <div class="row">
       <div class="col-md-12">
-          <div class="row">
-              <div class="col-md-6">
-                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
-                </RadzenButton>
-              </div>
-              <div class="col-md-6 text-right">
-                <RadzenLabel Text="От" style="margin-right: 1rem">
-                </RadzenLabel>
-                <RadzenDatePicker DateFormat="dd.MM.yyyy" Max="@EndCreatedOn" @bind-Value="@StartCreatedOn" Name="StartCreatedOn" Change="Load" style="margin-right: 2rem">
-                </RadzenDatePicker>
-                <RadzenLabel Text="До" style="margin-right: 1rem">
-                </RadzenLabel>
-                <RadzenDatePicker DateFormat="dd.MM.yyyy" Min="@StartCreatedOn" @bind-Value="@EndCreatedOn" Name="EndCreatedOn" Change="Load">
-                </RadzenDatePicker>
-              </div>
-          </div>
+        <div class="row">
+            <div class="col-md-6">
+            <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+            </RadzenButton>
+            </div>
+            <div class="col-md-6 text-right">
+            <RadzenLabel Text="От" style="margin-right: 1rem">
+            </RadzenLabel>
+            <RadzenDatePicker DateFormat="dd.MM.yyyy" Max="@EndCreatedOn" @bind-Value="@StartCreatedOn" Name="StartCreatedOn" Change="Load" style="margin-right: 2rem">
+            </RadzenDatePicker>
+            <RadzenLabel Text="До" style="margin-right: 1rem">
+            </RadzenLabel>
+            <RadzenDatePicker DateFormat="dd.MM.yyyy" Min="@StartCreatedOn" @bind-Value="@EndCreatedOn" Name="EndCreatedOn" Change="Load">
+            </RadzenDatePicker>
+            </div>
+        </div>
         <RadzenTextBox Placeholder="Поиск по ФИО или телефону..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
         </RadzenTextBox>
         <RadzenDataGrid @ref="grid0" AllowFiltering="false" GridLines="DataGridGridLines.Horizontal" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="PageSize" Count="TotalCount" LoadData="@LoadDataAsync" AllowSorting="false" Data="@GetOrdersResult" TItem="GetOrderResponseDto" RowSelect="@Grid0RowSelect">
@@ -80,9 +80,9 @@
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="Comment" Title="Комментарий">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="CreatedOn" FormatString="{0:dd.MM.yyyy}" Title="Дата создания">
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="CreatedOn.ToLocalTime()" FormatString="{0:dd.MM.yyyy}" Title="Дата создания">
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="UpdatedOn" FormatString="{0:dd.MM.yyyy}" Title="Дата обновления">
+            <RadzenDataGridColumn TItem="GetOrderResponseDto" Property="UpdatedOn.ToLocalTime()" FormatString="{0:dd.MM.yyyy}" Title="Дата обновления">
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="GetOrderResponseDto" Filterable="false" Sortable="false" Width="130px" TextAlign="TextAlign.Center" Title="Действие">
               <Template Context="webApplicationModelsLocalDbOrder">

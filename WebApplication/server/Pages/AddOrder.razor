@@ -30,7 +30,7 @@
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
-                <RadzenDropDown Data="@GetSubscriptionsResult" Multiple="true" TextProperty="Name" ValueProperty="Id" Placeholder="Выберите абонементы" style="display: block; width: 100%" @bind-Value="@(Order.SubscriptionIds)" Name="SubscriptionIds">
+                <RadzenDropDown Data="@GetSubscriptionsResult" Chips="true" Multiple="true" TextProperty="Name" ValueProperty="Id" Placeholder="Выберите абонементы" style="display: block; width: 100%" @bind-Value="@(Order.SubscriptionIds)" Name="SubscriptionIds">
                 </RadzenDropDown>
                 <RadzenRequiredValidator Component="SubscriptionIds" Text="Обязательное поле" style="position: absolute">
                 </RadzenRequiredValidator>

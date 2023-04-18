@@ -1,6 +1,4 @@
-﻿using BeautySaloon.DAL.Entities.Enums;
-
-namespace BeautySaloon.Api.Dto.Responses.Person;
+﻿namespace BeautySaloon.Api.Dto.Responses.Person;
 
 public record PersonSubscriptionResponseDto
 {

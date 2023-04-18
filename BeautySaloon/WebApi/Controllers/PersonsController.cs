@@ -1,7 +1,7 @@
 ﻿using BeautySaloon.Api.Dto.Common;
 using BeautySaloon.Api.Dto.Requests.Person;
+using BeautySaloon.Api.Dto.Responses.Common;
 using BeautySaloon.Api.Dto.Responses.Person;
-using BeautySaloon.Api.Services;
 using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
@@ -81,5 +81,15 @@ public class PersonsController : ControllerBase
         await _getPersonListRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
         return await _personService.GetPersonListAsync(request, cancellationToken);
+    }
+
+    [HttpGet("{id}/subscriptions")]
+    public async Task<ItemListResponseDto<PersonSubscriptionCosmeticServiceResponseDto>> GetSubscriptionsAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    {
+        var requestById = new ByIdRequestDto(id);
+
+        await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
+
+        return await _personService.GetPersonSubscriptionListAsync(requestById, cancellationToken);
     }
 }

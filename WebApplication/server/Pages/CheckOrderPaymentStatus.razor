@@ -1,0 +1,33 @@
+﻿@page "/check-order-status"
+@layout MainLayout
+@inherits WebApplication.Pages.CheckOrderPaymentStatusComponent
+
+@using Radzen
+@using Radzen.Blazor
+
+<PageTitle>Оплата заказа</PageTitle>
+    <RadzenContent Container="main">
+        <ChildContent>
+            <div class="row">
+                <div class="col-md-12">
+                    <RadzenTemplateForm Data="@Id" Visible="@(Id != default)" TItem="Guid" Submit="@Form0Submit">
+                        <ChildContent>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <RadzenStack AlignItems="AlignItems.Center" Class="rz-mx-auto rz-my-12">
+                                    <RadzenImage Path="@($"data:image/jpeg;base64,{Convert.ToBase64String(QrCodeImage)}")" style="width: 400px; height: 400px" />
+                                </RadzenStack>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col text-center">
+                                <RadzenButton ButtonType="ButtonType.Submit" Icon="autorenew" Text="Проверить" ButtonStyle="ButtonStyle.Primary" style="width: 400px">
+                                </RadzenButton>
+                            </div>
+                        </div>
+                    </ChildContent>
+                </RadzenTemplateForm>
+            </div>
+        </div>
+    </ChildContent>
+</RadzenContent>

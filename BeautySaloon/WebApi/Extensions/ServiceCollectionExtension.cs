@@ -1,4 +1,9 @@
-﻿using BeautySaloon.Api.Dto.Requests.Auth;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Auth;
+using BeautySaloon.Api.Services;
+using BeautySaloon.Core.Api.SmartPay;
+using BeautySaloon.Core.IntegrationServices.SmartPay;
+using BeautySaloon.Core.IntegrationServices.SmartPay.Contracts;
 using BeautySaloon.Core.Jobs;
 using BeautySaloon.Core.Profiles;
 using BeautySaloon.Core.Services;
@@ -16,6 +21,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Refit;
+using System.Net.Http.Headers;
 
 namespace BeautySaloon.WebApi.Extensions;
 
@@ -54,11 +62,41 @@ public static class ServiceCollectionExtension
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
 
+        services.AddScoped<ISmartPayService, SmartPayService>();
+
         services.Configure<BLayerSettings>(configuration.GetSection(nameof(BLayerSettings)));
         services.AddHostedService<RefreshPersonSubscriptionStatusJob>();
 
         services.AddValidatorsFromAssembly(typeof(AuthorizeByCredentialsRequestValidator).Assembly);
         services.AddAutoMapper(typeof(UserProfile).Assembly);
+
+        return services;
+    }
+
+    public static IServiceCollection AddHttpClients(this IServiceCollection services, IConfiguration configuration)
+    {
+        var settings = configuration.GetSection(nameof(BLayerSettings)).Get<BLayerSettings>();
+
+        var refitSettings = new RefitSettings
+        {
+            UrlParameterFormatter = new CustomUrlParameterFormatter(),
+            ContentSerializer = new NewtonsoftJsonContentSerializer(new JsonSerializerSettings
+            {
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                DateFormatString = DateTimeFormats.DateTimeWithTimeZoneFormat
+            })
+        };
+
+        services.AddRefitClient<ISmartPayHttpClient>(refitSettings)
+                .ConfigureHttpClient(_ =>
+                {
+                    _.BaseAddress = new Uri(settings.SmartPaySettings.BaseUrl);
+                    _.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(settings.SmartPaySettings.AuthScheme, settings.SmartPaySettings.AuthToken);
+                })
+                .ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                });
 
         return services;
     }

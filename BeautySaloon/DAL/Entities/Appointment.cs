@@ -87,14 +87,9 @@ public class Appointment : IEntity, IAuditable
             return AppointmentStatus.Cancelled;
         }
 
-        if (PersonSubscriptions.All(x => x.Status == PersonSubscriptionCosmeticServiceStatus.Paid))
-        {
-            return AppointmentStatus.NotImplemented;
-        }
-
         if (PersonSubscriptions.Any(x => x.Status == PersonSubscriptionCosmeticServiceStatus.InProgress))
         {
-            return AppointmentStatus.InProgress;
+            return AppointmentStatus.NotImplemented;
         }
 
         return AppointmentStatus.Completed;

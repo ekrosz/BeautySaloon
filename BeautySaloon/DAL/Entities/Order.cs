@@ -21,9 +21,13 @@ public class Order : IEntity, IAuditable
 
     public Guid Id { get; set; }
 
+    public int Number { get; set; }
+
     public decimal Cost { get; set; }
 
     public PaymentMethod PaymentMethod { get; set; }
+
+    public string? SpInvoiceId { get; set; }
 
     public string? Comment { get; set; }
 
@@ -60,13 +64,20 @@ public class Order : IEntity, IAuditable
         PersonSubscriptions.AddRange(entities);
     }
 
-    public void Pay(PaymentMethod paymentMethod, string? comment)
+    public void SetPaidStatus() => PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.Paid);
+
+    public void Pay(PaymentMethod paymentMethod, string? comment, string? invoiceId)
     {
         ThrowIfFinalStatus();
 
         PaymentMethod = paymentMethod;
         Comment = comment;
-        PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.Paid);
+        SpInvoiceId = invoiceId;
+
+        if (paymentMethod == PaymentMethod.Cash)
+        {
+            SetPaidStatus();
+        }
     }
 
     public void Cancel(string? comment)

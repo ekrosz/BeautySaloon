@@ -245,29 +245,17 @@ namespace WebApplication.Pages
             {
                 await Load();
                 await grid0.Reload();
-
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = "Заказ успешно оплачен"
-                });
             }
         }
 
         protected async Task GridCancelButtonClick(MouseEventArgs args, dynamic data)
         {
-            var dialogResult = await DialogService.OpenAsync<PayOrCancelOrder>("Оплата заказа", new Dictionary<string, object> { { "Id", data.Id }, { "IsPayOperation", false } });
+            var dialogResult = await DialogService.OpenAsync<PayOrCancelOrder>("Отмена заказа", new Dictionary<string, object> { { "Id", data.Id }, { "IsPayOperation", false } });
 
             if ((dialogResult as bool?).GetValueOrDefault())
             {
                 await Load();
                 await grid0.Reload();
-
-                NotificationService.Notify(new NotificationMessage()
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = "Заказ успешно отменен"
-                });
             }
         }
 

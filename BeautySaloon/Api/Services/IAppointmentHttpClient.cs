@@ -14,10 +14,10 @@ public interface IAppointmentHttpClient
     [Put("/api/appointments/{id}")]
     Task UpdateAsync([Header("Authorization")] string accessToken, Guid id, [Body] UpdateAppointmentRequestDto request, CancellationToken cancellationToken = default);
 
-    [Patch("/api/appointments/{id}")]
+    [Patch("/api/appointments/{id}/complete")]
     Task CompleteAsync([Header("Authorization")] string accessToken, Guid id, [Body] CompleteOrCancelAppointmentRequestDto request, CancellationToken cancellationToken = default);
 
-    [Patch("/api/appointments/{id}")]
+    [Patch("/api/appointments/{id}/cancel")]
     Task CancelAsync([Header("Authorization")] string accessToken, Guid id, [Body] CompleteOrCancelAppointmentRequestDto request, CancellationToken cancellationToken = default);
 
     [Get("/api/appointments")]

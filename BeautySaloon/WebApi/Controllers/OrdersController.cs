@@ -1,7 +1,6 @@
 ﻿using BeautySaloon.Api.Dto.Common;
 using BeautySaloon.Api.Dto.Requests.Order;
 using BeautySaloon.Api.Dto.Responses.Order;
-using BeautySaloon.Api.Services;
 using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
@@ -62,13 +61,13 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPatch("{id}/pay")]
-    public async Task PayAsync([FromRoute] Guid id, [FromBody] PayOrderRequestDto request, CancellationToken cancellationToken = default)
+    public async Task<PayOrderResponseDto> PayAsync([FromRoute] Guid id, [FromBody] PayOrderRequestDto request, CancellationToken cancellationToken = default)
     {
         await _payOrderRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
         var requestById = new ByIdWithDataRequestDto<PayOrderRequestDto>(id, request);
 
-        await _orderService.PayOrderAsync(requestById, cancellationToken);
+        return await _orderService.PayOrderAsync(requestById, cancellationToken);
     }
 
     [HttpPatch("{id}/cancel")]
@@ -97,5 +96,15 @@ public class OrdersController : ControllerBase
         await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
 
         return await _orderService.GetOrderAsync(requestById, cancellationToken);
+    }
+
+    [HttpGet("{id}/payment-status")]
+    public async Task<CheckAndUpdateOrderPaymentStatusResponseDto> CheckAndUpdatePaymentStatusAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    {
+        var requestById = new ByIdRequestDto(id);
+
+        await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
+
+        return await _orderService.CheckAndUpdateOrderPaymentStatusAsync(requestById, cancellationToken);
     }
 }
