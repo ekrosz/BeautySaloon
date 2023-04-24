@@ -16,6 +16,7 @@ public class AppointmentProfile : Profile
             .ForMember(dest => dest.AppointmentDate, cfg => cfg.MapFrom(src => src.AppointmentDate.ToUniversalTime()));
 
         CreateMap<GetAppointmentResponseDto, EditAppointmentComponent.AppointmentRequest>()
-            .ForMember(dest => dest.AppointmentDate, cfg => cfg.MapFrom(src => src.AppointmentDate.ToLocalTime()));
+            .ForMember(dest => dest.AppointmentDate, cfg => cfg.MapFrom(src => src.AppointmentDate.ToLocalTime()))
+            .ForMember(dest => dest.PersonSubscriptionIds, cfg => cfg.MapFrom(src => src.Subscriptions.Select(x => x.Id)));
     }
 }

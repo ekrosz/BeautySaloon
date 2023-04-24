@@ -96,7 +96,10 @@ public class PersonService : IPersonService
     public async Task<ItemListResponseDto<PersonSubscriptionCosmeticServiceResponseDto>> GetPersonSubscriptionListAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var list = await _personSubscriptionQueryRepository.FindAsync(
-            x => x.Order.Person.Id == request.Id && x.Status == PersonSubscriptionCosmeticServiceStatus.Paid,
+            x => x.Order.Person.Id == request.Id &&
+            (x.Status == PersonSubscriptionCosmeticServiceStatus.Paid
+                || x.Status == PersonSubscriptionCosmeticServiceStatus.InProgress
+                || x.Status == PersonSubscriptionCosmeticServiceStatus.Completed),
             cancellationToken);
 
         return new ItemListResponseDto<PersonSubscriptionCosmeticServiceResponseDto>(_mapper.Map<IReadOnlyCollection<PersonSubscriptionCosmeticServiceResponseDto>>(list));

@@ -1,4 +1,4 @@
-﻿namespace BeautySaloon.Core.IntegrationServices.SmartPay.Dto;
+﻿namespace BeautySaloon.Core.IntegrationServices.SmartPay.Utils;
 
 public record SmartPayConstants
 {
@@ -22,10 +22,25 @@ public record SmartPayConstants
 
     public const string OperationCode = "QR";
 
+    public const string DateTimeRFC3339Format = "yyyy'-'MM'-'dd'T'HH':'mm':'ss''K";
+
+    public const int ExpireTime = 20;
+
+    public const int NdsRate = 20;
+
     public record ContactType
     {
         public const string PhoneType = "phone";
 
         public const string EmailType = "email";
+    }
+
+    public record Status
+    {
+        public const string Created = "created";
+
+        public const string Executed = "executed";
+
+        public const string Confirmed = "confirmed";
     }
 }

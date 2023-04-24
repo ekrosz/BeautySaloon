@@ -16,4 +16,6 @@ public record SmartPaySettings
     public string AuthScheme { get; init; } = string.Empty;
 
     public string ServiceId { get; init; } = string.Empty;
+
+    public string DefaultEmail { get; init; } = string.Empty;
 }

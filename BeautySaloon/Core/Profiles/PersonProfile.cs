@@ -18,7 +18,8 @@ public class PersonProfile : Profile
         CreateMap<PersonSubscription, PersonSubscriptionCosmeticServiceResponseDto>()
             .ForMember(dest => dest.Id, cfg => cfg.MapFrom(src => src.Id))
             .ForMember(dest => dest.Subscription, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot))
-            .ForMember(dest => dest.CosmeticService, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot));
+            .ForMember(dest => dest.CosmeticService, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot))
+            .ForMember(dest => dest.IsPaidStatus, cfg => cfg.MapFrom(src => src.Status == PersonSubscriptionCosmeticServiceStatus.Paid));
 
         CreateMap<Person, GetPersonResponseDto>()
             .ForMember(dest => dest.Subscriptions, cfg => cfg.MapFrom(src => src.Orders

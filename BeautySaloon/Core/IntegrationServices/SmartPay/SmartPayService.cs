@@ -4,13 +4,12 @@ using BeautySaloon.Core.Api.SmartPay.Dto.CreateInvoice;
 using BeautySaloon.Core.Api.SmartPay.Dto.ProcessInvoice;
 using BeautySaloon.Core.IntegrationServices.SmartPay.Contracts;
 using BeautySaloon.Core.IntegrationServices.SmartPay.Dto;
+using BeautySaloon.Core.IntegrationServices.SmartPay.Utils;
 using BeautySaloon.Core.Settings;
 using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Repositories.Abstract;
-using BeautySaloon.DAL.Uow;
 using Microsoft.Extensions.Options;
 using QRCoder;
-using Refit;
 
 namespace BeautySaloon.Core.IntegrationServices.SmartPay;
 
@@ -46,9 +45,9 @@ public class SmartPayService : ISmartPayService
 
         var status = getInvoiceResponse.InvoiceStatus switch
         {
-            "created" => PaymentRequestStatus.InProgress,
-            "executed" => PaymentRequestStatus.InProgress,
-            "confirmed" => PaymentRequestStatus.Completed,
+            SmartPayConstants.Status.Created => PaymentRequestStatus.InProgress,
+            SmartPayConstants.Status.Executed => PaymentRequestStatus.InProgress,
+            SmartPayConstants.Status.Confirmed => PaymentRequestStatus.Completed,
             _ => PaymentRequestStatus.Failed
         };
 
@@ -63,6 +62,26 @@ public class SmartPayService : ISmartPayService
         var order = await _orderWriteRepository.GetByIdAsync(orderId, cancellationToken)
             ?? throw new OrderNotFoundException(orderId);
 
+        async Task<CreatePaymentRequestResponseDto> ProcessInvoiceAsync(string invoiceId, Order order, CancellationToken cancellationToken = default)
+        {
+            var processInvoiceRequest = MapProcessInvoiceRequest(order);
+
+            var processInvoiceResponse = await _smartPayHttpClient.ProcessInvoiceAsync(invoiceId, processInvoiceRequest, cancellationToken);
+
+            var qrCode = GenerateQrCodeFromUrl(processInvoiceResponse.FormUrl);
+
+            return new CreatePaymentRequestResponseDto
+            {
+                InvoiceId = invoiceId,
+                QrCode = qrCode
+            };
+        }
+
+        if (!string.IsNullOrEmpty(order.SpInvoiceId))
+        {
+            return await ProcessInvoiceAsync(order.SpInvoiceId, order, cancellationToken);
+        }
+
         var createInvoiceRequest = MapCreateInvoiceRequest(order);
 
         var createInvoiceResponse = await _smartPayHttpClient.CreateInvoiceAsync(createInvoiceRequest, cancellationToken);
@@ -72,21 +91,11 @@ public class SmartPayService : ISmartPayService
             throw new SmartPayApiException(createInvoiceResponse.Error.UserMessage, createInvoiceResponse.Error.ErrorDescription, createInvoiceResponse.Error.ErrorCode);
         }
 
-        var processInvoiceRequest = MapProcessInvoiceRequest(order);
-
-        var processInvoiceResponse = await _smartPayHttpClient.ProcessInvoiceAsync(createInvoiceResponse.InvoiceId, processInvoiceRequest, cancellationToken);
-
-        var qrCode = GenerateQrCodeFromUrl(processInvoiceResponse.FormUrl);
-
-        return new CreatePaymentRequestResponseDto
-        {
-            InvoiceId = createInvoiceResponse.InvoiceId,
-            QrCode = qrCode
-        };
+        return await ProcessInvoiceAsync(createInvoiceResponse.InvoiceId, order, cancellationToken);
     }
 
     private CreateInvoiceRequestDto MapCreateInvoiceRequest(Order order)
-        => new CreateInvoiceRequestDto
+        => new()
         {
             Type = SmartPayConstants.Type,
             UserId = new CreateInvoiceRequestDto.UserRequestDto
@@ -97,8 +106,8 @@ public class SmartPayService : ISmartPayService
             {
                 Purchaser = new CreateInvoiceRequestDto.InvoiceRequestDto.PurchaserRequestDto
                 {
-                    Phone = order.Person.PhoneNumber[2..],
-                    Email = order.Person.Email,
+                    Phone = SmartPayConverter.ToSmartPayPhoneFormat(order.Person.PhoneNumber),
+                    Email = order.Person.Email ?? _settings.SmartPaySettings.DefaultEmail,
                     Contact = string.IsNullOrEmpty(order.Person.Email)
                     ? SmartPayConstants.ContactType.PhoneType
                     : SmartPayConstants.ContactType.EmailType
@@ -107,41 +116,41 @@ public class SmartPayService : ISmartPayService
                 {
                     OrderId = order.Id,
                     OrderNumber = order.Number.ToString(),
-                    OrderDate = order.CreatedOn.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss''K"),
+                    OrderDate = SmartPayConverter.ToRfc3999Format(order.CreatedOn),
                     ServiceId = _settings.SmartPaySettings.ServiceId,
-                    Amount = Convert.ToInt32(order.Cost * 100),
+                    Amount = SmartPayConverter.ToCentsAmount(order.Cost),
                     Currency = SmartPayConstants.Currency,
                     Purpose = SmartPayConstants.Purpose,
                     Description = SmartPayConstants.DescriptionPrefix + string.Join(", ", order.PersonSubscriptions
                         .GroupBy(x => x.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Id)
                         .Select(x => x.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name)),
                     Language = SmartPayConstants.Language,
-                    ExpirationDate = DateTime.Now.AddMinutes(20),
+                    ExpirationDate = DateTime.UtcNow.AddMinutes(SmartPayConstants.ExpireTime),
                     TaxSystem = SmartPayConstants.TaxSystem,
                     OrderBundles = order.PersonSubscriptions
                     .GroupBy(x => x.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Id)
                     .Select((x, i) => new CreateInvoiceRequestDto.InvoiceRequestDto.OrderRequestDto.OrderBundleRequestDto
                     {
-                        PositionId = i,
+                        PositionId = i + 1,
                         Name = x.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name,
                         Quantity = new CreateInvoiceRequestDto.InvoiceRequestDto.OrderRequestDto.OrderBundleRequestDto.QuantityRequestDto
                         {
                             Value = 1,
                             Measure = SmartPayConstants.Measure
                         },
-                        ItemAmount = Convert.ToInt32(x.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Price * 100),
+                        ItemAmount = SmartPayConverter.ToCentsAmount(x.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Price),
                         Currency = SmartPayConstants.Currency,
                         ItemCode = x.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Id,
-                        ItemPrice = Convert.ToInt32(x.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Price * 100),
+                        ItemPrice = SmartPayConverter.ToCentsAmount(x.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Price),
                         TaxType = SmartPayConstants.TaxType,
-                        TaxSum = Convert.ToInt32(order.Cost * 0.2m * 100)
+                        TaxSum = SmartPayConverter.ToCentsAmount(order.Cost * SmartPayConstants.NdsRate / 100)
                     }).ToArray()
                 }
             }
         };
 
     private ProcessInvoiceRequestDto MapProcessInvoiceRequest(Order order)
-        => new ProcessInvoiceRequestDto
+        => new()
         {
             UserId = new ProcessInvoiceRequestDto.UserRequestDto
             {
@@ -158,7 +167,7 @@ public class SmartPayService : ISmartPayService
             }
         };
 
-    private byte[] GenerateQrCodeFromUrl(string url)
+    private static byte[] GenerateQrCodeFromUrl(string url)
     {
         var qrCodeData = new QRCodeGenerator().CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
         var qrCodeImage = new QRCode(qrCodeData).GetGraphic(20);

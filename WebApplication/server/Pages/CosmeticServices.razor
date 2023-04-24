@@ -14,7 +14,7 @@
       <div class="col-md-12">
         <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
         </RadzenButton>
-        <RadzenTextBox Placeholder="Search ..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        <RadzenTextBox Placeholder="Поиск по наименованию..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
         </RadzenTextBox>
         <RadzenDataGrid @ref="grid0" GridLines="DataGridGridLines.Horizontal" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" LoadData="@LoadDataAsync" AllowSorting="false" Data="@GetCosmeticServicesResult" TItem="GetCosmeticServiceResponseDto" RowSelect="@Grid0RowSelect">
           <Columns>

@@ -144,30 +144,21 @@ namespace WebApplication.Pages
 
             await Task.WhenAll(personsTask, appointmentTask);
 
+            if (appointmentTask.Result == default)
+            {
+                return;
+            }
+
             Appointment = Mapper.Map<AppointmentRequest>(appointmentTask.Result);
             GetPersonsResult = personsTask.Result;
+            GetPersonSubscriptionsResult = await GetPersonSubscriptionsAsync(appointmentTask.Result.Person.Id);
 
             IsComponentsDisabled = appointmentTask.Result.Status != AppointmentStatus.NotImplemented;
         }
 
         protected async Task OnPersonSelectedEvent(object args)
         {
-            var personSubscriptions = await HttpClientWrapper.SendAsync((accessToken) => PersonHttpClient.GetSubscriptionsAsync(accessToken, (Guid)args, CancellationToken.None));
-
-            GetPersonSubscriptionsResult = personSubscriptions.Items
-                .GroupBy(x => x.Subscription.Id)
-                .SelectMany(x => new[] { new PersonSubscriptionCosmeticServiceResponse
-                {
-                    Id = x.First().Id,
-                    CosmeticServiceName = x.First().CosmeticService.Name,
-                    SubscriptionName = x.First().Subscription.Name
-                } }.Concat(x.GroupBy(y => y.CosmeticService.Id).Select(y => new PersonSubscriptionCosmeticServiceResponse
-                {
-                    Id = y.First().Id,
-                    CosmeticServiceName = y.First().CosmeticService.Name,
-                    CosmeticServiceCount = y.Count(),
-                    SubscriptionName = null!
-                }))).ToArray();
+            GetPersonSubscriptionsResult = await GetPersonSubscriptionsAsync((Guid)args);
         }
 
         protected async Task Form0Submit(AppointmentRequest args)
@@ -182,6 +173,28 @@ namespace WebApplication.Pages
         protected async Task Button2Click(MouseEventArgs args)
         {
             DialogService.Close(false);
+        }
+
+        private async Task<IReadOnlyCollection<PersonSubscriptionCosmeticServiceResponse>> GetPersonSubscriptionsAsync(Guid personId)
+        {
+            var personSubscriptions = await HttpClientWrapper.SendAsync((accessToken) => PersonHttpClient.GetSubscriptionsAsync(accessToken, personId, CancellationToken.None));
+
+            return personSubscriptions.Items
+                .GroupBy(x => x.Subscription.Id)
+                .SelectMany(x => new[] { new PersonSubscriptionCosmeticServiceResponse
+                {
+                    Id = x.First().Id,
+                    CosmeticServiceName = x.First().CosmeticService.Name,
+                    SubscriptionName = x.First().Subscription.Name,
+                    IsDisabled = true
+                } }.Concat(x.GroupBy(y => y.CosmeticService.Id).Select(y => new PersonSubscriptionCosmeticServiceResponse
+                {
+                    Id = y.FirstOrDefault(z => Appointment.PersonSubscriptionIds.Contains(z.Id))?.Id ?? (y.FirstOrDefault(z => z.IsPaidStatus)?.Id ?? y.First().Id),
+                    CosmeticServiceName = y.FirstOrDefault(z => Appointment.PersonSubscriptionIds.Contains(z.Id))?.CosmeticService.Name ?? (y.FirstOrDefault(z => z.IsPaidStatus)?.CosmeticService.Name ?? y.First().CosmeticService.Name),
+                    CosmeticServiceCount = y.Count(z => z.IsPaidStatus),
+                    SubscriptionName = null!,
+                    IsDisabled = !y.FirstOrDefault(z => Appointment.PersonSubscriptionIds.Contains(z.Id))?.IsPaidStatus ?? (!y.FirstOrDefault(z => z.IsPaidStatus)?.IsPaidStatus ?? true)
+                }))).ToArray();
         }
 
         private async Task<IReadOnlyCollection<GetPersonListItemResponseDto>> GetPersonsAsync()
@@ -242,7 +255,7 @@ namespace WebApplication.Pages
 
             public int CosmeticServiceCount { get; set; }
 
-            public bool IsGroup => SubscriptionName != null;
+            public bool IsDisabled { get; set; }
         }
     }
 }
