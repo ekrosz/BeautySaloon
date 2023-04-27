@@ -1,23 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Services;
 using BeautySaloon.Api.Services;
 using BeautySaloon.Api.Dto.Responses.Person;
 using BeautySaloon.Api.Dto.Requests.Person;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
-using WebApplication.Handlers;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using WebApplication.Wrappers;
-using Azure.Core;
 
 namespace WebApplication.Pages
 {

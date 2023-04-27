@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
 using BeautySaloon.Api.Services;
 using WebApplication.Wrappers;
 using BeautySaloon.Api.Dto.Responses.Order;
 using BeautySaloon.Api.Dto.Requests.Order;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
+using BeautySaloon.Api.Dto.Common;
 
 namespace WebApplication.Pages
 {
@@ -259,8 +259,15 @@ namespace WebApplication.Pages
             }
         }
 
+        protected async Task GridDownloadButtonClick(MouseEventArgs args, dynamic data)
+        {
+            await HttpClientWrapper.SendAsync((accessToken) => Task.Run(() => JSRuntime.InvokeAsync<object>("open", Path.Combine(NavigationManager.BaseUri, $"/api/files/receipt?accessToken={accessToken}&id={data.Id}"), "_blank")));
+        }
+
         protected void ShowPayButtonTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, "Оплатить", options);
 
         protected void ShowCancelButtonTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, "Отменить", options);
+
+        protected void ShowDownloadButtonTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, "Скачать", options);
     }
 }

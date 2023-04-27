@@ -1,4 +1,5 @@
-﻿using BeautySaloon.Api.Dto.Requests.Order;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Order;
 using BeautySaloon.Api.Dto.Responses.Order;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using Refit;
@@ -28,4 +29,7 @@ public interface IOrderHttpClient
 
     [Get("/api/orders/{id}/payment-status")]
     Task<CheckAndUpdateOrderPaymentStatusResponseDto> CheckAndUpdatePaymentStatusAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
+
+    [Get("/api/orders/{id}/receipt")]
+    Task<FileResponseDto> GetReceiptAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
 }

@@ -12,6 +12,9 @@ using BeautySaloon.DAL.Uow;
 using BeautySaloon.Core.IntegrationServices.SmartPay.Contracts;
 using BeautySaloon.Core.IntegrationServices.SmartPay.Dto;
 using BeautySaloon.DAL.Entities.Enums;
+using QRCoder;
+using BeautySaloon.Core.Utils.Dto;
+using BeautySaloon.Core.Utils.Contracts;
 
 namespace BeautySaloon.Core.Services;
 public class OrderService : IOrderService
@@ -26,6 +29,8 @@ public class OrderService : IOrderService
 
     private readonly ISmartPayService _smartPayService;
 
+    private readonly IDocumentGenerator<ReceiptRequestDto> _receiptDocumentGenerator;
+
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly IMapper _mapper;
@@ -36,6 +41,7 @@ public class OrderService : IOrderService
         IQueryRepository<Order> orderQueryRepository,
         IQueryRepository<Subscription> subscriptionQueryRepository,
         ISmartPayService smartPayService,
+        IDocumentGenerator<ReceiptRequestDto> receiptDocumentGenerator,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
@@ -44,6 +50,7 @@ public class OrderService : IOrderService
         _orderQueryRepository = orderQueryRepository;
         _subscriptionQueryRepository = subscriptionQueryRepository;
         _smartPayService = smartPayService;
+        _receiptDocumentGenerator = receiptDocumentGenerator;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -123,22 +130,18 @@ public class OrderService : IOrderService
         var order = await _orderWriteRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new OrderNotFoundException(request.Id);
 
-        string? invoiceId = null;
-        byte[]? qrCode = null;
-
         if (request.Data.PaymentMethod == PaymentMethod.Card)
         {
             var smartPayResponse = await _smartPayService.CreatePaymentRequestAsync(request.Id, cancellationToken);
 
-            invoiceId = smartPayResponse.InvoiceId;
-            qrCode = smartPayResponse.QrCode;
+            return new PayOrderResponseDto { QrCode = new FileResponseDto { Data = smartPayResponse.QrCode } };
         }
 
-        order.Pay(request.Data.PaymentMethod, request.Data.Comment, invoiceId);
+        order.Pay(request.Data.PaymentMethod, request.Data.Comment, null);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new PayOrderResponseDto { QrCode = qrCode };
+        return new();
     }
 
     public async Task CancelOrderAsync(ByIdWithDataRequestDto<CancelOrderRequestDto> request, CancellationToken cancellationToken = default)
@@ -185,7 +188,7 @@ public class OrderService : IOrderService
         switch (smartPayResponse.PaymentStatus)
         {
             case PaymentRequestStatus.Completed:
-                order.SetPaidStatus();
+                order.Pay(PaymentMethod.Card, null, order.SpInvoiceId);
                 break;
             case PaymentRequestStatus.InProgress:
                 break;
@@ -197,5 +200,22 @@ public class OrderService : IOrderService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new CheckAndUpdateOrderPaymentStatusResponseDto { PaymentStatus = order.PaymentStatus };
+    }
+
+    public async Task<FileResponseDto> GetReceiptAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var order = await _orderQueryRepository.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new OrderNotFoundException(request.Id);
+
+        if (order.PaymentStatus != PaymentStatus.Paid)
+        {
+            throw new OrderNotPaidException();
+        }
+
+        var data = _mapper.Map<ReceiptRequestDto>(order);
+
+        var file = await _receiptDocumentGenerator.GenerateDocumentAsync(data);
+
+        return new FileResponseDto { Data = file };
     }
 }

@@ -90,6 +90,8 @@
                 </RadzenButton>
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.NotPaid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowCancelButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridCancelButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
                 </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="get_app" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.Paid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowDownloadButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridDownloadButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
+                </RadzenButton>
               </Template>
             </RadzenDataGridColumn>
           </Columns>

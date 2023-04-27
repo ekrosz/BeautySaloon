@@ -64,19 +64,17 @@ public class Order : IEntity, IAuditable
         PersonSubscriptions.AddRange(entities);
     }
 
-    public void SetPaidStatus() => PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.Paid);
-
     public void Pay(PaymentMethod paymentMethod, string? comment, string? invoiceId)
     {
         ThrowIfFinalStatus();
 
         PaymentMethod = paymentMethod;
-        Comment = comment;
+        Comment = comment ?? Comment;
         SpInvoiceId = invoiceId;
 
         if (paymentMethod == PaymentMethod.Cash)
         {
-            SetPaidStatus();
+            PersonSubscriptions.ForEach(x => x.Status = PersonSubscriptionCosmeticServiceStatus.Paid);
         }
     }
 

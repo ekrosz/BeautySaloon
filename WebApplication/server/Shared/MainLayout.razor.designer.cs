@@ -1,14 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+﻿using Microsoft.AspNetCore.Components;
 using Radzen;
 using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
-using WebApplication.Pages;
-using WebApplication.Services;
 using BeautySaloon.Api.Services;
 using WebApplication.Wrappers;
 using BeautySaloon.Api.Dto.Responses.User;

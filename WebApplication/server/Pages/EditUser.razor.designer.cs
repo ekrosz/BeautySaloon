@@ -2,13 +2,11 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
-using WebApplication.Services;
 using BeautySaloon.Api.Services;
 using AutoMapper;
 using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects;
 using BeautySaloon.Api.Dto.Requests.User;
-using WebApplication.Handlers;
 using WebApplication.Wrappers;
 
 namespace WebApplication.Pages

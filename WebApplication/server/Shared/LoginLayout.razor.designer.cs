@@ -6,10 +6,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
-using WebApplication.Pages;
-using WebApplication.Services;
-
 namespace WebApplication.Layouts
 {
     public partial class LoginLayoutComponent : LayoutComponentBase
@@ -28,10 +24,7 @@ namespace WebApplication.Layouts
 
         [Inject]
         protected NotificationService NotificationService { get; set; }
-        [Inject]
-        protected LocalDbService LocalDb { get; set; }
 
         protected RadzenBody body0;
-
     }
 }

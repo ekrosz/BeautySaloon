@@ -9,6 +9,9 @@ using BeautySaloon.Core.Profiles;
 using BeautySaloon.Core.Services;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.Core.Settings;
+using BeautySaloon.Core.Utils;
+using BeautySaloon.Core.Utils.Contracts;
+using BeautySaloon.Core.Utils.Dto;
 using BeautySaloon.DAL;
 using BeautySaloon.DAL.Providers;
 using BeautySaloon.DAL.Repositories.Abstract;
@@ -63,6 +66,8 @@ public static class ServiceCollectionExtension
         services.AddScoped<IAppointmentService, AppointmentService>();
 
         services.AddScoped<ISmartPayService, SmartPayService>();
+
+        services.AddScoped<IDocumentGenerator<ReceiptRequestDto>, ReceiptDocumentGenerator>();
 
         services.Configure<BLayerSettings>(configuration.GetSection(nameof(BLayerSettings)));
         services.AddHostedService<RefreshPersonSubscriptionStatusJob>();

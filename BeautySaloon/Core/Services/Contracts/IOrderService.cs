@@ -20,4 +20,6 @@ public interface IOrderService
     Task<PageResponseDto<GetOrderResponseDto>> GetOrderListAsync(GetOrderListRequestDto request, CancellationToken cancellationToken = default);
 
     Task<GetOrderResponseDto> GetOrderAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
+
+    Task<FileResponseDto> GetReceiptAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
 }

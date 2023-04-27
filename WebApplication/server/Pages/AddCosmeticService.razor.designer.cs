@@ -5,7 +5,6 @@ using Radzen;
 using BeautySaloon.Api.Dto.Requests.CosmeticService;
 using BeautySaloon.Api.Services;
 using AutoMapper;
-using WebApplication.Handlers;
 using WebApplication.Wrappers;
 
 namespace WebApplication.Pages

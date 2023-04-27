@@ -121,7 +121,7 @@ public partial class PayOrCancelOrderComponent : ComponentBase
                 return;
             }
 
-            var dialogResult = await DialogService.OpenAsync<CheckOrderPaymentStatus>("Оплата заказа", new Dictionary<string, object>() { { "Id", Id }, { "QrCodeImage", paymentResponse.QrCode } });
+            var dialogResult = await DialogService.OpenAsync<CheckOrderPaymentStatus>("Оплата заказа", new Dictionary<string, object>() { { "Id", Id }, { "QrCodeImage", paymentResponse.QrCode.Data } });
 
             DialogService.Close((dialogResult as bool?).GetValueOrDefault());
 

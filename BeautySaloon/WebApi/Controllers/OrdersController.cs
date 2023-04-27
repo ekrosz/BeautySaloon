@@ -107,4 +107,14 @@ public class OrdersController : ControllerBase
 
         return await _orderService.CheckAndUpdateOrderPaymentStatusAsync(requestById, cancellationToken);
     }
+
+    [HttpGet("{id}/receipt")]
+    public async Task<FileResponseDto> GetReceiptAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    {
+        var requestById = new ByIdRequestDto(id);
+
+        await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
+
+        return await _orderService.GetReceiptAsync(requestById, cancellationToken);
+    }
 }

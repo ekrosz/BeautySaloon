@@ -1,16 +1,11 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
-
 using Radzen;
-using WebApplication.Services;
 using BeautySaloon.Api.Services;
 using WebApplication.Handlers;
 using Refit;
 using WebApplication.Profiles;
 using WebApplication.Wrappers;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Converters;
 using BeautySaloon.Api.Dto.Common;
 
 namespace WebApplication
@@ -33,23 +28,12 @@ namespace WebApplication
             OnConfiguringServices(services);
 
             services.AddHttpContextAccessor();
-            services.AddScoped<HttpClient>(serviceProvider =>
+            services.AddScoped(serviceProvider =>
             {
 
               var uriHelper = serviceProvider.GetRequiredService<NavigationManager>();
 
-              return new HttpClient
-              {
-                BaseAddress = new Uri(uriHelper.BaseUri)
-              };
-            });
-
-            services.AddHttpClient();
-            services.AddScoped<LocalDbService>();
-
-            services.AddDbContext<WebApplication.Data.LocalDbContext>(options =>
-            {
-              options.UseNpgsql(Configuration.GetConnectionString("LocalDbConnection"));
+              return new HttpClient{ BaseAddress = new Uri(uriHelper.BaseUri) };
             });
 
             services.AddRazorPages();

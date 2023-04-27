@@ -9,7 +9,7 @@ public class OrderConfiguration : EntityConfiguration<Order>
     public override void Configure(EntityTypeBuilder<Order> builder)
     {
         builder.Property(x => x.Number)
-            .ValueGeneratedOnAdd()
+            .ValueGeneratedOnAddOrUpdate()
             .IsRequired();
 
         builder.Property(x => x.Cost)

@@ -1,15 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
-using Radzen.Blazor;
-using WebApplication.Models.LocalDb;
-using Microsoft.EntityFrameworkCore;
-using WebApplication.Services;
 using AutoMapper;
 using BeautySaloon.Api.Dto.Requests.Order;
 using BeautySaloon.Api.Dto.Responses.Person;
