@@ -1,0 +1,37 @@
+﻿@page "/materials"
+@layout MainLayout
+@inherits WebApplication.Pages.MaterialsComponent
+
+@using BeautySaloon.Api.Dto.Responses.Material
+@using Radzen
+@using Radzen.Blazor
+
+<PageTitle>Материалы</PageTitle>
+<RadzenContent Container="main">
+  <ChildContent>
+    <RadzenHeading Size="H1" Text="Материалы">
+    </RadzenHeading>
+    <div class="row">
+      <div class="col-md-12">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+        </RadzenButton>
+        <RadzenTextBox Placeholder="Поиск по наименованию..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        </RadzenTextBox>
+        <RadzenDataGrid @ref="grid0" GridLines="DataGridGridLines.Horizontal" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" LoadData="@LoadDataAsync" AllowSorting="false" Data="@GetMaterialsResult" TItem="GetMaterialResponseDto" RowSelect="@Grid0RowSelect">
+          <Columns>
+            <RadzenDataGridColumn TItem="GetMaterialResponseDto" Property="Name" Title="Наименование">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetMaterialResponseDto" Property="Description" Title="Описание">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetMaterialResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+              <Template Context="webApplicationModelsLocalDbMaterial">
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbMaterial))" @onclick:stopPropagation="true">
+                </RadzenButton>
+              </Template>
+            </RadzenDataGridColumn>
+          </Columns>
+        </RadzenDataGrid>
+      </div>
+    </div>
+  </ChildContent>
+</RadzenContent>

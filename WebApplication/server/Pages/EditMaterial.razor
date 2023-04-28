@@ -1,37 +1,27 @@
-﻿@page "/add-cosmetic-service"
+﻿@page "/edit-material/{Id}"
 @layout MainLayout
-@inherits WebApplication.Pages.AddCosmeticServiceComponent
+@inherits WebApplication.Pages.EditMaterialComponent
 
 @using Radzen
 @using Radzen.Blazor
 
-<PageTitle>Создание услуги</PageTitle>
+<PageTitle>Редактирование материала</PageTitle>
 <RadzenContent Container="main">
   <ChildContent>
     <div class="row">
       <div class="col-md-12">
-        <RadzenTemplateForm Data="@CosmeticService" Visible="@(CosmeticService != null)" TItem="CosmeticServiceRequest" Submit="@Form0Submit">
-          <ChildContent>         
+        <RadzenTemplateForm TItem="MaterialRequest" Data="@Material" Visible="@(Material != null)" Submit="@Form0Submit">
+          <ChildContent>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
                 <RadzenLabel Text="Наименование" Component="Name" style="width: 100%">
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
-                <RadzenTextBox MaxLength="100" style="display: block; width: 100%" @bind-Value="@(CosmeticService.Name)" Name="Name">
+                <RadzenTextBox MaxLength="100" style="display: block; width: 100%" @bind-Value="@(Material.Name)" Name="Name">
                 </RadzenTextBox>
                 <RadzenRequiredValidator Component="Name" Text="Обязательное поле" style="position: absolute">
                 </RadzenRequiredValidator>
-              </div>
-            </div>
-            <div style="margin-bottom: 1rem" class="row">
-              <div class="col-md-3">
-                <RadzenLabel Text="Длительность (минуты)" Component="ExecuteTimeInMinutes" style="width: 100%">
-                </RadzenLabel>
-              </div>
-              <div class="col-md-9">
-                <RadzenNumeric style="display: block; width: 100%" @bind-Value="@(CosmeticService.ExecuteTimeInMinutes)" Name="ExecuteTimeInMinutes">
-                </RadzenNumeric>
               </div>
             </div>
             <div style="margin-bottom: 1rem" class="row">
@@ -40,7 +30,7 @@
                 </RadzenLabel>
               </div>
               <div class="col-md-9">
-                <RadzenTextBox MaxLength="500" style="display: block; width: 100%" @bind-Value="@(CosmeticService.Description)" Name="Description">
+                <RadzenTextBox MaxLength="500" style="display: block; width: 100%" @bind-Value="@(Material.Description)" Name="Description">
                 </RadzenTextBox>
               </div>
             </div>
