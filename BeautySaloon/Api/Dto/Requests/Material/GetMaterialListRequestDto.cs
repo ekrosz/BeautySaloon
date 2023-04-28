@@ -6,7 +6,7 @@ namespace BeautySaloon.Api.Dto.Requests.Material;
 
 public record GetMaterialListRequestDto
 {
-    public string? SearchString { get; init; } = string.Empty;
+    public string? SearchString { get; init; }
 
     public PageRequestDto Page { get; init; } = new();
 }
