@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BeautySaloon.DAL.Migrations
 {
     [DbContext(typeof(BeautySaloonDbContext))]
-    [Migration("20230427074923_UpdateGeneratedValueInOrder")]
-    partial class UpdateGeneratedValueInOrder
+    [Migration("20230428093012_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,6 +94,38 @@ namespace BeautySaloon.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("CosmeticService");
+                });
+
+            modelBuilder.Entity("BeautySaloon.DAL.Entities.Material", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserModifierId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Material");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Order", b =>

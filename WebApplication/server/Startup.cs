@@ -88,6 +88,10 @@ namespace WebApplication
             services.AddRefitClient<IAppointmentHttpClient>(refitSettings)
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>();
+            
+            services.AddRefitClient<IMaterialHttpClient>(refitSettings)
+                .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
+                .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
             services.AddAutoMapper(typeof(UserProfile).Assembly);
 
