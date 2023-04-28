@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -165,7 +166,8 @@ namespace BeautySaloon.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Number = table.Column<int>(type: "integer", nullable: false),
+                    Number = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Cost = table.Column<decimal>(type: "numeric", nullable: false),
                     PaymentMethod = table.Column<int>(type: "integer", nullable: false),
                     SpInvoiceId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),

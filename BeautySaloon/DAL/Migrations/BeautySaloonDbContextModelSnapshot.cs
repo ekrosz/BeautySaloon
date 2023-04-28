@@ -143,8 +143,10 @@ namespace BeautySaloon.DAL.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Number")
-                        .ValueGeneratedOnAddOrUpdate()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Number"));
 
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");

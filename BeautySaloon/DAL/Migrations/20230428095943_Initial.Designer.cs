@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BeautySaloon.DAL.Migrations
 {
     [DbContext(typeof(BeautySaloonDbContext))]
-    [Migration("20230428093012_Initial")]
+    [Migration("20230428095943_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -145,8 +145,10 @@ namespace BeautySaloon.DAL.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Number")
-                        .ValueGeneratedOnAddOrUpdate()
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Number"));
 
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
