@@ -2,11 +2,18 @@
 
 public record BLayerSettings
 {
-    public int ExecuteJobPeriodInDays { get; init; }
+    public JobSettings JobSettings { get; init; } = new();
 
     public SmartPaySettings SmartPaySettings { get; init; } = new();
 
     public MailKitSettings MailKitSettings { get; init; } = new();
+}
+
+public record JobSettings
+{
+    public int RefreshPersonSubscriptionStatusJobDelayInDays { get; init; }
+
+    public int AppointmentNotificationJobInMinutes { get; init; }
 }
 
 public record SmartPaySettings

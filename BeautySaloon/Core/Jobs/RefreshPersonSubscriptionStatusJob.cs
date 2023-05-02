@@ -48,12 +48,14 @@ public class RefreshPersonSubscriptionStatusJob : BackgroundService
                 }
 
                 logger.LogInformation("Мониторинг просроченных услуг абонементов окончен успешно.");
-
-                await Task.Delay(TimeSpan.FromDays(settings.Value.ExecuteJobPeriodInDays), stoppingToken);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, ex.Message);
+            }
+            finally
+            {
+                await Task.Delay(TimeSpan.FromDays(settings.Value.JobSettings.RefreshPersonSubscriptionStatusJobDelayInDays), stoppingToken);
             }
         }
     }

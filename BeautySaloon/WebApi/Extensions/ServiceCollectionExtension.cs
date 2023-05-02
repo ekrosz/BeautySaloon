@@ -74,6 +74,7 @@ public static class ServiceCollectionExtension
 
         services.Configure<BLayerSettings>(configuration.GetSection(nameof(BLayerSettings)));
         services.AddHostedService<RefreshPersonSubscriptionStatusJob>();
+        services.AddHostedService<AppointmentNotificationJob>();
 
         services.AddValidatorsFromAssembly(typeof(AuthorizeByCredentialsRequestValidator).Assembly);
         services.AddAutoMapper(typeof(UserProfile).Assembly);

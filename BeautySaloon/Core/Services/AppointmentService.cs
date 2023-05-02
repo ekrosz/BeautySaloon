@@ -8,6 +8,7 @@ using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;
+using BeautySaloon.DAL.Entities.Enums;
 
 namespace BeautySaloon.Core.Services;
 
@@ -176,8 +177,9 @@ public class AppointmentService : IAppointmentService
         var anyAppointmentInRange = await _appointmentQueryRepositry.ExistAsync(
             x => (!appointmentId.HasValue || appointmentId.Value != x.Id)
             && x.PersonSubscriptions.Any()
-            && (x.AppointmentDate < endDateTime && x.AppointmentDate > appointmentDate)
-                || (x.AppointmentDate.AddMinutes(x.DurationInMinutes) < endDateTime && x.AppointmentDate.AddMinutes(x.DurationInMinutes) > appointmentDate),
+            && x.PersonSubscriptions.All(y => y.Status == PersonSubscriptionCosmeticServiceStatus.InProgress)
+            && ((x.AppointmentDate < endDateTime && x.AppointmentDate > appointmentDate)
+                || (x.AppointmentDate.AddMinutes(x.DurationInMinutes) < endDateTime && x.AppointmentDate.AddMinutes(x.DurationInMinutes) > appointmentDate)),
             cancellationToken);
 
         if (anyAppointmentInRange)

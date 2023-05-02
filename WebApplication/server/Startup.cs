@@ -56,7 +56,6 @@ namespace WebApplication
                 UrlParameterFormatter = new CustomUrlParameterFormatter(),
                 ContentSerializer = new NewtonsoftJsonContentSerializer(new JsonSerializerSettings
                 {
-                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                     DateFormatString = DateTimeFormats.DateTimeWithTimeZoneFormat
                 })
             };
