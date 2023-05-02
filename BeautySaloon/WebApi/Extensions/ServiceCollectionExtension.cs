@@ -2,6 +2,8 @@
 using BeautySaloon.Api.Dto.Requests.Auth;
 using BeautySaloon.Api.Services;
 using BeautySaloon.Core.Api.SmartPay;
+using BeautySaloon.Core.IntegrationServices.MailKit;
+using BeautySaloon.Core.IntegrationServices.MailKit.Contracts;
 using BeautySaloon.Core.IntegrationServices.SmartPay;
 using BeautySaloon.Core.IntegrationServices.SmartPay.Contracts;
 using BeautySaloon.Core.Jobs;
@@ -103,6 +105,8 @@ public static class ServiceCollectionExtension
                 {
                     ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
                 });
+
+        services.AddScoped<IMailKitService, MailKitService>();
 
         return services;
     }

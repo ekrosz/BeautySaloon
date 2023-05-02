@@ -20,6 +20,6 @@ public class FileController : ControllerBase
     {
         var receipt = await _orderHttpClient.GetReceiptAsync(accessToken, id, cancellationToken);
 
-        return File(receipt.Data, contentType: "application/pdf", $"Заказ-{id}.pdf");
+        return File(receipt.Data, contentType: "application/pdf", receipt.FileName);
     }
 }

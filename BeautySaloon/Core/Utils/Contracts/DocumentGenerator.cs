@@ -1,4 +1,5 @@
-﻿using GrapeCity.Documents.Word;
+﻿using BeautySaloon.Api.Dto.Common;
+using GrapeCity.Documents.Word;
 using GrapeCity.Documents.Word.Layout;
 using System.IO.Compression;
 using TemplateEngine.Docx;
@@ -9,11 +10,11 @@ public abstract class DocumentGenerator<T> : IDocumentGenerator<T> where T : cla
 {
     private const string PdfExtension = ".pdf";
 
-    public async Task<byte[]> GenerateDocumentAsync(T data)
+    public async Task<FileResponseDto> GenerateDocumentAsync(string fileName, T data)
     {
-        var result = await GenerateContentAsync(data);
+        var result = await GenerateContentAsync(fileName, data);
 
-        var pdfFileName = Path.GetFileNameWithoutExtension(result.FileName) + PdfExtension;
+        var pdfFileName = fileName + PdfExtension;
 
         using var outputDocument = new TemplateProcessor(result.FileName).SetRemoveContentControls(true);
 
@@ -41,10 +42,10 @@ public abstract class DocumentGenerator<T> : IDocumentGenerator<T> where T : cla
 
         await fileStream.CopyToAsync(memoryStream);
 
-        return memoryStream.ToArray();
+        return new FileResponseDto { FileName = pdfFileName, Data = memoryStream.ToArray() };
     }
 
-    protected abstract Task<DocumentGeneratorResponseDto> GenerateContentAsync(T data);
+    protected abstract Task<DocumentGeneratorResponseDto> GenerateContentAsync(string fileName, T data);
 }
 
 public record DocumentGeneratorResponseDto

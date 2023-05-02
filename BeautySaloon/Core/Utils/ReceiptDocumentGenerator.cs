@@ -12,10 +12,10 @@ public class ReceiptDocumentGenerator : DocumentGenerator<ReceiptRequestDto>
 
     private const string DocxExtension = ".docx";
 
-    protected override Task<DocumentGeneratorResponseDto> GenerateContentAsync(ReceiptRequestDto data)
+    protected override Task<DocumentGeneratorResponseDto> GenerateContentAsync(string fileName, ReceiptRequestDto data)
     {
         var templateFileName = DocumentName + TemplatePostfix + DocxExtension;
-        var tempFileName = DocumentName + DocxExtension;
+        var tempFileName = fileName + DocxExtension;
 
         File.Delete(tempFileName);
         File.Copy(templateFileName, tempFileName);

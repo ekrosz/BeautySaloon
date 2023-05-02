@@ -15,6 +15,8 @@ using BeautySaloon.DAL.Entities.Enums;
 using QRCoder;
 using BeautySaloon.Core.Utils.Dto;
 using BeautySaloon.Core.Utils.Contracts;
+using BeautySaloon.Core.IntegrationServices.MailKit.Contracts;
+using BeautySaloon.Core.IntegrationServices.MailKit.Dto;
 
 namespace BeautySaloon.Core.Services;
 public class OrderService : IOrderService
@@ -29,6 +31,8 @@ public class OrderService : IOrderService
 
     private readonly ISmartPayService _smartPayService;
 
+    private readonly IMailKitService _mailKitService;
+
     private readonly IDocumentGenerator<ReceiptRequestDto> _receiptDocumentGenerator;
 
     private readonly IUnitOfWork _unitOfWork;
@@ -41,6 +45,7 @@ public class OrderService : IOrderService
         IQueryRepository<Order> orderQueryRepository,
         IQueryRepository<Subscription> subscriptionQueryRepository,
         ISmartPayService smartPayService,
+        IMailKitService mailKitService,
         IDocumentGenerator<ReceiptRequestDto> receiptDocumentGenerator,
         IUnitOfWork unitOfWork,
         IMapper mapper)
@@ -50,6 +55,7 @@ public class OrderService : IOrderService
         _orderQueryRepository = orderQueryRepository;
         _subscriptionQueryRepository = subscriptionQueryRepository;
         _smartPayService = smartPayService;
+        _mailKitService = mailKitService;
         _receiptDocumentGenerator = receiptDocumentGenerator;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -139,6 +145,8 @@ public class OrderService : IOrderService
 
         order.Pay(request.Data.PaymentMethod, request.Data.Comment, null);
 
+        await SendReceiptToEmailAsync(order);
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new();
@@ -189,6 +197,7 @@ public class OrderService : IOrderService
         {
             case PaymentRequestStatus.Completed:
                 order.Pay(PaymentMethod.Card, null, order.SpInvoiceId);
+                await SendReceiptToEmailAsync(order);
                 break;
             case PaymentRequestStatus.InProgress:
                 break;
@@ -212,10 +221,32 @@ public class OrderService : IOrderService
             throw new OrderNotPaidException();
         }
 
+        return await GenerateReceiptAsync(order);
+    }
+
+    private async Task SendReceiptToEmailAsync(Order order)
+    {
+        if (string.IsNullOrEmpty(order.Person.Email))
+        {
+            return;
+        }
+
+        var file = await GenerateReceiptAsync(order);
+
+        await _mailKitService.SendEmailAsync(new SendEmailRequestDto
+        {
+            ReceiverName = order.Person.Name.ConcatedName,
+            ReceiverEmail = order.Person.Email,
+            Subject = $"Заказ {order.Number} успешно оплачен.",
+            Body = $"Благодарим Вас за покупку абонементов в студии красоты Beauty Studio.",
+            Files = new[] { file }
+        });
+    }
+
+    private Task<FileResponseDto> GenerateReceiptAsync(Order order)
+    {
         var data = _mapper.Map<ReceiptRequestDto>(order);
 
-        var file = await _receiptDocumentGenerator.GenerateDocumentAsync(data);
-
-        return new FileResponseDto { Data = file };
+        return _receiptDocumentGenerator.GenerateDocumentAsync($"Заказ-{order.Number}", data);
     }
 }

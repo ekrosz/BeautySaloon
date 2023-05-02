@@ -1,6 +1,8 @@
-﻿namespace BeautySaloon.Core.Utils.Contracts;
+﻿using BeautySaloon.Api.Dto.Common;
+
+namespace BeautySaloon.Core.Utils.Contracts;
 
 public interface IDocumentGenerator<T> where T : class
 {
-    Task<byte[]> GenerateDocumentAsync(T data);
+    Task<FileResponseDto> GenerateDocumentAsync(string fileName, T data);
 }
