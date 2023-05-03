@@ -10,6 +10,20 @@ namespace BeautySaloon.DAL.Entities
 {
     public class Invoice : IEntity, IAuditable
     {
+        [Obsolete("For EF")]
+        private Invoice()
+        {
+        }
+
+        public Invoice(
+        InvoiceType invoiceType,
+        Guid? employeeId,
+        string? comment)
+        {
+            InvoiceType = invoiceType;
+            EmployeeId = employeeId;
+            Comment = comment;
+        }
         public Guid Id { get; set; }
 
         public InvoiceType InvoiceType { get; set; }
@@ -20,29 +34,27 @@ namespace BeautySaloon.DAL.Entities
 
         public User? Employee { get; set; } = default!;
 
+        public Guid? EmployeeId { get; set; }
+
         public string? Comment { get; set; }
 
-        public int Count { get; set; }
+        public List<InvoiceMaterial> InvoiceMaterials { get; set; } = new List<InvoiceMaterial>();
 
-        public decimal? Cost { get; set; }
-
-        public Material Material { get; set; } = default!;
+        public void AddMaterials(IEnumerable<InvoiceMaterial> materials)
+        {
+            InvoiceMaterials.Clear();
+            InvoiceMaterials.AddRange(materials);
+        }
 
         public Guid UserModifierId { get; set; }
 
         public void Update(
         InvoiceType invoiceType,
-        int count,
-        decimal cost,
-        Material material,
-        User? employee,
+        Guid? employeeId,
         string? comment)
         {
             InvoiceType = invoiceType;
-            Count = count;
-            Cost = cost;
-            Material = material;
-            Employee = employee;
+            EmployeeId = employeeId;
             Comment = comment;
         }
     }

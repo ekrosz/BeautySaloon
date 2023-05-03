@@ -17,25 +17,25 @@ namespace BeautySaloon.DAL.Configurations
             builder.Property(x => x.InvoiceType)
             .IsRequired();
 
-            builder.Property(x => x.Count)
-            .IsRequired();
-
-            builder.Property(x => x.Cost)
-            .IsRequired(false);
-
             builder.Property(x => x.Comment)
             .HasMaxLength(500)
             .IsRequired(false);
 
             builder.HasOne(x => x.Employee)
                 .WithMany()
-                .HasForeignKey("UserId")
+                .HasForeignKey(x => x.EmployeeId)
                 .IsRequired(false);
 
-            builder.HasOne(x => x.Material)
-               .WithMany()
-               .HasForeignKey("MaterialId")
+            builder.HasMany(x => x.InvoiceMaterials)
+               .WithOne(x => x.Invoice)
+               .HasForeignKey("InvoiceId")
                .IsRequired();
+
+            builder.Navigation(x => x.Employee)
+                .AutoInclude();
+
+            builder.Navigation(x => x.InvoiceMaterials)
+                .AutoInclude();
 
             base.Configure(builder);
         }

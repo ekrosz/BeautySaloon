@@ -19,6 +19,11 @@ namespace BeautySaloon.DAL.Configurations
                 .HasMaxLength(500)
                 .IsRequired(false);
 
+            builder.HasMany<InvoiceMaterial>()
+                .WithOne(x => x.Material)
+                .HasForeignKey(x => x.MaterialId)
+                .IsRequired();
+
             base.Configure(builder);
         }
     }
