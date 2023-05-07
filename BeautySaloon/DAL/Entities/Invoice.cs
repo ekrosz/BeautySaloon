@@ -17,16 +17,20 @@ namespace BeautySaloon.DAL.Entities
 
         public Invoice(
         InvoiceType invoiceType,
+        DateTime invoiceDate,
         Guid? employeeId,
         string? comment)
         {
             InvoiceType = invoiceType;
             EmployeeId = employeeId;
+            InvoiceDate = invoiceDate;
             Comment = comment;
         }
         public Guid Id { get; set; }
 
         public InvoiceType InvoiceType { get; set; }
+
+        public DateTime InvoiceDate { get; set; }
 
         public DateTime CreatedOn { get; set; }
 
@@ -50,10 +54,12 @@ namespace BeautySaloon.DAL.Entities
 
         public void Update(
         InvoiceType invoiceType,
+        DateTime invoiceDate,
         Guid? employeeId,
         string? comment)
         {
             InvoiceType = invoiceType;
+            InvoiceDate = invoiceDate;
             EmployeeId = employeeId;
             Comment = comment;
         }

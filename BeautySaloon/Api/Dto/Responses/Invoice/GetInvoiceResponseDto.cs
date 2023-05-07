@@ -9,6 +9,8 @@ public record GetInvoiceResponseDto
 
     public InvoiceType InvoiceType { get; init; }
 
+    public DateTime InvoiceDate { get; init; }
+
     public string? Comment { get; init; }
 
     public ModifierResponseDto Modifier { get; set; } = new();

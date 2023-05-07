@@ -18,6 +18,12 @@ public class QueryRepository<TEntity> : ReadRepository<TEntity>, IQueryRepositor
     public Task<bool> ExistAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         => Query.AnyAsync(predicate, cancellationToken);
 
+    public async Task<double> SumAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, double>> selector,
+        CancellationToken cancellationToken = default)
+        => await Query.Where(predicate).SumAsync(selector, cancellationToken);
+
     public async Task<PageResponseDto<TEntity>> GetPageAsync<TKey>(
         PageRequestDto request,
         Expression<Func<TEntity, bool>> predicate,

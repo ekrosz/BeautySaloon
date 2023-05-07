@@ -110,6 +110,9 @@ namespace BeautySaloon.DAL.Migrations
                     b.Property<Guid?>("EmployeeId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("InvoiceType")
                         .HasColumnType("integer");
 

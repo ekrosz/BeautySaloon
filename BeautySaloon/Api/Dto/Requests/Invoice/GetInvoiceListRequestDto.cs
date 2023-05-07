@@ -16,6 +16,10 @@ public record GetInvoiceListRequestDto
 
     public string? SearchString { get; init; }
 
+    public DateTime? StartCreatedOn { get; init; }
+
+    public DateTime? EndCreatedOn { get; init; }
+
     public PageRequestDto Page { get; init; } = new();
 }
 

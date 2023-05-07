@@ -1,7 +1,6 @@
 ﻿using BeautySaloon.Api.Dto.Common;
 using BeautySaloon.Api.Dto.Requests.Subscription;
 using BeautySaloon.Api.Dto.Responses.Subscription;
-using BeautySaloon.Api.Services;
 using BeautySaloon.Common;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
@@ -15,7 +14,7 @@ namespace BeautySaloon.WebApi.Controllers;
 [ApiController]
 public class SubscriptionsController : ControllerBase
 {
-    private readonly ISubscriptionService _personService;
+    private readonly ISubscriptionService _subscriptionService;
 
     private readonly IValidator<CreateSubscriptionRequestDto> _createSubscriptionRequestValidator;
     private readonly IValidator<UpdateSubscriptionRequestDto> _updateSubscriptionRequestValidator;
@@ -23,13 +22,13 @@ public class SubscriptionsController : ControllerBase
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
     public SubscriptionsController(
-        ISubscriptionService personService,
+        ISubscriptionService subscriptionService,
         IValidator<CreateSubscriptionRequestDto> createSubscriptionRequestValidator,
         IValidator<UpdateSubscriptionRequestDto> updateSubscriptionRequestValidator,
         IValidator<GetSubscriptionListRequestDto> getSubscriptionListRequestValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
-        _personService = personService;
+        _subscriptionService = subscriptionService;
         _createSubscriptionRequestValidator = createSubscriptionRequestValidator;
         _updateSubscriptionRequestValidator = updateSubscriptionRequestValidator;
         _getSubscriptionListRequestValidator = getSubscriptionListRequestValidator;
@@ -42,7 +41,7 @@ public class SubscriptionsController : ControllerBase
     {
         await _createSubscriptionRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
-        await _personService.CreateSubscriptionAsync(request, cancellationToken);
+        await _subscriptionService.CreateSubscriptionAsync(request, cancellationToken);
     }
 
     [HttpPut("{id}")]
@@ -53,7 +52,7 @@ public class SubscriptionsController : ControllerBase
 
         var requestById = new ByIdWithDataRequestDto<UpdateSubscriptionRequestDto>(id, request);
 
-        await _personService.UpdateSubscriptionAsync(requestById, cancellationToken);
+        await _subscriptionService.UpdateSubscriptionAsync(requestById, cancellationToken);
     }
 
     [HttpDelete("{id}")]
@@ -64,7 +63,7 @@ public class SubscriptionsController : ControllerBase
 
         await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
 
-        await _personService.DeleteSubscriptionAsync(requestById, cancellationToken);
+        await _subscriptionService.DeleteSubscriptionAsync(requestById, cancellationToken);
     }
 
     [HttpGet("{id}")]
@@ -75,7 +74,7 @@ public class SubscriptionsController : ControllerBase
 
         await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
 
-        return await _personService.GetSubscriptionAsync(requestById, cancellationToken);
+        return await _subscriptionService.GetSubscriptionAsync(requestById, cancellationToken);
     }
 
     [HttpGet]
@@ -84,6 +83,6 @@ public class SubscriptionsController : ControllerBase
     {
         await _getSubscriptionListRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
-        return await _personService.GetSubscriptionListAsync(request, cancellationToken);
+        return await _subscriptionService.GetSubscriptionListAsync(request, cancellationToken);
     }
 }

@@ -67,6 +67,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<IMaterialService, MaterialService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
 
         services.AddScoped<ISmartPayService, SmartPayService>();
 

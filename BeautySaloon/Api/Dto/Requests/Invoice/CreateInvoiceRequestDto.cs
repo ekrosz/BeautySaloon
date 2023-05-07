@@ -4,11 +4,13 @@ using FluentValidation;
 namespace BeautySaloon.Api.Dto.Requests.Invoice;
 public record CreateInvoiceRequestDto
 {
-    public InvoiceType InvoiceType { get; set; }
+    public InvoiceType InvoiceType { get; init; }
 
-    public string? Comment { get; set; }
+    public DateTime InvoiceDate { get; init; }
 
-    public Guid? EmployeeId { get; set; }
+    public string? Comment { get; init; }
+
+    public Guid? EmployeeId { get; init; }
 
     public IReadOnlyCollection<MaterialRequestDto> Materials { get; init; } = Array.Empty<MaterialRequestDto>();
 }
@@ -24,6 +26,10 @@ public class CreateInvoiceRequestValidator : AbstractValidator<CreateInvoiceRequ
         RuleFor(_ => _.Comment)
             .MaximumLength(500)
             .When(_ => !string.IsNullOrEmpty(_.Comment));
+
+        RuleFor(_ => _.InvoiceDate)
+            .NotNull()
+            .NotEmpty();
 
         RuleFor(_ => _.EmployeeId)
             .NotEmpty()

@@ -17,12 +17,18 @@ public abstract class ReadRepository<TEntity> : IReadRepository<TEntity> where T
         _dbContext = dbContext;
     }
 
-    public async Task<IReadOnlyCollection<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<TEntity>> FindAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default)
         => await Query.Where(predicate).ToArrayAsync(cancellationToken);
 
-    public Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public Task<TEntity?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
         => Query.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-    public Task<TEntity?> GetFirstAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+    public Task<TEntity?> GetFirstAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default)
         => Query.FirstOrDefaultAsync(predicate, cancellationToken);
 }

@@ -15,11 +15,14 @@ namespace BeautySaloon.DAL.Configurations
         {
 
             builder.Property(x => x.InvoiceType)
-            .IsRequired();
+                .IsRequired();
+
+            builder.Property(x => x.InvoiceDate)
+                .IsRequired();
 
             builder.Property(x => x.Comment)
-            .HasMaxLength(500)
-            .IsRequired(false);
+                .HasMaxLength(500)
+                .IsRequired(false);
 
             builder.HasOne(x => x.Employee)
                 .WithMany()

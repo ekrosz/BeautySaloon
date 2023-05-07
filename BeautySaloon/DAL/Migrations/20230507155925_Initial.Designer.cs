@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BeautySaloon.DAL.Migrations
 {
     [DbContext(typeof(BeautySaloonDbContext))]
-    [Migration("20230503165221_AddedInvoiceEntity")]
-    partial class AddedInvoiceEntity
+    [Migration("20230507155925_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -111,6 +111,9 @@ namespace BeautySaloon.DAL.Migrations
 
                     b.Property<Guid?>("EmployeeId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("InvoiceType")
                         .HasColumnType("integer");
