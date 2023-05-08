@@ -13,7 +13,7 @@ public record GetInvoiceResponseDto
 
     public string? Comment { get; init; }
 
-    public ModifierResponseDto Modifier { get; set; } = new();
+    public UserResponseDto Modifier { get; set; } = new();
 
     public FullName EmployeeName { get; init; } = FullName.Empty;
 

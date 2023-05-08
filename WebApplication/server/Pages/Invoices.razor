@@ -1,0 +1,43 @@
+﻿@page "/subscriptions"
+@layout MainLayout
+@inherits WebApplication.Pages.InvoicesComponent
+
+@using BeautySaloon.Api.Dto.Responses.Invoice
+@using Radzen
+@using Radzen.Blazor
+
+<PageTitle>Абонементы</PageTitle>
+<RadzenContent Container="main">
+  <ChildContent>
+    <RadzenHeading Size="H1" Text="Движения материалов">
+    </RadzenHeading>
+    <div class="row">
+      <div class="col-md-12">
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+        </RadzenButton>
+        <RadzenTextBox Placeholder="Поиск по наименованию..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+        </RadzenTextBox>
+        <RadzenDataGrid @ref="grid0" GridLines="DataGridGridLines.Horizontal" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" AllowSorting="false" Data="@GetInvoicesResult" TItem="GetInvoiceListItemResponseDto" RowSelect="@Grid0RowSelect" LoadData="@LoadDataAsync">
+          <Columns>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="InvoiceType" Title="Тип">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="InvoiceDate" Title="Дата движения">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="Cost" Title="Сумма">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="EmployeeName" Title="Сотрудник">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="Comment" Title="Комментарий">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+              <Template Context="webApplicationModelsLocalDbInvoice">
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbInvoice))" @onclick:stopPropagation="true">
+                </RadzenButton>
+              </Template>
+            </RadzenDataGridColumn>
+          </Columns>
+        </RadzenDataGrid>
+      </div>
+    </div>
+  </ChildContent>
+</RadzenContent>

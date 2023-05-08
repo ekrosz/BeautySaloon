@@ -21,7 +21,7 @@ public record GetOrderResponseDto
 
     public PersonResponseDto Person { get; init; } = new();
 
-    public ModifierResponseDto Modifier { get; set; } = new();
+    public UserResponseDto Modifier { get; set; } = new();
 
     public IReadOnlyCollection<SubscriptionResponseDto> Subscriptions { get; init; } = Array.Empty<SubscriptionResponseDto>();
 }

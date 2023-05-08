@@ -1,0 +1,62 @@
+﻿@page "/add-or-edit-invoice-material"
+@layout MainLayout
+@inherits WebApplication.Pages.AddOrEditInvoiceMaterialComponent
+
+@using Radzen
+@using Radzen.Blazor
+
+<PageTitle>Добавление материала</PageTitle>
+<RadzenContent Container="main">
+    <ChildContent>
+        <div class="row">
+            <div class="col-md-12">
+                <RadzenTemplateForm Data="@InvoiceMaterial" Visible="@(InvoiceMaterial != null)" TItem="InvoiceMaterialRequest" Submit="@Form0Submit">
+                    <ChildContent>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Материал" Component="Material" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenDropDown Disabled="@IsDropDownDisabled" style="display: block; width: 100%" @bind-Value="@(InvoiceMaterial.Id)" Data="@Materials" ValueProperty="Id" TextProperty="Name" Name="Material">
+                                </RadzenDropDown>
+                                <RadzenRequiredValidator Component="Material" Text="Обязательное поле" style="position: absolute">
+                                </RadzenRequiredValidator>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Количество" Component="Count" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenNumeric style="display: block; width: 100%" @bind-Value="@(InvoiceMaterial.Count)" Name="Count">
+                                </RadzenNumeric>
+                                <RadzenRequiredValidator Component="Count" Text="Обязательное поле" style="position: absolute">
+                                </RadzenRequiredValidator>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem" class="row">
+                            <div class="col-md-3">
+                                <RadzenLabel Text="Стоимость" Component="Cost" style="width: 100%">
+                                </RadzenLabel>
+                            </div>
+                            <div class="col-md-9">
+                                <RadzenNumeric style="display: block; width: 100%" @bind-Value="@(InvoiceMaterial.Cost)" Name="Cost">
+                                </RadzenNumeric>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col offset-sm-3">
+                                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Сохранить" ButtonStyle="ButtonStyle.Primary">
+                                </RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" style="margin-left: 1rem" Text="Отмена" Click="@Button2Click">
+                                </RadzenButton>
+                            </div>
+                        </div>
+                    </ChildContent>
+                </RadzenTemplateForm>
+            </div>
+        </div>
+    </ChildContent>
+</RadzenContent>

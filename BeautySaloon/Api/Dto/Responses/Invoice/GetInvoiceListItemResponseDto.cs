@@ -13,9 +13,9 @@ public record GetInvoiceListItemResponseDto
 
     public string? Comment { get; init; }
 
-    public ModifierResponseDto Modifier { get; set; } = new();
+    public UserResponseDto Modifier { get; set; } = new();
 
-    public FullName EmployeeName { get; init; } = FullName.Empty;
+    public UserResponseDto? Employee { get; set; } = new();
 
     public decimal? Cost { get; set; }
 }

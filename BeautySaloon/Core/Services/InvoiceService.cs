@@ -186,7 +186,7 @@ namespace BeautySaloon.Core.Services
 
         public async Task<PageResponseDto<GetInvoiceListItemResponseDto>> GetInvoiceListAsync(GetInvoiceListRequestDto request, CancellationToken cancellationToken = default)
         {
-            var orders = await _invoiceQueryRepository.GetPageAsync(
+            var invoices = await _invoiceQueryRepository.GetPageAsync(
                 request: request.Page,
                 predicate: x => (string.IsNullOrWhiteSpace(request.SearchString)
                             || x.InvoiceMaterials.Any(y => y.Material.Name.ToLower().Contains(request.SearchString.ToLower())))
@@ -196,8 +196,8 @@ namespace BeautySaloon.Core.Services
                 sortProperty: x => x.InvoiceDate,
                 asc: false,
                 cancellationToken);
-
-            return _mapper.Map<PageResponseDto<GetInvoiceListItemResponseDto>>(orders);
+                        
+            return _mapper.Map<PageResponseDto<GetInvoiceListItemResponseDto>>(invoices);
         }
 
         private async Task ValidateMaterialCountAsync(

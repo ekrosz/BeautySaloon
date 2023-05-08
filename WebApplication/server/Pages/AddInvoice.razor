@@ -1,0 +1,100 @@
+﻿@page "/add-invoice"
+@layout MainLayout
+@inherits WebApplication.Pages.AddInvoiceComponent
+
+@using Radzen
+@using Radzen.Blazor
+
+<PageTitle>Создание движение</PageTitle>
+<RadzenContent Container="main">
+  <ChildContent>
+    <div class="row">
+      <div class="col-md-12">
+        <RadzenTemplateForm TItem="InvoiceRequest" Data="@Invoice" Visible="@(Invoice != null)" Submit="@Form0Submit">
+          <ChildContent>
+            <div class="row">
+                <div class="col-md-6">
+                    <RadzenHeading Size="H1" Text="Создание движения">
+                    </RadzenHeading>
+                </div>
+                <div class="col-md-6">
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Отмена" Click="@Button2Click" style="position: absolute; right: 1rem">
+                    </RadzenButton>
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Сохранить" ButtonStyle="ButtonStyle.Primary" style="position: absolute; right: 7rem">
+                    </RadzenButton>
+                </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Тип движения" Component="InvoiceType" style="width: 100%">
+                </RadzenLabel>
+              </div>
+               <div class="col-md-9">
+                <RadzenDropDown Data="InvoiceTypes" ValueProperty="Key" TextProperty="Value" style="display: block; width: 100%" @bind-Value="@(Invoice.InvoiceType)" Name="InvoiceType">
+                </RadzenDropDown>
+                <RadzenRequiredValidator Component="InvoiceType" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Дата движения" Component="InvoiceDate" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenDatePicker DateFormat="dd.MM.yyyy" style="display: block; width: 100%" @bind-Value="@(Invoice.InvoiceDate)" Name="InvoiceDate">
+                </RadzenDatePicker>
+                <RadzenRequiredValidator Component="InvoiceDate" Text="Обязательное поле" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+             <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Сотрудник" Component="Employee" style="width: 100%">
+                </RadzenLabel>
+              </div>
+               <div class="col-md-9">
+                <RadzenDropDown Data="GetUsersResult" ValueProperty="Id" TextProperty="Name.ConcatedName" style="display: block; width: 100%" Change="@OnInvoiceTypeSelectedEvent" @bind-Value="@(Invoice.EmployeeId)" Name="Employee">
+                </RadzenDropDown>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Комментарий" Component="Comment" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenTextBox style="display: block; width: 100%" @bind-Value="@(Invoice.Comment)" Name="Comment">
+                </RadzenTextBox>
+              </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <RadzenHeading Size="H2" Text="Материалы" style="margin-top: 1rem">
+                    </RadzenHeading>
+                    <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+                    </RadzenButton>
+                    <RadzenDataGrid @ref="grid0" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="false" AllowSorting="false" Data="@Invoice.Materials" TItem="InvoiceRequest.MaterialRequest"  RowSelect="@Grid0RowSelect">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="InvoiceRequest.MaterialRequest" Property="Name" Title="Материал">
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="InvoiceRequest.MaterialRequest" Property="Count" Title="Количество">
+                            </RadzenDataGridColumn>
+                             <RadzenDataGridColumn TItem="InvoiceRequest.MaterialRequest" Property="Cost" Title="Стоимость">
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="InvoiceRequest.MaterialRequest" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                              <Template Context="webApplicationModelsLocalDbInvoice">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbInvoice))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                              </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                </div>
+            </div>
+          </ChildContent>
+        </RadzenTemplateForm>
+      </div>
+    </div>
+  </ChildContent>
+</RadzenContent>

@@ -12,7 +12,10 @@ public class InvoiceProfile : Profile
     {
         CreateMap<PageResponseDto<Invoice>, PageResponseDto<GetInvoiceListItemResponseDto>>();
 
-        CreateMap<Invoice, GetInvoiceListItemResponseDto>();
+        CreateMap<Invoice, GetInvoiceListItemResponseDto>()
+            .ForMember(dest => dest.Employee, cfg => cfg.MapFrom(src => src.Employee));
+
+        CreateMap<User, UserResponseDto>();
 
         CreateMap<Invoice, GetInvoiceResponseDto>()
             .ForMember(dest => dest.Materials, cfg => cfg.MapFrom(src => src.InvoiceMaterials));
