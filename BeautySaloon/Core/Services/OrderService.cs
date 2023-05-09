@@ -285,7 +285,8 @@ public class OrderService : IOrderService
         {
             Items = result,
             ForecastItems = GetOrderForecastAnalytic(result),
-            TotalRevenues = orders.Sum(x => x.Revenues)
+            TotalRevenues = orders.Sum(x => x.Revenues),
+            TotalCount = orders.Sum(x => x.Count)
         };
     }
 

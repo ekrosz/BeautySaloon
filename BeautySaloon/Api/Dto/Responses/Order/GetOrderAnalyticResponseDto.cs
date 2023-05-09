@@ -4,6 +4,8 @@ public record GetOrderAnalyticResponseDto
 {
     public decimal TotalRevenues { get; init; }
 
+    public decimal TotalCount { get; init; }
+
     public IReadOnlyCollection<GetOrderAnalyticItemResponseDto> Items { get; init; } = Array.Empty<GetOrderAnalyticItemResponseDto>();
 
     public IReadOnlyCollection<GetOrderAnalyticItemResponseDto> ForecastItems { get; init; } = Array.Empty<GetOrderAnalyticItemResponseDto>();
