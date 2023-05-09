@@ -23,15 +23,7 @@ public class ForecastService : IForecastService
             }
         };
 
-        forecastModel.AddRange(Enumerable.Range(0, forecastModel.Count).Select(i => i == 0
-        ? new ForecastModel
-        {
-            Period = orderedSource.First().Period,
-            CurrentValue = orderedSource.First().Value,
-            SmoothingValue = orderedSource.First().Value,
-            TrendValue = 0
-        }
-        : new ForecastModel
+        forecastModel.AddRange(Enumerable.Range(1, orderedSource.Length - 1).Select(i => new ForecastModel
         {
             Period = orderedSource.ElementAt(i).Period,
             CurrentValue = orderedSource.ElementAt(i).Value,

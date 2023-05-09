@@ -123,11 +123,7 @@
             <RadzenLabel Text="Количество" For="count" class="rz-color-primary-darker" />
         </RadzenCard>
         <RadzenChart Visible="@IsAnalyticBlockVisible">
-                <RadzenLineSeries Smooth="true" Data="@ForecastAnalytic" Visible="@(!IsCountChart)" CategoryProperty="Period" Title="Прогнозируемые данные" ValueProperty="Revenues" RenderingOrder="1">
-                    <RadzenSeriesTrendLine Visible="@IsTrendVisible" Stroke="var(--rz-danger-dark)" LineType="LineType.Dashed" />
-                    <RadzenSeriesMedianLine Visible="@IsMedianVisible" Stroke="var(--rz-success-dark)" LineType="LineType.Dotted" />
-                    <RadzenSeriesMeanLine Visible="@IsMeanVisible" Stroke="var(--rz-info-dark)" LineType="LineType.Dotted" />
-                    <RadzenSeriesModeLine Visible="@IsModeVisible" Stroke="var(--rz-warning-darker)" LineType="LineType.Dotted" />
+                <RadzenLineSeries LineType="LineType.Dotted" Smooth="true" Data="@ForecastAnalytic" Visible="@(!IsCountChart)" CategoryProperty="Period" Title="Прогнозируемые данные" ValueProperty="Revenues" RenderingOrder="1">
                 </RadzenLineSeries>
                 <RadzenLineSeries Smooth="true" Data="@CurrentAnalytic" Visible="@(!IsCountChart)" CategoryProperty="Period" Title="Текущие данные" ValueProperty="Revenues" RenderingOrder="2">
                     <RadzenSeriesTrendLine Visible="@IsTrendVisible" Stroke="var(--rz-danger-dark)" LineType="LineType.Dashed" />
@@ -135,19 +131,16 @@
                     <RadzenSeriesMeanLine Visible="@IsMeanVisible" Stroke="var(--rz-info-dark)" LineType="LineType.Dotted" />
                     <RadzenSeriesModeLine Visible="@IsModeVisible" Stroke="var(--rz-warning-darker)" LineType="LineType.Dotted" />
                 </RadzenLineSeries>
-                <RadzenLineSeries Smooth="true" Data="@ForecastAnalytic" Visible="@(IsCountChart)" CategoryProperty="Period" Title="Прогнозируемые данные" ValueProperty="Count" RenderingOrder="3">
-                    <RadzenSeriesTrendLine Visible="@IsTrendVisible" Stroke="var(--rz-danger-dark)" LineType="LineType.Dashed" />
-                    <RadzenSeriesMedianLine Visible="@IsMedianVisible" Stroke="var(--rz-success-dark)" LineType="LineType.Dotted" />
-                    <RadzenSeriesMeanLine Visible="@IsMeanVisible" Stroke="var(--rz-info-dark)" LineType="LineType.Dotted" />
-                    <RadzenSeriesModeLine Visible="@IsModeVisible" Stroke="var(--rz-warning-darker)" LineType="LineType.Dotted" />
+                <RadzenLineSeries LineType="LineType.Dotted" Smooth="true" Data="@ForecastAnalytic" Visible="@(IsCountChart)" CategoryProperty="Period" Title="Прогнозируемые данные" ValueProperty="Count" RenderingOrder="3">
                 </RadzenLineSeries>
-                    <RadzenLineSeries Smooth="true" Data="@CurrentAnalytic" Visible="@(IsCountChart)" CategoryProperty="Period" Title="Текущие данные" ValueProperty="Count" RenderingOrder="4">
+                <RadzenLineSeries Smooth="true" Data="@CurrentAnalytic" Visible="@(IsCountChart)" CategoryProperty="Period" Title="Текущие данные" ValueProperty="Count" RenderingOrder="4">
                     <RadzenSeriesTrendLine Visible="@IsTrendVisible" Stroke="var(--rz-danger-dark)" LineType="LineType.Dashed" />
                     <RadzenSeriesMedianLine Visible="@IsMedianVisible" Stroke="var(--rz-success-dark)" LineType="LineType.Dotted" />
                     <RadzenSeriesMeanLine Visible="@IsMeanVisible" Stroke="var(--rz-info-dark)" LineType="LineType.Dotted" />
                     <RadzenSeriesModeLine Visible="@IsModeVisible" Stroke="var(--rz-warning-darker)" LineType="LineType.Dotted" />
                 </RadzenLineSeries>
                 <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
+                <RadzenLegend Position="LegendPosition.Bottom" />
         </RadzenChart>
       </div>
     </div>
