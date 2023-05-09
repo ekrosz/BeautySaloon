@@ -13,19 +13,21 @@
     <div class="row">
       <div class="col-md-12">
         <div class="row">
-            <div class="col-md-6">
-            <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
-            </RadzenButton>
+            <div class="col-md-6 text-left">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+                </RadzenButton>
+                <RadzenButton Icon="backup" style="margin-bottom: 10px; margin-left: 1rem" Text="Отчет" Click="@GridDownloadReportButtonClick">
+                </RadzenButton>
             </div>
             <div class="col-md-6 text-right">
-            <RadzenLabel Text="От" style="margin-right: 1rem">
-            </RadzenLabel>
-            <RadzenDatePicker DateFormat="dd.MM.yyyy" Max="@EndCreatedOn" @bind-Value="@StartCreatedOn" Name="StartCreatedOn" Change="Load" style="margin-right: 2rem">
-            </RadzenDatePicker>
-            <RadzenLabel Text="До" style="margin-right: 1rem">
-            </RadzenLabel>
-            <RadzenDatePicker DateFormat="dd.MM.yyyy" Min="@StartCreatedOn" @bind-Value="@EndCreatedOn" Name="EndCreatedOn" Change="Load">
-            </RadzenDatePicker>
+                <RadzenLabel Text="От" style="margin-right: 1rem">
+                </RadzenLabel>
+                <RadzenDatePicker DateFormat="dd.MM.yyyy" Max="@EndCreatedOn" @bind-Value="@StartCreatedOn" Name="StartCreatedOn" Change="Load" style="margin-right: 2rem">
+                </RadzenDatePicker>
+                <RadzenLabel Text="До" style="margin-right: 1rem">
+                </RadzenLabel>
+                <RadzenDatePicker DateFormat="dd.MM.yyyy" Min="@StartCreatedOn" @bind-Value="@EndCreatedOn" Name="EndCreatedOn" Change="Load">
+                </RadzenDatePicker>
             </div>
         </div>
         <RadzenTextBox Placeholder="Поиск по ФИО или телефону..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
@@ -90,12 +92,63 @@
                 </RadzenButton>
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.NotPaid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowCancelButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridCancelButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
                 </RadzenButton>
-                <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="get_app" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.Paid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowDownloadButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridDownloadButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
+                <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="get_app" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.Paid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowDownloadButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridDownloadReceiptButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
                 </RadzenButton>
               </Template>
             </RadzenDataGridColumn>
           </Columns>
         </RadzenDataGrid>
+      </div>
+    </div>
+    <RadzenHeading Visible="@IsAnalyticBlockVisible" Size="H2" Text="Аналитика" style="margin-top: 3rem">
+    </RadzenHeading>
+    <div class="row">
+      <div class="col-md-12">
+        <RadzenLabel Visible="@IsAnalyticBlockVisible" Text="Год">
+        </RadzenLabel>
+        <RadzenDropDown Visible="@IsAnalyticBlockVisible" Data="@Years" Placeholder="Выберите год" @bind-Value="@(Year)" Change="LoadAnalytic" style="margin-left: 1rem">
+        </RadzenDropDown>
+      </div>
+      <div class="col-md-12">
+        <RadzenCard Visible="@IsAnalyticBlockVisible" class="w-100 mb-4" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem" >
+            <RadzenCheckBox @bind-Value="@IsTrendVisible" Name="trend"></RadzenCheckBox>
+            <RadzenLabel Text="Тренд" For="trend" Style="margin-right: 1rem;" class="rz-color-danger-dark" />
+            <RadzenCheckBox @bind-Value="@IsMedianVisible" Name="median"></RadzenCheckBox>
+            <RadzenLabel Text="Медиана" For="median" Style="margin-right: 1rem;" class="rz-color-success-dark" />
+            <RadzenCheckBox @bind-Value="@IsMeanVisible" Name="mean"></RadzenCheckBox>
+            <RadzenLabel Text="Среднее" For="mean" Style="margin-right: 1rem;" class="rz-color-info-dark" />
+            <RadzenCheckBox @bind-Value="@IsModeVisible" Name="mode"></RadzenCheckBox>
+            <RadzenLabel Text="Мода" For="mode" Style="margin-right: 1rem;" class="rz-color-warning-darker" />
+            <RadzenCheckBox @bind-Value="@IsCountChart" Name="count"></RadzenCheckBox>
+            <RadzenLabel Text="Количество" For="count" class="rz-color-primary-darker" />
+        </RadzenCard>
+        <RadzenChart Visible="@IsAnalyticBlockVisible">
+                <RadzenLineSeries Smooth="true" Data="@ForecastAnalytic" Visible="@(!IsCountChart)" CategoryProperty="Period" Title="Прогнозируемые данные" ValueProperty="Revenues" RenderingOrder="1">
+                    <RadzenSeriesTrendLine Visible="@IsTrendVisible" Stroke="var(--rz-danger-dark)" LineType="LineType.Dashed" />
+                    <RadzenSeriesMedianLine Visible="@IsMedianVisible" Stroke="var(--rz-success-dark)" LineType="LineType.Dotted" />
+                    <RadzenSeriesMeanLine Visible="@IsMeanVisible" Stroke="var(--rz-info-dark)" LineType="LineType.Dotted" />
+                    <RadzenSeriesModeLine Visible="@IsModeVisible" Stroke="var(--rz-warning-darker)" LineType="LineType.Dotted" />
+                </RadzenLineSeries>
+                <RadzenLineSeries Smooth="true" Data="@CurrentAnalytic" Visible="@(!IsCountChart)" CategoryProperty="Period" Title="Текущие данные" ValueProperty="Revenues" RenderingOrder="2">
+                    <RadzenSeriesTrendLine Visible="@IsTrendVisible" Stroke="var(--rz-danger-dark)" LineType="LineType.Dashed" />
+                    <RadzenSeriesMedianLine Visible="@IsMedianVisible" Stroke="var(--rz-success-dark)" LineType="LineType.Dotted" />
+                    <RadzenSeriesMeanLine Visible="@IsMeanVisible" Stroke="var(--rz-info-dark)" LineType="LineType.Dotted" />
+                    <RadzenSeriesModeLine Visible="@IsModeVisible" Stroke="var(--rz-warning-darker)" LineType="LineType.Dotted" />
+                </RadzenLineSeries>
+                <RadzenLineSeries Smooth="true" Data="@ForecastAnalytic" Visible="@(IsCountChart)" CategoryProperty="Period" Title="Прогнозируемые данные" ValueProperty="Count" RenderingOrder="3">
+                    <RadzenSeriesTrendLine Visible="@IsTrendVisible" Stroke="var(--rz-danger-dark)" LineType="LineType.Dashed" />
+                    <RadzenSeriesMedianLine Visible="@IsMedianVisible" Stroke="var(--rz-success-dark)" LineType="LineType.Dotted" />
+                    <RadzenSeriesMeanLine Visible="@IsMeanVisible" Stroke="var(--rz-info-dark)" LineType="LineType.Dotted" />
+                    <RadzenSeriesModeLine Visible="@IsModeVisible" Stroke="var(--rz-warning-darker)" LineType="LineType.Dotted" />
+                </RadzenLineSeries>
+                    <RadzenLineSeries Smooth="true" Data="@CurrentAnalytic" Visible="@(IsCountChart)" CategoryProperty="Period" Title="Текущие данные" ValueProperty="Count" RenderingOrder="4">
+                    <RadzenSeriesTrendLine Visible="@IsTrendVisible" Stroke="var(--rz-danger-dark)" LineType="LineType.Dashed" />
+                    <RadzenSeriesMedianLine Visible="@IsMedianVisible" Stroke="var(--rz-success-dark)" LineType="LineType.Dotted" />
+                    <RadzenSeriesMeanLine Visible="@IsMeanVisible" Stroke="var(--rz-info-dark)" LineType="LineType.Dotted" />
+                    <RadzenSeriesModeLine Visible="@IsModeVisible" Stroke="var(--rz-warning-darker)" LineType="LineType.Dotted" />
+                </RadzenLineSeries>
+                <RadzenCategoryAxis Padding="20" Formatter="@FormatAsMonth" />
+        </RadzenChart>
       </div>
     </div>
   </ChildContent>

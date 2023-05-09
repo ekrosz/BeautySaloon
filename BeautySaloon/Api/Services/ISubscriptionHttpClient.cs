@@ -22,4 +22,7 @@ public interface ISubscriptionHttpClient
 
     [Get("/api/subscriptions")]
     Task<PageResponseDto<GetSubscriptionListItemResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetSubscriptionListRequestDto request, CancellationToken cancellationToken = default);
+
+    [Get("/api/subscriptions/analytic")]
+    Task<GetSubscriptionAnalyticResponseDto> GetAnalyticAsync([Header("Authorization")] string accessToken, [Query] GetSubscriptionAnalyticRequestDto request, CancellationToken cancellationToken = default);
 }

@@ -16,4 +16,6 @@ public interface ICosmeticServiceService
     Task<GetCosmeticServiceResponseDto> GetCosmeticServiceAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
 
     Task<PageResponseDto<GetCosmeticServiceResponseDto>> GetCosmeticServiceListAsync(GetCosmeticServiceListRequestDto request, CancellationToken cancellationToken = default);
+
+    Task<GetCosmeticServiceAnalyticResponseDto> GetCosmeticServiceAnalyticAsync(GetCosmeticServiceAnalyticRequestDto request, CancellationToken cancellationToken = default);
 }

@@ -17,7 +17,7 @@ public record GetAppointmentListItemResponseDto
 
     public PersonResponseDto Person { get; init; } = new();
 
-    public ModifierResponseDto Modifier { get; set; } = new();
+    public UserResponseDto Modifier { get; set; } = new();
 
     public DateTime CreatedOn { get; set; }
 

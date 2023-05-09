@@ -35,7 +35,7 @@ namespace BeautySaloon.WebApi.Controllers
             _byIdRequestValidator = byIdRequestValidator;
         }
         [HttpGet]
-        [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
+        [Authorize(Roles = Constants.Roles.Admin)]
         public async Task<PageResponseDto<GetMaterialResponseDto>> GetListAsync([FromQuery] GetMaterialListRequestDto request, CancellationToken cancellationToken = default)
         {
             await _getMaterialListRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -44,7 +44,7 @@ namespace BeautySaloon.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
+        [Authorize(Roles = Constants.Roles.Admin)]
         public async Task<GetMaterialResponseDto> GetAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
         {
             var requestById = new ByIdRequestDto(id);

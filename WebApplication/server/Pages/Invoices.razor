@@ -1,0 +1,99 @@
+﻿@page "/invoices"
+@layout MainLayout
+@inherits WebApplication.Pages.InvoicesComponent
+
+@using BeautySaloon.Api.Dto.Responses.Invoice
+@using Radzen
+@using Radzen.Blazor
+
+<PageTitle>Движения материалов</PageTitle>
+<RadzenContent Container="main">
+  <ChildContent>
+    <RadzenHeading Size="H1" Text="Движения материалов">
+    </RadzenHeading>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+                </RadzenButton>
+            </div>
+            <div class="col-md-6 text-right">
+                <RadzenLabel Text="От" style="margin-right: 1rem">
+                </RadzenLabel>
+                <RadzenDatePicker DateFormat="dd.MM.yyyy" Max="@EndCreatedOn" @bind-Value="@StartCreatedOn" Name="StartCreatedOn" Change="Load" style="margin-right: 2rem">
+                </RadzenDatePicker>
+                <RadzenLabel Text="До" style="margin-right: 1rem">
+                </RadzenLabel>
+                <RadzenDatePicker DateFormat="dd.MM.yyyy" Min="@StartCreatedOn" @bind-Value="@EndCreatedOn" Name="EndCreatedOn" Change="Load">
+                </RadzenDatePicker>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <RadzenTextBox Placeholder="Поиск по наименованию материалов..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
+                </RadzenTextBox>
+            </div>
+            <div class="col-md-6 text-right">
+                <RadzenDropDown Placeholder="Выберите тип движения..." style="display: block; margin-bottom: 10px; width: 100%" Data="InvoiceTypes" ValueProperty="Key" TextProperty="Value" @bind-Value="@(Type)" AllowClear="true" Name="InvoiceType" Change="@(async(args) => await Load())">
+                </RadzenDropDown>
+            </div>
+        </div>
+        <RadzenDataGrid @ref="grid0" GridLines="DataGridGridLines.Horizontal" AllowFiltering="false" FilterMode="Radzen.FilterMode.Advanced" AllowPaging="true" PageSize="@PageSize" Count="@TotalCount" AllowSorting="false" Data="@GetInvoicesResult" TItem="GetInvoiceListItemResponseDto" RowSelect="@Grid0RowSelect" LoadData="@LoadDataAsync">
+          <Columns>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="InvoiceType" Title="Тип">
+                <Template Context="data">
+                    @switch (data.InvoiceType)
+                    {
+                        case InvoiceType.Receipt:
+                            <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Success" Text="Приход" />
+                            break;
+                        case InvoiceType.Extradition:
+                            <RadzenBadge IsPill="true" BadgeStyle="BadgeStyle.Danger" Text="Расход" />
+                            break;
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="InvoiceDate" FormatString="{0:dd.MM.yyyy}" Title="Дата движения">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="Cost" Title="Сумма">
+                <Template Context="data">
+                    @switch (data.InvoiceType)
+                    {
+                        case InvoiceType.Receipt:
+                            <span>@data.Cost</span>
+                            break;
+                        case InvoiceType.Extradition:
+                            <span>-</span>
+                            break;
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="Modifier.Name.ConcatedName" Title="Выдано кем">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="Employee" Title="Выдано кому">
+                <Template Context="data">
+                    @if (data.Employee == null)
+                    {
+                        <span>-</span>
+                    }
+                    else
+                    {
+                        <span>@data.Employee.Name.ConcatedName</span>
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Property="Comment" Title="Комментарий">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="GetInvoiceListItemResponseDto" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+              <Template Context="webApplicationModelsLocalDbInvoice">
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@((args) =>GridDeleteButtonClick(args, webApplicationModelsLocalDbInvoice))" @onclick:stopPropagation="true">
+                </RadzenButton>
+              </Template>
+            </RadzenDataGridColumn>
+          </Columns>
+        </RadzenDataGrid>
+      </div>
+    </div>
+  </ChildContent>
+</RadzenContent>

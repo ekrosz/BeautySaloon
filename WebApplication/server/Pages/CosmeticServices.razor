@@ -59,5 +59,31 @@
         </RadzenDataGrid>
       </div>
     </div>
+    <RadzenHeading Visible="@IsAnalyticBlockVisible" Size="H2" Text="Аналитика" style="margin-top: 3rem">
+    </RadzenHeading>
+    <div class="row">
+      <div class="col-md-12">
+            <RadzenLabel Visible="@IsAnalyticBlockVisible" Text="От">
+            </RadzenLabel>
+            <RadzenDatePicker Visible="@IsAnalyticBlockVisible" DateFormat="dd.MM.yyyy" Max="@EndCreatedOn" @bind-Value="@StartCreatedOn" Name="StartCreatedOn" Change="LoadAnalytic">
+            </RadzenDatePicker>
+            <RadzenLabel Visible="@IsAnalyticBlockVisible" Text="До" style="margin-left: 1rem">
+            </RadzenLabel>
+            <RadzenDatePicker Visible="@IsAnalyticBlockVisible" DateFormat="dd.MM.yyyy" Min="@StartCreatedOn" @bind-Value="@EndCreatedOn" Name="EndCreatedOn" Change="LoadAnalytic">
+            </RadzenDatePicker>
+      </div>
+      <div class="col-md-12">
+          <RadzenChart Visible="@IsAnalyticBlockVisible">
+                <RadzenDonutSeries Title="Количество" Data="@Analytic" CategoryProperty="CosmeticServiceName" ValueProperty="Count">
+                    <TitleTemplate>
+                        <div class="rz-donut-content">
+                            <div>Всего</div>
+                            <div>@TotalCountAnalytic</div>
+                        </div>
+                    </TitleTemplate>
+                </RadzenDonutSeries>
+            </RadzenChart>
+      </div>
+    </div>
   </ChildContent>
 </RadzenContent>

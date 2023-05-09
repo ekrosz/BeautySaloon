@@ -16,4 +16,6 @@ public interface ISubscriptionService
     Task<GetSubscriptionResponseDto> GetSubscriptionAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
 
     Task<PageResponseDto<GetSubscriptionListItemResponseDto>> GetSubscriptionListAsync(GetSubscriptionListRequestDto request, CancellationToken cancellationToken = default);
+
+    Task<GetSubscriptionAnalyticResponseDto> GetSubscriptionAnalyticAsync(GetSubscriptionAnalyticRequestDto request, CancellationToken cancellationToken = default);
 }

@@ -24,7 +24,8 @@ public class CosmeticServiceConfiguration : EntityConfiguration<CosmeticService>
 
         builder.HasMany<SubscriptionCosmeticService>()
             .WithOne(x => x.CosmeticService)
-            .HasForeignKey(x => x.CosmeticServiceId);
+            .HasForeignKey(x => x.CosmeticServiceId)
+            .IsRequired();
 
         base.Configure(builder);
     }

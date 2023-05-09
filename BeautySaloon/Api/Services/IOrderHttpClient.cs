@@ -32,4 +32,10 @@ public interface IOrderHttpClient
 
     [Get("/api/orders/{id}/receipt")]
     Task<FileResponseDto> GetReceiptAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
+
+    [Get("/api/orders/report")]
+    Task<FileResponseDto> GetReportAsync([Header("Authorization")] string accessToken, [Query] GetOrderReportRequestDto request, CancellationToken cancellationToken = default);
+
+    [Get("/api/orders/analytic")]
+    Task<GetOrderAnalyticResponseDto> GetAnalyticAsync([Header("Authorization")] string accessToken, [Query] GetOrderAnalyticRequestDto request, CancellationToken cancellationToken = default);
 }

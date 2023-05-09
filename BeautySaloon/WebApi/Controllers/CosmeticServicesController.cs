@@ -20,6 +20,7 @@ public class CosmeticServicesController : ControllerBase
     private readonly IValidator<CreateCosmeticServiceRequestDto> _createCosmeticServiceRequestValidator;
     private readonly IValidator<UpdateCosmeticServiceRequestDto> _updateCosmeticServiceRequestValidator;
     private readonly IValidator<GetCosmeticServiceListRequestDto> _getCosmeticServiceListRequestValidator;
+    private readonly IValidator<GetCosmeticServiceAnalyticRequestDto> _getCosmeticServiceAnalyticRequestValidator;
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
     public CosmeticServicesController(
@@ -27,12 +28,14 @@ public class CosmeticServicesController : ControllerBase
         IValidator<CreateCosmeticServiceRequestDto> createCosmeticServiceRequestValidator,
         IValidator<UpdateCosmeticServiceRequestDto> updateCosmeticServiceRequestValidator,
         IValidator<GetCosmeticServiceListRequestDto> getCosmeticServiceListRequestValidator,
+        IValidator<GetCosmeticServiceAnalyticRequestDto> getCosmeticServiceAnalyticRequestValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
         _cosmeticServiceService = cosmeticServiceService;
         _createCosmeticServiceRequestValidator = createCosmeticServiceRequestValidator;
         _updateCosmeticServiceRequestValidator = updateCosmeticServiceRequestValidator;
         _getCosmeticServiceListRequestValidator = getCosmeticServiceListRequestValidator;
+        _getCosmeticServiceAnalyticRequestValidator = getCosmeticServiceAnalyticRequestValidator;
         _byIdRequestValidator = byIdRequestValidator;
     }
 
@@ -85,5 +88,14 @@ public class CosmeticServicesController : ControllerBase
         await _byIdRequestValidator.ValidateAndThrowAsync(requestById);
 
         await _cosmeticServiceService.DeleteCosmeticServiceAsync(requestById, cancellationToken);
+    }
+
+    [HttpGet("analytic")]
+    [Authorize(Roles = Constants.Roles.Admin)]
+    public async Task<GetCosmeticServiceAnalyticResponseDto> GetAnalyticAsync([FromQuery] GetCosmeticServiceAnalyticRequestDto request, CancellationToken cancellationToken = default)
+    {
+        await _getCosmeticServiceAnalyticRequestValidator.ValidateAndThrowAsync(request);
+
+        return await _cosmeticServiceService.GetCosmeticServiceAnalyticAsync(request, cancellationToken);
     }
 }

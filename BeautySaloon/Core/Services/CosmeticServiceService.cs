@@ -8,12 +8,16 @@ using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;
+using BeautySaloon.DAL.Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeautySaloon.Core.Services;
 
 public class CosmeticServiceService : ICosmeticServiceService
 {
     private readonly IQueryRepository<CosmeticService> _cosmeticServiceQueryRepository;
+
+    private readonly IQueryRepository<Order> _orderQueryRepository;
 
     private readonly IWriteRepository<CosmeticService> _cosmeticServiceWriteRepository;
 
@@ -23,11 +27,13 @@ public class CosmeticServiceService : ICosmeticServiceService
 
     public CosmeticServiceService(
         IQueryRepository<CosmeticService> cosmeticServiceQueryRepository,
+        IQueryRepository<Order> orderQueryRepository,
         IWriteRepository<CosmeticService> cosmeticServiceWriteRepository,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _cosmeticServiceQueryRepository = cosmeticServiceQueryRepository;
+        _orderQueryRepository = orderQueryRepository;
         _cosmeticServiceWriteRepository = cosmeticServiceWriteRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -102,5 +108,28 @@ public class CosmeticServiceService : ICosmeticServiceService
             request.Data.Description);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<GetCosmeticServiceAnalyticResponseDto> GetCosmeticServiceAnalyticAsync(GetCosmeticServiceAnalyticRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var subscriptions = (await _orderQueryRepository.GetQuery()
+            .Where(x => (!request.StartCreatedOn.HasValue || request.StartCreatedOn.Value.Date <= x.CreatedOn.Date)
+                && (!request.EndCreatedOn.HasValue || request.EndCreatedOn.Value.Date >= x.CreatedOn.Date)
+                && !x.PersonSubscriptions.Any(y => y.Status == PersonSubscriptionCosmeticServiceStatus.Cancelled || y.Status == PersonSubscriptionCosmeticServiceStatus.NotPaid))
+            .ToArrayAsync(cancellationToken))
+            .SelectMany(x => x.PersonSubscriptions.GroupBy(y => y.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.Id).Select(z => z.First().SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot))
+            .GroupBy(x => x.Name)
+            .Select(x => new GetCosmeticServiceAnalyticResponseDto.GetCosmeticServiceAnalyticItemResponseDto
+            {
+                CosmeticServiceName = x.First().Name,
+                Count = x.Count()
+            }).OrderBy(x => x.CosmeticServiceName)
+            .ToArray();
+
+        return new GetCosmeticServiceAnalyticResponseDto
+        {
+            Items = subscriptions,
+            TotalCount = subscriptions.Sum(x => x.Count)
+        };
     }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BeautySaloon.DAL.Migrations
 {
     [DbContext(typeof(BeautySaloonDbContext))]
-    [Migration("20230428095943_Initial")]
+    [Migration("20230507155925_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,6 +94,77 @@ namespace BeautySaloon.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("CosmeticService");
+                });
+
+            modelBuilder.Entity("BeautySaloon.DAL.Entities.Invoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("InvoiceType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserModifierId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Invoice");
+                });
+
+            modelBuilder.Entity("BeautySaloon.DAL.Entities.InvoiceMaterial", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("Cost")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserModifierId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.ToTable("InvoiceMaterial");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Material", b =>
@@ -366,6 +437,34 @@ namespace BeautySaloon.DAL.Migrations
                     b.Navigation("Person");
                 });
 
+            modelBuilder.Entity("BeautySaloon.DAL.Entities.Invoice", b =>
+                {
+                    b.HasOne("BeautySaloon.DAL.Entities.User", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId");
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("BeautySaloon.DAL.Entities.InvoiceMaterial", b =>
+                {
+                    b.HasOne("BeautySaloon.DAL.Entities.Invoice", "Invoice")
+                        .WithMany("InvoiceMaterials")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BeautySaloon.DAL.Entities.Material", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Material");
+                });
+
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Order", b =>
                 {
                     b.HasOne("BeautySaloon.DAL.Entities.Person", "Person")
@@ -568,6 +667,11 @@ namespace BeautySaloon.DAL.Migrations
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Appointment", b =>
                 {
                     b.Navigation("PersonSubscriptions");
+                });
+
+            modelBuilder.Entity("BeautySaloon.DAL.Entities.Invoice", b =>
+                {
+                    b.Navigation("InvoiceMaterials");
                 });
 
             modelBuilder.Entity("BeautySaloon.DAL.Entities.Order", b =>

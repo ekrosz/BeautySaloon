@@ -8,7 +8,7 @@ using WebApplication.Wrappers;
 using BeautySaloon.Api.Dto.Responses.Order;
 using BeautySaloon.Api.Dto.Requests.Order;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
-using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.DAL.Entities.Enums;
 
 namespace WebApplication.Pages
 {
@@ -44,9 +44,42 @@ namespace WebApplication.Pages
         protected IOrderHttpClient OrderHttpClient { get; set; }
 
         [Inject]
+        protected IUserHttpClient UserHttpClient { get; set; }
+
+        [Inject]
         protected IHttpClientWrapper HttpClientWrapper { get; set; }
 
         protected RadzenDataGrid<GetOrderResponseDto> grid0;
+
+        private const int StartAnalyticYear = 2018;
+
+        protected bool IsTrendVisible { get; set; } = false;
+
+        protected bool IsMedianVisible { get; set; } = false;
+
+        protected bool IsMeanVisible { get; set; } = false;
+
+        protected bool IsModeVisible { get; set; } = false;
+
+        protected bool IsCountChart { get; set; } = false;
+
+        private bool _isAnalyticBlockVisible = false;
+
+        protected bool IsAnalyticBlockVisible
+        {
+            get
+            {
+                return _isAnalyticBlockVisible;
+            }
+            set
+            {
+                if (!object.Equals(_isAnalyticBlockVisible, value))
+                {
+                    _isAnalyticBlockVisible = value;
+                    Reload();
+                }
+            }
+        }
 
         private string _search;
 
@@ -79,6 +112,42 @@ namespace WebApplication.Pages
                 if (!object.Equals(_getOrdersResult, value))
                 {
                     _getOrdersResult = value;
+                    Reload();
+                }
+            }
+        }
+
+        private IReadOnlyCollection<GetOrderAnalyticResponseDto.GetOrderAnalyticItemResponseDto> _currentAnalytic;
+
+        protected IReadOnlyCollection<GetOrderAnalyticResponseDto.GetOrderAnalyticItemResponseDto> CurrentAnalytic
+        {
+            get
+            {
+                return _currentAnalytic;
+            }
+            set
+            {
+                if (!object.Equals(_currentAnalytic, value))
+                {
+                    _currentAnalytic = value;
+                    Reload();
+                }
+            }
+        }
+
+        private IReadOnlyCollection<GetOrderAnalyticResponseDto.GetOrderAnalyticItemResponseDto> _forecastAnalytic;
+
+        protected IReadOnlyCollection<GetOrderAnalyticResponseDto.GetOrderAnalyticItemResponseDto> ForecastAnalytic
+        {
+            get
+            {
+                return _forecastAnalytic;
+            }
+            set
+            {
+                if (!object.Equals(_forecastAnalytic, value))
+                {
+                    _forecastAnalytic = value;
                     Reload();
                 }
             }
@@ -156,7 +225,45 @@ namespace WebApplication.Pages
             }
         }
 
+        private decimal _totalValueAnalytic;
+
+        protected decimal TotalValueAnalytic
+        {
+            get
+            {
+                return _totalValueAnalytic;
+            }
+            set
+            {
+                if (!object.Equals(_totalValueAnalytic, value))
+                {
+                    _totalValueAnalytic = value;
+                    Reload();
+                }
+            }
+        }
+
+        private int _year = DateTime.Now.Year;
+
+        protected int Year
+        {
+            get
+            {
+                return _year;
+            }
+            set
+            {
+                if (!object.Equals(_year, value))
+                {
+                    _year = value;
+                    Reload();
+                }
+            }
+        }
+
         protected int TotalCount { get; set; }
+
+        protected static int[] Years = Enumerable.Range(StartAnalyticYear, DateTime.Now.Year - StartAnalyticYear + 1).ToArray();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -191,7 +298,7 @@ namespace WebApplication.Pages
                 StartCreatedOn = StartCreatedOn?.ToUniversalTime(),
                 EndCreatedOn = EndCreatedOn?.ToUniversalTime(),
                 Page = new PageRequestDto(PageNumber, PageSize)
-            }));
+            }, CancellationToken.None));
 
             if (orders == default)
             {
@@ -200,6 +307,36 @@ namespace WebApplication.Pages
 
             GetOrdersResult = orders.Items;
             TotalCount = orders.TotalCount;
+
+            var user = await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.GetAsync(accessToken, CancellationToken.None));
+
+            if (user == default)
+            {
+                return;
+            }
+
+            IsAnalyticBlockVisible = user.Role == Role.Admin;
+
+            await LoadAnalytic();
+        }
+
+        protected async Task LoadAnalytic()
+        {
+            if (!IsAnalyticBlockVisible)
+            {
+                return;
+            }
+
+            var analytic = await HttpClientWrapper.SendAsync((accessToken) => OrderHttpClient.GetAnalyticAsync(accessToken, new GetOrderAnalyticRequestDto { Year = Year }, CancellationToken.None));
+
+            if (analytic == default)
+            {
+                return;
+            }
+
+            CurrentAnalytic = analytic.Items;
+            ForecastAnalytic = analytic.ForecastItems;
+            TotalValueAnalytic = analytic.TotalRevenues;
         }
 
         protected async Task Button0Click(MouseEventArgs args)
@@ -259,15 +396,18 @@ namespace WebApplication.Pages
             }
         }
 
-        protected async Task GridDownloadButtonClick(MouseEventArgs args, dynamic data)
-        {
-            await HttpClientWrapper.SendAsync((accessToken) => Task.Run(() => JSRuntime.InvokeAsync<object>("open", Path.Combine(NavigationManager.BaseUri, $"/api/files/receipt?accessToken={accessToken}&id={data.Id}"), "_blank")));
-        }
+        protected Task GridDownloadReceiptButtonClick(MouseEventArgs args, dynamic data)
+            => HttpClientWrapper.SendAsync((accessToken) => Task.Run(() => JSRuntime.InvokeAsync<object>("open", Path.Combine(NavigationManager.BaseUri, $"/api/files/receipt?accessToken={accessToken}&id={data.Id}"), "_blank")));
+
+        protected Task GridDownloadReportButtonClick(MouseEventArgs args)
+            => HttpClientWrapper.SendAsync((accessToken) => Task.Run(() => JSRuntime.InvokeAsync<object>("open", Path.Combine(NavigationManager.BaseUri, $"/api/files/report?accessToken={accessToken}&startCreatedOn={StartCreatedOn?.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'")}&endCreatedOn={EndCreatedOn?.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'")}"), "_blank")));
 
         protected void ShowPayButtonTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, "Оплатить", options);
 
         protected void ShowCancelButtonTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, "Отменить", options);
 
         protected void ShowDownloadButtonTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, "Скачать", options);
+
+        protected string FormatAsMonth(object value) => value != null ? Convert.ToDateTime(value).ToString("MMM") : string.Empty;
     }
 }
