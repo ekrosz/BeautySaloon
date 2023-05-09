@@ -10,6 +10,7 @@ using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using WebApplication.Handlers;
 using Azure.Core;
 using WebApplication.Wrappers;
+using BeautySaloon.DAL.Entities.Enums;
 
 namespace WebApplication.Pages
 {
@@ -45,11 +46,32 @@ namespace WebApplication.Pages
         protected ISubscriptionHttpClient SubscriptionHttpClient { get; set; }
 
         [Inject]
+        protected IUserHttpClient UserHttpClient { get; set; }
+
+        [Inject]
         protected IHttpClientWrapper HttpClientWrapper { get; set; }
 
         protected RadzenDataGrid<GetSubscriptionListItemResponseDto> grid0;
 
-        string _search;
+        private bool _isAnalyticBlockVisible = false;
+
+        protected bool IsAnalyticBlockVisible
+        {
+            get
+            {
+                return _isAnalyticBlockVisible;
+            }
+            set
+            {
+                if (!object.Equals(_isAnalyticBlockVisible, value))
+                {
+                    _isAnalyticBlockVisible = value;
+                    Reload();
+                }
+            }
+        }
+
+        private string _search;
 
         protected string Search
         {
@@ -67,7 +89,7 @@ namespace WebApplication.Pages
             }
         }
 
-        IReadOnlyCollection<GetSubscriptionListItemResponseDto> _getSubscriptionsResult;
+        private IReadOnlyCollection<GetSubscriptionListItemResponseDto> _getSubscriptionsResult;
 
         protected IReadOnlyCollection<GetSubscriptionListItemResponseDto> GetSubscriptionsResult
         {
@@ -80,6 +102,24 @@ namespace WebApplication.Pages
                 if (!object.Equals(_getSubscriptionsResult, value))
                 {
                     _getSubscriptionsResult = value;
+                    Reload();
+                }
+            }
+        }
+
+        private IReadOnlyCollection<GetSubscriptionAnalyticResponseDto.GetSubscriptionAnalyticItemResponseDto> _analytic;
+
+        protected IReadOnlyCollection<GetSubscriptionAnalyticResponseDto.GetSubscriptionAnalyticItemResponseDto> Analytic
+        {
+            get
+            {
+                return _analytic;
+            }
+            set
+            {
+                if (!object.Equals(_analytic, value))
+                {
+                    _analytic = value;
                     Reload();
                 }
             }
@@ -121,6 +161,60 @@ namespace WebApplication.Pages
             }
         }
 
+        private DateTime? _endCreatedOn = DateTime.Now;
+
+        protected DateTime? EndCreatedOn
+        {
+            get
+            {
+                return _endCreatedOn;
+            }
+            set
+            {
+                if (!object.Equals(_endCreatedOn, value))
+                {
+                    _endCreatedOn = value;
+                    Reload();
+                }
+            }
+        }
+
+        private DateTime? _startCreatedOn = DateTime.Now.AddDays(-7);
+
+        protected DateTime? StartCreatedOn
+        {
+            get
+            {
+                return _startCreatedOn;
+            }
+            set
+            {
+                if (!object.Equals(_startCreatedOn, value))
+                {
+                    _startCreatedOn = value;
+                    Reload();
+                }
+            }
+        }
+
+        private int _totalCountAnalytic;
+
+        protected int TotalCountAnalytic
+        {
+            get
+            {
+                return _totalCountAnalytic;
+            }
+            set
+            {
+                if (!object.Equals(_totalCountAnalytic, value))
+                {
+                    _totalCountAnalytic = value;
+                    Reload();
+                }
+            }
+        }
+
         protected int TotalCount { get; set; }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -150,8 +244,7 @@ namespace WebApplication.Pages
                 Search = string.Empty;
             }
 
-            var subscriptions = await HttpClientWrapper.SendAsync((accessToken)
-                => SubscriptionHttpClient.GetListAsync(accessToken, new GetSubscriptionListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = Search }, CancellationToken.None));
+            var subscriptions = await HttpClientWrapper.SendAsync((accessToken) => SubscriptionHttpClient.GetListAsync(accessToken, new GetSubscriptionListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = Search }, CancellationToken.None));
 
             if (subscriptions == default)
             {
@@ -160,7 +253,35 @@ namespace WebApplication.Pages
 
             GetSubscriptionsResult = subscriptions.Items;
             TotalCount = subscriptions.TotalCount;
-            
+
+            var user = await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.GetAsync(accessToken, CancellationToken.None));
+
+            if (user == default)
+            {
+                return;
+            }
+
+            IsAnalyticBlockVisible = user.Role == Role.Admin;
+
+            await LoadAnalytic();
+        }
+
+        protected async Task LoadAnalytic()
+        {
+            if (!IsAnalyticBlockVisible)
+            {
+                return;
+            }
+
+            var analytic = await HttpClientWrapper.SendAsync((accessToken) => SubscriptionHttpClient.GetAnalyticAsync(accessToken, new GetSubscriptionAnalyticRequestDto { StartCreatedOn = StartCreatedOn, EndCreatedOn = EndCreatedOn }, CancellationToken.None));
+
+            if (analytic == default)
+            {
+                return;
+            }
+
+            Analytic = analytic.Items;
+            TotalCountAnalytic = analytic.TotalCount;
         }
 
         protected async Task Button0Click(MouseEventArgs args)

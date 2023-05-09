@@ -8,6 +8,8 @@ using BeautySaloon.DAL.Entities;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;
+using BeautySaloon.DAL.Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeautySaloon.Core.Services;
 
@@ -16,6 +18,8 @@ public class SubscriptionService : ISubscriptionService
     private readonly IQueryRepository<Subscription> _subscriptionQueryRepository;
 
     private readonly IQueryRepository<CosmeticService> _cosmeticServiceQueryRepository;
+
+    private readonly IQueryRepository<Order> _orderQueryRepository;
 
     private readonly IWriteRepository<Subscription> _subscriptionWriteRepository;
 
@@ -26,12 +30,14 @@ public class SubscriptionService : ISubscriptionService
     public SubscriptionService(
         IQueryRepository<Subscription> subscriptionQueryRepository,
         IQueryRepository<CosmeticService> cosmeticServiceQueryRepository,
+        IQueryRepository<Order> orderQueryRepository,
         IWriteRepository<Subscription> subscriptionWriteRepository,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _subscriptionQueryRepository = subscriptionQueryRepository;
         _cosmeticServiceQueryRepository = cosmeticServiceQueryRepository;
+        _orderQueryRepository = orderQueryRepository;
         _subscriptionWriteRepository = subscriptionWriteRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -143,5 +149,28 @@ public class SubscriptionService : ISubscriptionService
         entity.AddCosmeticServices(subscriptionCosmeticServices);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<GetSubscriptionAnalyticResponseDto> GetSubscriptionAnalyticAsync(GetSubscriptionAnalyticRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var subscriptions = (await _orderQueryRepository.GetQuery()
+            .Where(x => (!request.StartCreatedOn.HasValue || request.StartCreatedOn.Value.Date <= x.CreatedOn.Date)
+                && (!request.EndCreatedOn.HasValue || request.EndCreatedOn.Value.Date >= x.CreatedOn.Date)
+                && !x.PersonSubscriptions.Any(y => y.Status == PersonSubscriptionCosmeticServiceStatus.Cancelled || y.Status == PersonSubscriptionCosmeticServiceStatus.NotPaid))
+            .ToArrayAsync(cancellationToken))
+            .SelectMany(x => x.PersonSubscriptions.GroupBy(y => y.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Id).Select(z => z.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot))
+            .GroupBy(x => x.Name)
+            .Select(x => new GetSubscriptionAnalyticResponseDto.GetSubscriptionAnalyticItemResponseDto
+            {
+                SubscriptionName = x.First().Name,
+                Count = x.Count()
+            }).OrderBy(x => x.SubscriptionName)
+            .ToArray();
+
+        return new GetSubscriptionAnalyticResponseDto
+        {
+            Items = subscriptions,
+            TotalCount = subscriptions.Sum(x => x.Count)
+        };
     }
 }

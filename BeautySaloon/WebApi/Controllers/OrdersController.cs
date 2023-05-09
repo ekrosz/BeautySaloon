@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeautySaloon.WebApi.Controllers;
 
-[Authorize(Roles = Constants.Roles.AdminAndEmployee)]
 [Route("api/orders")]
 [ApiController]
 public class OrdersController : ControllerBase
@@ -23,6 +22,7 @@ public class OrdersController : ControllerBase
     private readonly IValidator<CancelOrderRequestDto> _cancelOrderRequestValidator;
     private readonly IValidator<GetOrderListRequestDto> _getOrderListRequestValidator;
     private readonly IValidator<GetOrderReportRequestDto> _getOrderReportRequestValidator;
+    private readonly IValidator<GetOrderAnalyticRequestDto> _getOrderAnalyticRequestValidator;
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
     public OrdersController(
@@ -33,6 +33,7 @@ public class OrdersController : ControllerBase
         IValidator<CancelOrderRequestDto> cancelOrderRequestValidator,
         IValidator<GetOrderListRequestDto> getOrderListRequestValidator,
         IValidator<GetOrderReportRequestDto> getOrderReportRequestValidator,
+        IValidator<GetOrderAnalyticRequestDto> getOrderAnalyticRequestValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
         _orderService = orderService;
@@ -42,10 +43,12 @@ public class OrdersController : ControllerBase
         _cancelOrderRequestValidator = cancelOrderRequestValidator;
         _getOrderListRequestValidator = getOrderListRequestValidator;
         _getOrderReportRequestValidator = getOrderReportRequestValidator;
+        _getOrderAnalyticRequestValidator = getOrderAnalyticRequestValidator;
         _byIdRequestValidator = byIdRequestValidator;
     }
 
     [HttpPost]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task CreateAsync([FromBody] CreateOrderRequestDto request, CancellationToken cancellationToken = default)
     {
         await _createOrderRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -54,6 +57,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task UpdateAsync([FromRoute] Guid id, [FromBody] UpdateOrderRequestDto request, CancellationToken cancellationToken = default)
     {
         await _updateOrderRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -64,6 +68,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPatch("{id}/pay")]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<PayOrderResponseDto> PayAsync([FromRoute] Guid id, [FromBody] PayOrderRequestDto request, CancellationToken cancellationToken = default)
     {
         await _payOrderRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -74,6 +79,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPatch("{id}/cancel")]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task CancelAsync([FromRoute] Guid id, [FromBody] CancelOrderRequestDto request, CancellationToken cancellationToken = default)
     {
         await _cancelOrderRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -84,6 +90,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<PageResponseDto<GetOrderResponseDto>> GetListAsync([FromQuery] GetOrderListRequestDto request, CancellationToken cancellationToken = default)
     {
         await _getOrderListRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -92,6 +99,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<GetOrderResponseDto> GetAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var requestById = new ByIdRequestDto(id);
@@ -102,6 +110,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("{id}/payment-status")]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<CheckAndUpdateOrderPaymentStatusResponseDto> CheckAndUpdatePaymentStatusAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var requestById = new ByIdRequestDto(id);
@@ -112,6 +121,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("{id}/receipt")]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<FileResponseDto> GetReceiptAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var requestById = new ByIdRequestDto(id);
@@ -122,10 +132,20 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("report")]
+    [Authorize(Roles = Constants.Roles.AdminAndEmployee)]
     public async Task<FileResponseDto> GetReportAsync([FromQuery] GetOrderReportRequestDto request, CancellationToken cancellationToken = default)
     {
         await _getOrderReportRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
         return await _orderService.GetOrderReportAsync(request, cancellationToken);
+    }
+
+    [HttpGet("analytic")]
+    [Authorize(Roles = Constants.Roles.Admin)]
+    public async Task<GetOrderAnalyticResponseDto> GetAnalyticAsync([FromQuery] GetOrderAnalyticRequestDto request, CancellationToken cancellationToken = default)
+    {
+        await _getOrderAnalyticRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
+
+        return await _orderService.GetOrderAnalyticAsync(request, cancellationToken);
     }
 }

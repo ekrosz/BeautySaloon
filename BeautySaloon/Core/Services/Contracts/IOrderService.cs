@@ -24,4 +24,6 @@ public interface IOrderService
     Task<FileResponseDto> GetOrderReceiptAsync(ByIdRequestDto request, CancellationToken cancellationToken = default);
 
     Task<FileResponseDto> GetOrderReportAsync(GetOrderReportRequestDto request, CancellationToken cancellationToken = default);
+
+    Task<GetOrderAnalyticResponseDto> GetOrderAnalyticAsync(GetOrderAnalyticRequestDto request, CancellationToken cancellationToken = default);
 }

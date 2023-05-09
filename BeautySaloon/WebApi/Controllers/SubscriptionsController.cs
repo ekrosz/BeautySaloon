@@ -19,6 +19,7 @@ public class SubscriptionsController : ControllerBase
     private readonly IValidator<CreateSubscriptionRequestDto> _createSubscriptionRequestValidator;
     private readonly IValidator<UpdateSubscriptionRequestDto> _updateSubscriptionRequestValidator;
     private readonly IValidator<GetSubscriptionListRequestDto> _getSubscriptionListRequestValidator;
+    private readonly IValidator<GetSubscriptionAnalyticRequestDto> _getSubscriptionAnalyticRequestValidator;
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
     public SubscriptionsController(
@@ -26,12 +27,14 @@ public class SubscriptionsController : ControllerBase
         IValidator<CreateSubscriptionRequestDto> createSubscriptionRequestValidator,
         IValidator<UpdateSubscriptionRequestDto> updateSubscriptionRequestValidator,
         IValidator<GetSubscriptionListRequestDto> getSubscriptionListRequestValidator,
+        IValidator<GetSubscriptionAnalyticRequestDto> getSubscriptionAnalyticRequestValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
         _subscriptionService = subscriptionService;
         _createSubscriptionRequestValidator = createSubscriptionRequestValidator;
         _updateSubscriptionRequestValidator = updateSubscriptionRequestValidator;
         _getSubscriptionListRequestValidator = getSubscriptionListRequestValidator;
+        _getSubscriptionAnalyticRequestValidator = getSubscriptionAnalyticRequestValidator;
         _byIdRequestValidator = byIdRequestValidator;
     }
 
@@ -84,5 +87,14 @@ public class SubscriptionsController : ControllerBase
         await _getSubscriptionListRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
         return await _subscriptionService.GetSubscriptionListAsync(request, cancellationToken);
+    }
+
+    [HttpGet("analytic")]
+    [Authorize(Roles = Constants.Roles.Admin)]
+    public async Task<GetSubscriptionAnalyticResponseDto> GetAnalyticAsync([FromQuery] GetSubscriptionAnalyticRequestDto request, CancellationToken cancellationToken = default)
+    {
+        await _getSubscriptionAnalyticRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
+
+        return await _subscriptionService.GetSubscriptionAnalyticAsync(request, cancellationToken);
     }
 }

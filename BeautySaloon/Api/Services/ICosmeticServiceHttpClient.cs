@@ -22,4 +22,7 @@ public interface ICosmeticServiceHttpClient
 
     [Delete("/api/cosmetic-services/{id}")]
     Task DeleteAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);
+
+    [Get("/api/cosmetic-services/analytic")]
+    Task<GetCosmeticServiceAnalyticResponseDto> GetAnalyticAsync([Header("Authorization")] string accessToken, [Query] GetCosmeticServiceAnalyticRequestDto request, CancellationToken cancellationToken = default);
 }
