@@ -22,6 +22,7 @@ public class OrdersController : ControllerBase
     private readonly IValidator<PayOrderRequestDto> _payOrderRequestValidator;
     private readonly IValidator<CancelOrderRequestDto> _cancelOrderRequestValidator;
     private readonly IValidator<GetOrderListRequestDto> _getOrderListRequestValidator;
+    private readonly IValidator<GetOrderReportRequestDto> _getOrderReportRequestValidator;
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
     public OrdersController(
@@ -31,6 +32,7 @@ public class OrdersController : ControllerBase
         IValidator<PayOrderRequestDto> payOrderRequestValidator,
         IValidator<CancelOrderRequestDto> cancelOrderRequestValidator,
         IValidator<GetOrderListRequestDto> getOrderListRequestValidator,
+        IValidator<GetOrderReportRequestDto> getOrderReportRequestValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
         _orderService = orderService;
@@ -39,6 +41,7 @@ public class OrdersController : ControllerBase
         _payOrderRequestValidator = payOrderRequestValidator;
         _cancelOrderRequestValidator = cancelOrderRequestValidator;
         _getOrderListRequestValidator = getOrderListRequestValidator;
+        _getOrderReportRequestValidator = getOrderReportRequestValidator;
         _byIdRequestValidator = byIdRequestValidator;
     }
 
@@ -115,6 +118,14 @@ public class OrdersController : ControllerBase
 
         await _byIdRequestValidator.ValidateAndThrowAsync(requestById, cancellationToken);
 
-        return await _orderService.GetReceiptAsync(requestById, cancellationToken);
+        return await _orderService.GetOrderReceiptAsync(requestById, cancellationToken);
+    }
+
+    [HttpGet("report")]
+    public async Task<FileResponseDto> GetReportAsync([FromQuery] GetOrderReportRequestDto request, CancellationToken cancellationToken = default)
+    {
+        await _getOrderReportRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
+
+        return await _orderService.GetOrderReportAsync(request, cancellationToken);
     }
 }

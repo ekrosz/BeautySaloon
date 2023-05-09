@@ -160,7 +160,7 @@ namespace WebApplication.Pages
             var pageNumber = 1;
             var totalCount = 1;
 
-            async Task<PageResponseDto<GetPersonListItemResponseDto>?> GetListAsync(int number, int size)
+            async Task<PageResponseDto<GetPersonListItemResponseDto>> GetListAsync(int number, int size)
             {
                 var persons = await HttpClientWrapper.SendAsync((accessToken)
                     => PersonHttpClient.GetListAsync(accessToken, new GetPersonListRequestDto { Page = new PageRequestDto(number, size) }, CancellationToken.None));

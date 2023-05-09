@@ -36,6 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="OrderReportTemplate.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\ReceiptTemplate.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

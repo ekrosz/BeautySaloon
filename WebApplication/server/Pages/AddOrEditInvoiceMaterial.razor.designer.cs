@@ -1,6 +1,8 @@
 ﻿using BeautySaloon.Api.Dto.Requests.Material;
 using BeautySaloon.Api.Dto.Responses.Material;
 using BeautySaloon.Api.Services;
+using BeautySaloon.DAL.Entities;
+using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -45,6 +47,9 @@ public partial class AddOrEditInvoiceMaterialComponent : ComponentBase
     protected IHttpClientWrapper HttpClientWrapper { get; set; }
 
     private InvoiceMaterialRequest _invoiceMaterial;
+
+    [Parameter]
+    public InvoiceType InvoiceType { get; set; }
 
     [Parameter]
     public InvoiceMaterialRequest InvoiceMaterial

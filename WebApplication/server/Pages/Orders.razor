@@ -13,19 +13,21 @@
     <div class="row">
       <div class="col-md-12">
         <div class="row">
-            <div class="col-md-6">
-            <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
-            </RadzenButton>
+            <div class="col-md-6 text-left">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@Button0Click">
+                </RadzenButton>
+                <RadzenButton Icon="backup" style="margin-bottom: 10px; margin-left: 1rem" Text="Отчет" Click="@GridDownloadReportButtonClick">
+                </RadzenButton>
             </div>
             <div class="col-md-6 text-right">
-            <RadzenLabel Text="От" style="margin-right: 1rem">
-            </RadzenLabel>
-            <RadzenDatePicker DateFormat="dd.MM.yyyy" Max="@EndCreatedOn" @bind-Value="@StartCreatedOn" Name="StartCreatedOn" Change="Load" style="margin-right: 2rem">
-            </RadzenDatePicker>
-            <RadzenLabel Text="До" style="margin-right: 1rem">
-            </RadzenLabel>
-            <RadzenDatePicker DateFormat="dd.MM.yyyy" Min="@StartCreatedOn" @bind-Value="@EndCreatedOn" Name="EndCreatedOn" Change="Load">
-            </RadzenDatePicker>
+                <RadzenLabel Text="От" style="margin-right: 1rem">
+                </RadzenLabel>
+                <RadzenDatePicker DateFormat="dd.MM.yyyy" Max="@EndCreatedOn" @bind-Value="@StartCreatedOn" Name="StartCreatedOn" Change="Load" style="margin-right: 2rem">
+                </RadzenDatePicker>
+                <RadzenLabel Text="До" style="margin-right: 1rem">
+                </RadzenLabel>
+                <RadzenDatePicker DateFormat="dd.MM.yyyy" Min="@StartCreatedOn" @bind-Value="@EndCreatedOn" Name="EndCreatedOn" Change="Load">
+                </RadzenDatePicker>
             </div>
         </div>
         <RadzenTextBox Placeholder="Поиск по ФИО или телефону..." style="display: block; margin-bottom: 10px; width: 100%" Name="Textbox0" @oninput="@(async(args) => {Search = $"{args.Value}";await grid0.GoToPage(0);await Load();})">
@@ -90,7 +92,7 @@
                 </RadzenButton>
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.NotPaid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowCancelButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridCancelButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
                 </RadzenButton>
-                <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="get_app" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.Paid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowDownloadButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridDownloadButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
+                <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="get_app" Visible="@(webApplicationModelsLocalDbOrder.PaymentStatus == PaymentStatus.Paid)" Size="ButtonSize.Small" MouseEnter="@(args => ShowDownloadButtonTooltip(args, new TooltipOptions { Position = TooltipPosition.Bottom }) )" Click="@((args) => GridDownloadReceiptButtonClick(args, webApplicationModelsLocalDbOrder))" @onclick:stopPropagation="true">
                 </RadzenButton>
               </Template>
             </RadzenDataGridColumn>

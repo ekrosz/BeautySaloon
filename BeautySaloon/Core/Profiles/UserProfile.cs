@@ -4,12 +4,13 @@ using AutoMapper;
 using BeautySaloon.DAL.Entities;
 
 namespace BeautySaloon.Core.Profiles;
+
 public class UserProfile : Profile
 {
     public UserProfile()
     {
         CreateMap<User, GetUserResponseDto>();
 
-        CreateMap<User, ModifierResponseDto>();
+        CreateMap<User, UserResponseDto>();
     }
 }

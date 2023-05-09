@@ -10,6 +10,8 @@ using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using WebApplication.Handlers;
 using Azure.Core;
 using WebApplication.Wrappers;
+using BeautySaloon.DAL.Entities.Enums;
+using BeautySaloon.DAL.Entities;
 
 namespace WebApplication.Pages
 {
@@ -67,7 +69,7 @@ namespace WebApplication.Pages
             }
         }
 
-        IReadOnlyCollection<GetInvoiceListItemResponseDto> _getInvoicesResult;
+        private IReadOnlyCollection<GetInvoiceListItemResponseDto> _getInvoicesResult;
 
         protected IReadOnlyCollection<GetInvoiceListItemResponseDto> GetInvoicesResult
         {
@@ -121,7 +123,69 @@ namespace WebApplication.Pages
             }
         }
 
+        private DateTime? _endCreatedOn = DateTime.Now.AddDays(1);
+
+        protected DateTime? EndCreatedOn
+        {
+            get
+            {
+                return _endCreatedOn;
+            }
+            set
+            {
+                if (!object.Equals(_endCreatedOn, value))
+                {
+                    _endCreatedOn = value;
+                    Reload();
+                }
+            }
+        }
+
+        private DateTime? _startCreatedOn = DateTime.Now.AddDays(-7);
+
+        protected DateTime? StartCreatedOn
+        {
+            get
+            {
+                return _startCreatedOn;
+            }
+            set
+            {
+                if (!object.Equals(_startCreatedOn, value))
+                {
+                    _startCreatedOn = value;
+                    Reload();
+                }
+            }
+        }
+
+        private InvoiceType? _type;
+
+        protected InvoiceType? Type
+        {
+            get
+            {
+                return _type;
+            }
+            set
+            {
+                if (!object.Equals(_type, value))
+                {
+                    _type = value;
+                    Reload();
+                }
+            }
+        }
+
         protected int TotalCount { get; set; }
+
+        protected static IDictionary<InvoiceType, string> InvoiceTypes = Enum.GetValues<InvoiceType>()
+           .ToDictionary(k => k, v => v switch
+           {
+               InvoiceType.Extradition => "Расход",
+               InvoiceType.Receipt => "Приход",
+               _ => string.Empty
+           });
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -150,8 +214,14 @@ namespace WebApplication.Pages
                 Search = string.Empty;
             }
 
-            var invoices = await HttpClientWrapper.SendAsync((accessToken)
-                => InvoiceHttpClient.GetListAsync(accessToken, new GetInvoiceListRequestDto { Page = new PageRequestDto(PageNumber, PageSize), SearchString = Search }, CancellationToken.None));
+            var invoices = await HttpClientWrapper.SendAsync((accessToken) => InvoiceHttpClient.GetListAsync(accessToken, new GetInvoiceListRequestDto
+            {
+                SearchString = Search,
+                InvoiceType = Type,
+                StartCreatedOn = StartCreatedOn?.ToUniversalTime(),
+                EndCreatedOn = EndCreatedOn?.ToUniversalTime(),
+                Page = new PageRequestDto(PageNumber, PageSize)
+            }, CancellationToken.None));
 
             if (invoices == default)
             {

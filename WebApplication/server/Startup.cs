@@ -92,6 +92,10 @@ namespace WebApplication
                 .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
                 .AddHttpMessageHandler<CustomRefitErrorHandler>();
 
+            services.AddRefitClient<IInvoiceHttpClient>(refitSettings)
+                .ConfigureHttpClient(_ => _.BaseAddress = new Uri("http://localhost:40001"))
+                .AddHttpMessageHandler<CustomRefitErrorHandler>();
+
             services.AddAutoMapper(typeof(UserProfile).Assembly);
 
             OnConfigureServices(services);

@@ -10,15 +10,9 @@ public class InvoiceProfile : Profile
 {
     public InvoiceProfile()
     {
-        CreateMap<PageResponseDto<Invoice>, PageResponseDto<GetInvoiceListItemResponseDto>>();
-
-        CreateMap<Invoice, GetInvoiceListItemResponseDto>()
-            .ForMember(dest => dest.Employee, cfg => cfg.MapFrom(src => src.Employee));
-
-        CreateMap<User, UserResponseDto>();
-
         CreateMap<Invoice, GetInvoiceResponseDto>()
-            .ForMember(dest => dest.Materials, cfg => cfg.MapFrom(src => src.InvoiceMaterials));
+            .ForMember(dest => dest.Materials, cfg => cfg.MapFrom(src => src.InvoiceMaterials))
+            .ForMember(dest => dest.Employee, cfg => cfg.MapFrom(src => src.Employee));
 
         CreateMap<InvoiceMaterial, MaterialResponseDto>()
             .ForMember(dest => dest.Id, cfg => cfg.MapFrom(src => src.Material.Id))
@@ -26,5 +20,7 @@ public class InvoiceProfile : Profile
             .ForMember(dest => dest.Description, cfg => cfg.MapFrom(src => src.Material.Description))
             .ForMember(dest => dest.Cost, cfg => cfg.MapFrom(src => src.Cost))
             .ForMember(dest => dest.Count, cfg => cfg.MapFrom(src => src.Count));
+
+        CreateMap<User, UserResponseDto>();
     }
 }

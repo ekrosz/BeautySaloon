@@ -21,5 +21,15 @@ public class DocumentGeneratorProfile : Profile
             .ForMember(dest => dest.Count, cfg => cfg.MapFrom(src => 1))
             .ForMember(dest => dest.Price, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Price))
             .ForMember(dest => dest.TotalPrice, cfg => cfg.MapFrom(src => src.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Price));
+
+        CreateMap<Order, OrderReportRequestDto.OrderItem>()
+            .ForMember(dest => dest.PersonFullName, cfg => cfg.MapFrom(src => src.Person.Name.ConcatedName))
+            .ForMember(dest => dest.EmployeeFullName, cfg => cfg.MapFrom(src => src.Modifier.Name.ConcatedName))
+            .ForMember(dest => dest.SubscriptionNames, cfg => cfg.MapFrom(src => string.Join('\n', src.PersonSubscriptions
+                .GroupBy(x => x.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Id)
+                .Select(x => x.First().SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name))))
+            .ForMember(dest => dest.PaymentStatus, cfg => cfg.MapFrom(src => src.PaymentStatus))
+            .ForMember(dest => dest.Cost, cfg => cfg.MapFrom(src => src.Cost))
+            .ForMember(dest => dest.CreatedOn, cfg => cfg.MapFrom(src => src.CreatedOn));
     }
 }

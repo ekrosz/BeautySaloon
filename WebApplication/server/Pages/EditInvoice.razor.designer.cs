@@ -11,6 +11,7 @@ using BeautySaloon.DAL.Entities.Enums;
 using BeautySaloon.DAL.Entities.ValueObjects;
 using BeautySaloon.Api.Dto.Responses.User;
 using BeautySaloon.Api.Dto.Responses.Invoice;
+using BeautySaloon.Api.Dto.Requests.User;
 
 namespace WebApplication.Pages
 {
@@ -46,6 +47,9 @@ namespace WebApplication.Pages
         protected IInvoiceHttpClient InvoiceHttpClient { get; set; }
 
         [Inject]
+        protected IUserHttpClient UserHttpClient { get; set; }
+
+        [Inject]
         protected IHttpClientWrapper HttpClientWrapper { get; set; }
 
         [Inject]
@@ -56,23 +60,6 @@ namespace WebApplication.Pages
 
         private InvoiceRequest _invoice;
 
-        private IReadOnlyCollection<GetUserResponseDto> _getUsersResult;
-
-        protected IReadOnlyCollection<GetUserResponseDto> GetUsersResult
-        {
-            get
-            {
-                return _getUsersResult;
-            }
-            set
-            {
-                if (!object.Equals(_getUsersResult, value))
-                {
-                    _getUsersResult = value;
-                    Reload();
-                }
-            }
-        }
         protected InvoiceRequest Invoice
         {
             get
@@ -89,6 +76,24 @@ namespace WebApplication.Pages
                 if (!object.Equals(_invoice, value))
                 {
                     _invoice = value;
+                    Reload();
+                }
+            }
+        }
+
+        private IReadOnlyCollection<GetUserResponseDto> _getUsersResult;
+
+        protected IReadOnlyCollection<GetUserResponseDto> GetUsersResult
+        {
+            get
+            {
+                return _getUsersResult;
+            }
+            set
+            {
+                if (!object.Equals(_getUsersResult, value))
+                {
+                    _getUsersResult = value;
                     Reload();
                 }
             }
@@ -115,7 +120,16 @@ namespace WebApplication.Pages
                 return;
             }
 
+            var employees = await HttpClientWrapper.SendAsync((accessToken) => UserHttpClient.GetListAsync(accessToken, new GetUserListRequestDto(null), CancellationToken.None));
+
+            if (employees == default)
+            {
+                return;
+            }
+
             Invoice = Mapper.Map<InvoiceRequest>(invoice);
+
+            GetUsersResult = employees.Items;
         }
 
         protected async Task Form0Submit(InvoiceRequest args)
@@ -149,24 +163,25 @@ namespace WebApplication.Pages
 
         protected async Task Button0Click(MouseEventArgs args)
         {
-            var dialogResult = await DialogService.OpenAsync<AddOrEditInvoiceMaterial>("Добавить движение", null);
+            var dialogResult = await DialogService.OpenAsync<AddOrEditInvoiceMaterial>("Добавить движение", new Dictionary<string, object>() { { "InvoiceType", Invoice.InvoiceType } });
 
             if (dialogResult == null)
             {
                 return;
             }
 
-            var cosmeticService = Mapper.Map<InvoiceRequest.MaterialRequest>((AddOrEditInvoiceMaterialComponent.InvoiceMaterialRequest)dialogResult);
+            var material = Mapper.Map<InvoiceRequest.MaterialRequest>((AddOrEditInvoiceMaterialComponent.InvoiceMaterialRequest)dialogResult);
 
-            var existingMaterial = Invoice.Materials.FirstOrDefault(x => x.Id == cosmeticService.Id);
+            var existingMaterial = Invoice.Materials.FirstOrDefault(x => x.Id == material.Id);
 
             if (existingMaterial != null)
             {
-                existingMaterial.Count += cosmeticService.Count;
+                existingMaterial.Count += material.Count;
+                existingMaterial.Cost += material.Cost;
             }
             else
             {
-                Invoice.Materials.Add(cosmeticService);
+                Invoice.Materials.Add(material);
             }
 
             await grid0.Reload();
@@ -177,18 +192,18 @@ namespace WebApplication.Pages
         {
             var parameter = Mapper.Map<AddOrEditInvoiceMaterialComponent.InvoiceMaterialRequest>(args);
 
-            var dialogResult = await DialogService.OpenAsync<AddOrEditInvoiceMaterial>("Редактирование движение", new Dictionary<string, object>() { { "InvoiceMaterial", parameter } });
+            var dialogResult = await DialogService.OpenAsync<AddOrEditInvoiceMaterial>("Редактирование движение", new Dictionary<string, object>() { { "InvoiceMaterial", parameter }, { "InvoiceType", Invoice.InvoiceType } });
 
             if (dialogResult == null)
             {
                 return;
             }
 
-            var cosmeticService = (AddOrEditInvoiceMaterialComponent.InvoiceMaterialRequest)dialogResult;
+            var material = (AddOrEditInvoiceMaterialComponent.InvoiceMaterialRequest)dialogResult;
 
-            var existingMaterial = Invoice.Materials.First(x => x.Id == cosmeticService.Id);
+            var existingMaterial = Invoice.Materials.First(x => x.Id == material.Id);
 
-            Mapper.Map(cosmeticService, existingMaterial);
+            Mapper.Map(material, existingMaterial);
 
             await grid0.Reload();
             await InvokeAsync(() => { StateHasChanged(); });
@@ -215,13 +230,17 @@ namespace WebApplication.Pages
 
         protected async Task OnInvoiceTypeSelectedEvent(object args)
         {
+            if (((InvoiceType)args) == InvoiceType.Receipt)
+            {
+                Invoice.EmployeeId = null;
+            }
         }
 
         public record InvoiceRequest
         {
-            public InvoiceType InvoiceType { get; set; }
+            public InvoiceType InvoiceType { get; set; } = InvoiceType.Receipt;
 
-            public DateTime InvoiceDate { get; set; }
+            public DateTime InvoiceDate { get; set; } = DateTime.Now;
 
             public string? Comment { get; set; }
 

@@ -30,7 +30,7 @@
                 </RadzenLabel>
               </div>
                <div class="col-md-9">
-                <RadzenDropDown Data="InvoiceTypes" ValueProperty="Key" TextProperty="Value" style="display: block; width: 100%" @bind-Value="@(Invoice.InvoiceType)" Name="InvoiceType">
+                <RadzenDropDown Data="InvoiceTypes" ValueProperty="Key" TextProperty="Value" style="display: block; width: 100%" @bind-Value="@(Invoice.InvoiceType)" Change="OnInvoiceTypeSelectedEvent" Name="InvoiceType">
                 </RadzenDropDown>
                 <RadzenRequiredValidator Component="InvoiceType" Text="Обязательное поле" style="position: absolute">
                 </RadzenRequiredValidator>
@@ -48,16 +48,6 @@
                 </RadzenRequiredValidator>
               </div>
             </div>
-             <div style="margin-bottom: 1rem" class="row">
-              <div class="col-md-3">
-                <RadzenLabel Text="Сотрудник" Component="Employee" style="width: 100%">
-                </RadzenLabel>
-              </div>
-               <div class="col-md-9">
-                <RadzenDropDown Data="GetUsersResult" ValueProperty="Id" TextProperty="Name.ConcatedName" style="display: block; width: 100%" Change="@OnInvoiceTypeSelectedEvent" @bind-Value="@(Invoice.EmployeeId)" Name="Employee">
-                </RadzenDropDown>
-              </div>
-            </div>
             <div style="margin-bottom: 1rem" class="row">
               <div class="col-md-3">
                 <RadzenLabel Text="Комментарий" Component="Comment" style="width: 100%">
@@ -66,6 +56,16 @@
               <div class="col-md-9">
                 <RadzenTextBox style="display: block; width: 100%" @bind-Value="@(Invoice.Comment)" Name="Comment">
                 </RadzenTextBox>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Visible="Invoice.InvoiceType == InvoiceType.Extradition" Text="Сотрудник" Component="Employee" style="width: 100%">
+                </RadzenLabel>
+              </div>
+               <div class="col-md-9">
+                <RadzenDropDown Data="GetUsersResult" Visible="Invoice.InvoiceType == InvoiceType.Extradition" ValueProperty="Id" TextProperty="Name.ConcatedName" style="display: block; width: 100%" @bind-Value="@(Invoice.EmployeeId)" Name="Employee">
+                </RadzenDropDown>
               </div>
             </div>
             <div class="row">

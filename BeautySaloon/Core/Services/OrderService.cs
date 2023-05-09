@@ -12,7 +12,6 @@ using BeautySaloon.DAL.Uow;
 using BeautySaloon.Core.IntegrationServices.SmartPay.Contracts;
 using BeautySaloon.Core.IntegrationServices.SmartPay.Dto;
 using BeautySaloon.DAL.Entities.Enums;
-using QRCoder;
 using BeautySaloon.Core.Utils.Dto;
 using BeautySaloon.Core.Utils.Contracts;
 using BeautySaloon.Core.IntegrationServices.MailKit.Contracts;
@@ -35,6 +34,8 @@ public class OrderService : IOrderService
 
     private readonly IDocumentGenerator<ReceiptRequestDto> _receiptDocumentGenerator;
 
+    private readonly IDocumentGenerator<OrderReportRequestDto> _orderReportDocumentGenerator;
+
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly IMapper _mapper;
@@ -47,6 +48,7 @@ public class OrderService : IOrderService
         ISmartPayService smartPayService,
         IMailKitService mailKitService,
         IDocumentGenerator<ReceiptRequestDto> receiptDocumentGenerator,
+        IDocumentGenerator<OrderReportRequestDto> orderReportDocumentGenerator,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
@@ -57,6 +59,7 @@ public class OrderService : IOrderService
         _smartPayService = smartPayService;
         _mailKitService = mailKitService;
         _receiptDocumentGenerator = receiptDocumentGenerator;
+        _orderReportDocumentGenerator = orderReportDocumentGenerator;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -211,7 +214,7 @@ public class OrderService : IOrderService
         return new CheckAndUpdateOrderPaymentStatusResponseDto { PaymentStatus = order.PaymentStatus };
     }
 
-    public async Task<FileResponseDto> GetReceiptAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
+    public async Task<FileResponseDto> GetOrderReceiptAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
     {
         var order = await _orderQueryRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new OrderNotFoundException(request.Id);
@@ -222,6 +225,25 @@ public class OrderService : IOrderService
         }
 
         return await GenerateReceiptAsync(order);
+    }
+
+    public async Task<FileResponseDto> GetOrderReportAsync(GetOrderReportRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var orders = await _orderQueryRepository.FindAsync(
+            x => (!request.StartCreatedOn.HasValue || request.StartCreatedOn.Value.Date <= x.CreatedOn.Date) && (!request.EndCreatedOn.HasValue || request.EndCreatedOn.Value.Date <= x.CreatedOn.Date),
+            cancellationToken);
+
+        var data = new OrderReportRequestDto
+        {
+            StartCreatedOn = request.StartCreatedOn ?? orders.Min(x => x.CreatedOn),
+            EndCreatedOn = request.EndCreatedOn ?? orders.Max(x => x.CreatedOn),
+            TotalCost = orders.Sum(x => x.Cost),
+            Items = _mapper.Map<IReadOnlyCollection<OrderReportRequestDto.OrderItem>>(orders)
+                .OrderByDescending(x => x.CreatedOn)
+                .ToArray()
+        };
+
+        return await _orderReportDocumentGenerator.GenerateDocumentAsync($"Отчет", data);
     }
 
     private async Task SendReceiptToEmailAsync(Order order)

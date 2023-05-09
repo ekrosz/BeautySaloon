@@ -13,9 +13,7 @@ public record GetInvoiceResponseDto
 
     public string? Comment { get; init; }
 
-    public UserResponseDto Modifier { get; set; } = new();
-
-    public FullName EmployeeName { get; init; } = FullName.Empty;
+    public UserResponseDto? Employee { get; init; }
 
     public IReadOnlyCollection<MaterialResponseDto> Materials { get; init; } = Array.Empty<MaterialResponseDto>();
 }

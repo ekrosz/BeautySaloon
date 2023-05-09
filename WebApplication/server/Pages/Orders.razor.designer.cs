@@ -191,7 +191,7 @@ namespace WebApplication.Pages
                 StartCreatedOn = StartCreatedOn?.ToUniversalTime(),
                 EndCreatedOn = EndCreatedOn?.ToUniversalTime(),
                 Page = new PageRequestDto(PageNumber, PageSize)
-            }));
+            }, CancellationToken.None));
 
             if (orders == default)
             {
@@ -259,10 +259,11 @@ namespace WebApplication.Pages
             }
         }
 
-        protected async Task GridDownloadButtonClick(MouseEventArgs args, dynamic data)
-        {
-            await HttpClientWrapper.SendAsync((accessToken) => Task.Run(() => JSRuntime.InvokeAsync<object>("open", Path.Combine(NavigationManager.BaseUri, $"/api/files/receipt?accessToken={accessToken}&id={data.Id}"), "_blank")));
-        }
+        protected Task GridDownloadReceiptButtonClick(MouseEventArgs args, dynamic data)
+            => HttpClientWrapper.SendAsync((accessToken) => Task.Run(() => JSRuntime.InvokeAsync<object>("open", Path.Combine(NavigationManager.BaseUri, $"/api/files/receipt?accessToken={accessToken}&id={data.Id}"), "_blank")));
+
+        protected Task GridDownloadReportButtonClick(MouseEventArgs args)
+            => HttpClientWrapper.SendAsync((accessToken) => Task.Run(() => JSRuntime.InvokeAsync<object>("open", Path.Combine(NavigationManager.BaseUri, $"/api/files/report?accessToken={accessToken}&startCreatedOn={StartCreatedOn?.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'")}&endCreatedOn={EndCreatedOn?.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'")}"), "_blank")));
 
         protected void ShowPayButtonTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, "Оплатить", options);
 

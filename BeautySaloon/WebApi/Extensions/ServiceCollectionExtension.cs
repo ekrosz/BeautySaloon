@@ -72,6 +72,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<ISmartPayService, SmartPayService>();
 
         services.AddScoped<IDocumentGenerator<ReceiptRequestDto>, ReceiptDocumentGenerator>();
+        services.AddScoped<IDocumentGenerator<OrderReportRequestDto>, OrderReportDocumentGenerator>();
 
         services.Configure<BLayerSettings>(configuration.GetSection(nameof(BLayerSettings)));
         services.AddHostedService<RefreshPersonSubscriptionStatusJob>();

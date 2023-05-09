@@ -38,11 +38,11 @@
                         </div>
                         <div style="margin-bottom: 1rem" class="row">
                             <div class="col-md-3">
-                                <RadzenLabel Text="Стоимость" Component="Cost" style="width: 100%">
+                                <RadzenLabel Visible="InvoiceType == InvoiceType.Receipt" Text="Стоимость" Component="Cost" style="width: 100%">
                                 </RadzenLabel>
                             </div>
                             <div class="col-md-9">
-                                <RadzenNumeric style="display: block; width: 100%" @bind-Value="@(InvoiceMaterial.Cost)" Name="Cost">
+                                <RadzenNumeric Visible="InvoiceType == InvoiceType.Receipt" style="display: block; width: 100%" @bind-Value="@(InvoiceMaterial.Cost)" Name="Cost">
                                 </RadzenNumeric>
                             </div>
                         </div>

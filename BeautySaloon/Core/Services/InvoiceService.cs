@@ -9,6 +9,7 @@ using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;
 using BeautySaloon.DAL.Entities.Enums;
+using BeautySaloon.Api.Dto.Responses.Common;
 
 namespace BeautySaloon.Core.Services
 {
@@ -172,6 +173,13 @@ namespace BeautySaloon.Core.Services
             var entity = await _invoiceWriteRepository.GetByIdAsync(request.Id, cancellationToken)
                 ?? throw new InvoiceNotFoundException(request.Id);
 
+            var isExistInvoice = await _invoiceQueryRepository.ExistAsync(x => x.InvoiceDate.Date > entity.InvoiceDate.Date, cancellationToken);
+
+            if (isExistInvoice)
+            {
+                throw new InvalidInvoiceDateException(entity.InvoiceDate);
+            }
+
             _invoiceWriteRepository.Delete(entity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
@@ -186,18 +194,40 @@ namespace BeautySaloon.Core.Services
 
         public async Task<PageResponseDto<GetInvoiceListItemResponseDto>> GetInvoiceListAsync(GetInvoiceListRequestDto request, CancellationToken cancellationToken = default)
         {
-            var invoices = await _invoiceQueryRepository.GetPageAsync(
-                request: request.Page,
-                predicate: x => (string.IsNullOrWhiteSpace(request.SearchString)
+            var query = _invoiceQueryRepository.GetQuery()
+                .Where(x => (string.IsNullOrWhiteSpace(request.SearchString)
                             || x.InvoiceMaterials.Any(y => y.Material.Name.ToLower().Contains(request.SearchString.ToLower())))
                         && ((!request.StartCreatedOn.HasValue || x.InvoiceDate.Date >= request.StartCreatedOn.Value.Date)
                             && (!request.EndCreatedOn.HasValue || x.InvoiceDate.Date <= request.EndCreatedOn.Value.Date))
-                        && x.InvoiceType == request.InvoiceType,
-                sortProperty: x => x.InvoiceDate,
-                asc: false,
-                cancellationToken);
+                        && (!request.InvoiceType.HasValue
+                            || x.InvoiceType == request.InvoiceType))
+                .Join(_userQueryRepository.GetQuery(), x => x.UserModifierId, x => x.Id, (x, y) => new GetInvoiceListItemResponseDto
+                {
+                    Id = x.Id,
+                    InvoiceDate = x.InvoiceDate,
+                    InvoiceType = x.InvoiceType,
+                    Comment = x.Comment,
+                    Cost = x.InvoiceMaterials.Sum(y => y.Cost ?? 0),
+                    Employee = x.Employee == null ? null : new UserResponseDto
+                    {
+                        Id = x.Employee.Id,
+                        Name = x.Employee.Name,
+                        Role = x.Employee.Role
+                    },
+                    Modifier = new UserResponseDto
+                    {
+                        Id = y.Id,
+                        Name = y.Name,
+                        Role = y.Role
+                    }
+                })
+                .OrderByDescending(x => x.InvoiceDate.Date)
+                .ThenByDescending(x => x.InvoiceType);
                         
-            return _mapper.Map<PageResponseDto<GetInvoiceListItemResponseDto>>(invoices);
+            return await _invoiceQueryRepository.GetPageAsync(
+                request: request.Page,
+                query: query,
+                cancellationToken);
         }
 
         private async Task ValidateMaterialCountAsync(
