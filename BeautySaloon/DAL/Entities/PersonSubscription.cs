@@ -24,6 +24,8 @@ public class PersonSubscription : IEntity
 
     public SubscriptionCosmeticServiceSnapshot SubscriptionCosmeticServiceSnapshot { get; set; } = default!;
 
+    public Guid OrderId { get; set; }
+
     public Order Order { get; set; } = default!;
 
     public void ValidateStatusOrThrow()

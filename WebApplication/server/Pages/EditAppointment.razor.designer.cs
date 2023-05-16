@@ -108,7 +108,7 @@ namespace WebApplication.Pages
             }
         }
 
-        private bool _isComponentsDisabled;
+        private bool _isComponentsDisabled = true;
 
         protected bool IsComponentsDisabled
         {
@@ -173,6 +173,42 @@ namespace WebApplication.Pages
         protected async Task Button2Click(MouseEventArgs args)
         {
             DialogService.Close(false);
+        }
+
+        protected async Task CompleteButtonClick(MouseEventArgs args)
+        {
+            var dialogResult = await DialogService.OpenAsync<CompleteOrCancelAppointment>("Выполнение записи", new Dictionary<string, object> { { "Id", Id }, { "IsCompleteOperation", true } });
+
+            if ((dialogResult as bool?).GetValueOrDefault())
+            {
+                await Load();
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно выполнена"
+                });
+
+                DialogService.Close(true);
+            }
+        }
+
+        protected async Task CancelButtonClick(MouseEventArgs args)
+        {
+            var dialogResult = await DialogService.OpenAsync<CompleteOrCancelAppointment>("Отмена записи", new Dictionary<string, object> { { "Id", Id }, { "IsCompleteOperation", false } });
+
+            if ((dialogResult as bool?).GetValueOrDefault())
+            {
+                await Load();
+
+                NotificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Запись успешно отменена"
+                });
+
+                DialogService.Close(true);
+            }
         }
 
         private async Task<IReadOnlyCollection<PersonSubscriptionCosmeticServiceResponse>> GetPersonSubscriptionsAsync(Guid personId)

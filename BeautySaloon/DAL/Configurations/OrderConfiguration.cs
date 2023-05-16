@@ -28,7 +28,7 @@ public class OrderConfiguration : EntityConfiguration<Order>
 
         builder.HasMany(x => x.PersonSubscriptions)
             .WithOne(x => x.Order)
-            .HasForeignKey("OrderId")
+            .HasForeignKey(x => x.OrderId)
             .IsRequired();
 
         builder.Navigation(x => x.PersonSubscriptions)

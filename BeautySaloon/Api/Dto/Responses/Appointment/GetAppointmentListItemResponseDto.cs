@@ -9,6 +9,8 @@ public record GetAppointmentListItemResponseDto
 
     public DateTime AppointmentDate { get; init; }
 
+    public DateTime AppointmentDateEnd => AppointmentDate.AddMinutes(DurationInMinutes);
+
     public int DurationInMinutes { get; init; }
 
     public AppointmentStatus Status { get; init; }

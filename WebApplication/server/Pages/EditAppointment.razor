@@ -63,9 +63,11 @@
             </div>
             <div class="row">
               <div class="col offset-sm-3">
-                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Сохранить" ButtonStyle="ButtonStyle.Primary">
+                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Visible="!IsComponentsDisabled" Text="Сохранить" ButtonStyle="ButtonStyle.Primary">
                 </RadzenButton>
-                <RadzenButton ButtonStyle="ButtonStyle.Light" style="margin-left: 1rem" Text="Отменить" Click="@Button2Click">
+                <RadzenButton Icon="done" Visible="!IsComponentsDisabled" Text="Выполнить" ButtonStyle="ButtonStyle.Success" Click="@CompleteButtonClick">
+                </RadzenButton>
+                <RadzenButton Icon="delete" Visible="!IsComponentsDisabled" Text="Отменить" ButtonStyle="ButtonStyle.Danger" Click="@CancelButtonClick">
                 </RadzenButton>
               </div>
             </div>

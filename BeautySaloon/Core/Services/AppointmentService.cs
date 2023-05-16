@@ -5,7 +5,6 @@ using AutoMapper;
 using BeautySaloon.Common.Exceptions;
 using BeautySaloon.Core.Services.Contracts;
 using BeautySaloon.DAL.Entities;
-using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using BeautySaloon.DAL.Repositories.Abstract;
 using BeautySaloon.DAL.Uow;
 using BeautySaloon.DAL.Entities.Enums;
@@ -16,11 +15,14 @@ public class AppointmentService : IAppointmentService
 {
     private readonly IWriteRepository<Appointment> _appointmentWriteRepositry;
 
-    private readonly IQueryRepository<Appointment> _appointmentQueryRepositry;
-
-    private readonly IQueryRepository<PersonSubscription> _personSubscriptionQueryRepositry;
+    private readonly IWriteRepository<PersonSubscription> _personSubscriptionWriteRepositry;
 
     private readonly IWriteRepository<Person> _personWriteRepositry;
+
+    private readonly IQueryRepository<Appointment> _appointmentQueryRepositry;
+
+    private readonly IQueryRepository<Order> _orderQueryRepositry;
+
 
     private readonly IUnitOfWork _unitOfWork;
 
@@ -28,16 +30,19 @@ public class AppointmentService : IAppointmentService
 
     public AppointmentService(
         IWriteRepository<Appointment> appointmentWriteRepositry,
-        IQueryRepository<Appointment> appointmentQueryRepositry,
-        IQueryRepository<PersonSubscription> personSubscriptionQueryRepositry,
+        IWriteRepository<PersonSubscription> personSubscriptionWriteRepositry,
         IWriteRepository<Person> personWriteRepositry,
+        IQueryRepository<Appointment> appointmentQueryRepositry,
+        IQueryRepository<Order> orderQueryRepositry,
+        IQueryRepository<Person> personQueryRepositry,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _appointmentWriteRepositry = appointmentWriteRepositry;
-        _appointmentQueryRepositry = appointmentQueryRepositry;
-        _personSubscriptionQueryRepositry = personSubscriptionQueryRepositry;
+        _personSubscriptionWriteRepositry = personSubscriptionWriteRepositry;
         _personWriteRepositry = personWriteRepositry;
+        _appointmentQueryRepositry = appointmentQueryRepositry;
+        _orderQueryRepositry = orderQueryRepositry;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -84,7 +89,7 @@ public class AppointmentService : IAppointmentService
         var entity = await _appointmentWriteRepositry.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new AppointmentNotFoundException(request.Id);
 
-        var personSubscriptions = await _personSubscriptionQueryRepositry.FindAsync(
+        var personSubscriptions = await _personSubscriptionWriteRepositry.FindAsync(
             x => request.Data.PersonSubscriptionIds.Contains(x.Id),
             cancellationToken);
 
@@ -97,7 +102,7 @@ public class AppointmentService : IAppointmentService
             throw new PersonSubscriptionNotFoundException(notExistPersonSubscription.First());
         }
 
-        ValidateStatus(personSubscriptions);
+        ValidateStatus(personSubscriptions.Where(x => !entity.PersonSubscriptions.Select(y => y.Id).Contains(x.Id)));
 
         var duration = personSubscriptions.Sum(x => x.SubscriptionCosmeticServiceSnapshot.CosmeticServiceSnapshot.ExecuteTimeInMinutes ?? 0);
 
@@ -134,19 +139,16 @@ public class AppointmentService : IAppointmentService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<PageResponseDto<GetAppointmentListItemResponseDto>> GetAppointmentListAsync(GetAppointmentListRequestDto request, CancellationToken cancellationToken = default)
+    public async Task<ItemListResponseDto<GetAppointmentListItemResponseDto>> GetAppointmentListAsync(GetAppointmentListRequestDto request, CancellationToken cancellationToken = default)
     {
-        var appointments = await _appointmentQueryRepositry.GetPageAsync(
-            request: request.Page,
+        var appointments = await _appointmentQueryRepositry.FindAsync(
             predicate: x => (string.IsNullOrWhiteSpace(request.SearchString)
                     || string.Join(' ', x.Person.Name.LastName, x.Person.Name.FirstName, x.Person.Name.MiddleName).TrimEnd(' ').ToLower().Contains(request.SearchString.ToLower())
                         || x.Person.PhoneNumber.ToLower().Contains(request.SearchString.ToLower()))
-                    && ((!request.StartAppointmentDate.HasValue || x.AppointmentDate.Date >= request.StartAppointmentDate.Value.Date)
-                        && (!request.EndAppointmentDate.HasValue || x.AppointmentDate.Date <= request.EndAppointmentDate.Value.Date)),
-            sortProperty: x => x.AppointmentDate,
+                    && x.PersonSubscriptions.Any(),
             cancellationToken: cancellationToken);
 
-        return _mapper.Map<PageResponseDto<GetAppointmentListItemResponseDto>>(appointments);
+        return new ItemListResponseDto<GetAppointmentListItemResponseDto>(_mapper.Map<IReadOnlyCollection<GetAppointmentListItemResponseDto>>(appointments));
     }
 
     public async Task<GetAppointmentResponseDto> GetAppointmentAsync(ByIdRequestDto request, CancellationToken cancellationToken = default)
@@ -191,7 +193,10 @@ public class AppointmentService : IAppointmentService
         {
             var subscriptionLifeTime = personSubscription.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.LifeTimeInDays;
 
-            if (subscriptionLifeTime.HasValue && personSubscription.Order.UpdatedOn.AddDays(subscriptionLifeTime.Value).Date < appointmentDate.Date)
+            var order = await _orderQueryRepositry.GetByIdAsync(personSubscription.OrderId, cancellationToken)
+                ?? throw new OrderNotFoundException(personSubscription.OrderId);
+
+            if (subscriptionLifeTime.HasValue && order.UpdatedOn.AddDays(subscriptionLifeTime.Value).Date < appointmentDate.Date)
             {
                 throw new PersonSubscriptionWillBeOverdueException(
                     personSubscription.SubscriptionCosmeticServiceSnapshot.SubscriptionSnapshot.Name,

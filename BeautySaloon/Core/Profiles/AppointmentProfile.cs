@@ -2,7 +2,6 @@
 using BeautySaloon.Api.Dto.Responses.Common;
 using AutoMapper;
 using BeautySaloon.DAL.Entities;
-using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 
 namespace BeautySaloon.Core.Profiles;
 
@@ -10,8 +9,6 @@ public class AppointmentProfile : Profile
 {
     public AppointmentProfile()
     {
-        CreateMap<PageResponseDto<Appointment>, PageResponseDto<GetAppointmentListItemResponseDto>>();
-
         CreateMap<Appointment, GetAppointmentListItemResponseDto>()
             .ForMember(dest => dest.Person, cfg => cfg.MapFrom(src => src.Person))
             .ForMember(dest => dest.Modifier, cfg => cfg.MapFrom(src => src.Modifier));

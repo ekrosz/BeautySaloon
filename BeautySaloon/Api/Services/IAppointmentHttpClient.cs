@@ -1,6 +1,6 @@
-﻿using BeautySaloon.Api.Dto.Requests.Appointment;
+﻿using BeautySaloon.Api.Dto.Common;
+using BeautySaloon.Api.Dto.Requests.Appointment;
 using BeautySaloon.Api.Dto.Responses.Appointment;
-using BeautySaloon.DAL.Entities.ValueObjects.Pagination;
 using Refit;
 
 namespace BeautySaloon.Api.Services;
@@ -21,7 +21,7 @@ public interface IAppointmentHttpClient
     Task CancelAsync([Header("Authorization")] string accessToken, Guid id, [Body] CompleteOrCancelAppointmentRequestDto request, CancellationToken cancellationToken = default);
 
     [Get("/api/appointments")]
-    Task<PageResponseDto<GetAppointmentListItemResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetAppointmentListRequestDto request, CancellationToken cancellationToken = default);
+    Task<ItemListResponseDto<GetAppointmentListItemResponseDto>> GetListAsync([Header("Authorization")] string accessToken, [Query] GetAppointmentListRequestDto request, CancellationToken cancellationToken = default);
 
     [Get("/api/appointments/{id}")]
     Task<GetAppointmentResponseDto> GetAsync([Header("Authorization")] string accessToken, Guid id, CancellationToken cancellationToken = default);

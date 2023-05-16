@@ -49,6 +49,9 @@ namespace WebApplication.Pages
         [Inject]
         protected IMapper Mapper { get; set; }
 
+        [Parameter]
+        public DateTime AppointmentDate { get; set; }
+
         private IReadOnlyCollection<GetPersonListItemResponseDto> _getPersonsResult;
 
         protected IReadOnlyCollection<GetPersonListItemResponseDto> GetPersonsResult
@@ -117,7 +120,10 @@ namespace WebApplication.Pages
         {
             GetPersonsResult = await GetPersonsAsync();
 
-            Appointment = new AppointmentRequest();
+            Appointment = new AppointmentRequest()
+            {
+                AppointmentDate = AppointmentDate
+            };
         }
 
         protected async Task OnPersonSelectedEvent(object args)

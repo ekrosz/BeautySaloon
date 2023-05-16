@@ -21,7 +21,6 @@ public class AppointmentsController : ControllerBase
     private readonly IValidator<CreateAppointmentRequestDto> _createAppointmentRequestValidator;
     private readonly IValidator<UpdateAppointmentRequestDto> _updateAppointmentRequestValidator;
     private readonly IValidator<CompleteOrCancelAppointmentRequestDto> _completeOrCancelAppointmentRequestValidator;
-    private readonly IValidator<GetAppointmentListRequestDto> _getAppointmentListRequestValidator;
     private readonly IValidator<ByIdRequestDto> _byIdRequestValidator;
 
     public AppointmentsController(
@@ -29,14 +28,12 @@ public class AppointmentsController : ControllerBase
         IValidator<CreateAppointmentRequestDto> createAppointmentRequestValidator,
         IValidator<UpdateAppointmentRequestDto> updateAppointmentRequestValidator,
         IValidator<CompleteOrCancelAppointmentRequestDto> completeOrCancelAppointmentRequestValidator,
-        IValidator<GetAppointmentListRequestDto> getAppointmentListRequestValidator,
         IValidator<ByIdRequestDto> byIdRequestValidator)
     {
         _orderService = orderService;
         _createAppointmentRequestValidator = createAppointmentRequestValidator;
         _updateAppointmentRequestValidator = updateAppointmentRequestValidator;
         _completeOrCancelAppointmentRequestValidator = completeOrCancelAppointmentRequestValidator;
-        _getAppointmentListRequestValidator = getAppointmentListRequestValidator;
         _byIdRequestValidator = byIdRequestValidator;
     }
 
@@ -79,12 +76,8 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<PageResponseDto<GetAppointmentListItemResponseDto>> GetListAsync([FromQuery] GetAppointmentListRequestDto request, CancellationToken cancellationToken = default)
-    {
-        await _getAppointmentListRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
-
-        return await _orderService.GetAppointmentListAsync(request, cancellationToken);
-    }
+    public Task<ItemListResponseDto<GetAppointmentListItemResponseDto>> GetListAsync([FromQuery] GetAppointmentListRequestDto request, CancellationToken cancellationToken = default)
+        => _orderService.GetAppointmentListAsync(request, cancellationToken);
 
     [HttpGet("{id}")]
     public async Task<GetAppointmentResponseDto> GetAsync([FromRoute] Guid id, CancellationToken cancellationToken = default)
